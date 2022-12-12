@@ -1,0 +1,9 @@
+rootProject.name = 'miniconnect-api'
+
+include 'api'
+include 'lang'
+include 'lang-jackson'
+
+rootProject.children.each { project ->
+    project.projectDir = new File(settingsDir, "projects/${project.name}")
+}

@@ -1,0 +1,9 @@
+plugins {
+    id 'java-library'
+}
+
+description "MiniConnect API definition"
+
+dependencies {
+    api project(':lang')
+}
