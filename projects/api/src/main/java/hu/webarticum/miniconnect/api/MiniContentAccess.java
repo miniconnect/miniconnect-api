@@ -1,11 +1,11 @@
 package hu.webarticum.miniconnect.api;
 
-import java.io.Closeable;
 import java.io.InputStream;
 
 import hu.webarticum.miniconnect.lang.ByteString;
+import hu.webarticum.miniconnect.lang.CheckableCloseable;
 
-public interface MiniContentAccess extends Closeable {
+public interface MiniContentAccess extends CheckableCloseable {
     
     public long length();
     
@@ -21,7 +21,4 @@ public interface MiniContentAccess extends Closeable {
 
     public InputStream inputStream(long start, long length);
     
-    @Override
-    public void close();
-
 }
