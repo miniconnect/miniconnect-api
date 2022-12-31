@@ -44,7 +44,14 @@ public final class ImmutableList<T> implements ReversibleIterable<T>, Serializab
         return new ImmutableList<>(new ArrayList<>(collection));
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> ImmutableList<T> fromIterable(Iterable<? extends T> iterable) {
+        if (iterable instanceof ImmutableList) {
+            return (ImmutableList<T>) iterable;
+        } else if (iterable instanceof Collection) {
+            return fromCollection((Collection<T>) iterable);
+        }
+        
         return fromIterator(iterable.iterator());
     }
 
