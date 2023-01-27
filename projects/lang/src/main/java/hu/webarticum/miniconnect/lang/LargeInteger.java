@@ -3,6 +3,7 @@ package hu.webarticum.miniconnect.lang;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.util.BitSet;
 
 public abstract class LargeInteger extends Number implements Comparable<LargeInteger> {
     
@@ -100,6 +101,18 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         }
     }
 
+    public static LargeInteger of(BitSet bitSet) {
+        byte[] bytes = bitSet.toByteArray();
+        int halfLength = bytes.length / 2;
+        for (int i = 0; i < halfLength; i++) {
+            byte v = bytes[i];
+            int flipIndex = bytes.length - i - 1;
+            bytes[i] = bytes[flipIndex];
+            bytes[flipIndex] = v;
+        }
+        return of(bytes);
+    }
+    
 
     private static boolean isSmall(BigInteger value) {
         return value.bitLength() <= 63;
@@ -196,6 +209,18 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     
     
     // additional methods
+    
+    public BitSet toBitSet() {
+        byte[] bytes = toByteArray();
+        int halfLength = bytes.length / 2;
+        for (int i = 0; i < halfLength; i++) {
+            byte v = bytes[i];
+            int flipIndex = bytes.length - i - 1;
+            bytes[i] = bytes[flipIndex];
+            bytes[flipIndex] = v;
+        }
+        return BitSet.valueOf(bytes);
+    }
 
     public abstract String toString(int radix);
     
@@ -262,6 +287,8 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     public boolean isGreaterThanOrEqualTo(LargeInteger val) {
         return compareTo(val) >= 0;
     }
+    
+    public abstract boolean isPowerOfTwo();
     
     public abstract LargeInteger increment();
     
@@ -473,10 +500,15 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
             }
             
             long square = value * value;
-            long longResult =
-                    exponent == 2 ? square :
-                    exponent == 3 ? square * value :
-                    square * square;
+            long longResult;
+            if (exponent == 2) {
+                longResult = square;
+            } else if (exponent == 3) {
+                longResult = square * value;
+            } else {
+                // MAX_SMALL_POW_EXPONENT == 4
+                longResult = square * square;
+            }
             return ofSmall(longResult);
         }
         
@@ -617,6 +649,17 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         
         public boolean isFittingInByte() {
             return value >= Byte.MIN_VALUE && value <= Byte.MAX_VALUE;
+        }
+        
+        public boolean isPowerOfTwo() {
+            if (value > 0L) {
+                return (value & (value - 1L)) == 0;
+            } else if (value == Long.MIN_VALUE) {
+                return true;
+            } else {
+                long absValue = Math.abs(value);
+                return (absValue & (absValue - 1L)) == 0;
+            }
         }
 
         public LargeInteger increment() {
@@ -881,7 +924,12 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         public boolean isFittingInByte() {
             return false;
         }
-        
+
+        public boolean isPowerOfTwo() {
+            BigInteger absValue = value.abs();
+            return absValue.and(absValue.subtract(BigInteger.ONE)).equals(BigInteger.ZERO);
+        }
+
         public LargeInteger increment() {
             return ofBig(value.add(BigInteger.ONE));
         }
