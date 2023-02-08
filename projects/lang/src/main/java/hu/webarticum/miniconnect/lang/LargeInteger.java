@@ -91,6 +91,9 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
             return ZERO;
         } else if (bytes.length < Long.BYTES) {
             ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+            if (bytes[0] < 0) {
+                buffer.putLong(-1L);
+            }
             buffer.position(Long.BYTES - bytes.length);
             buffer.put(bytes);
             buffer.position(0);
