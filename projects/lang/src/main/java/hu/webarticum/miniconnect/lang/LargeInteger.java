@@ -3,6 +3,7 @@ package hu.webarticum.miniconnect.lang;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.BitSet;
 
 public abstract class LargeInteger extends Number implements Comparable<LargeInteger> {
@@ -114,6 +115,34 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
             bytes[flipIndex] = v;
         }
         return of(bytes);
+    }
+
+    public static LargeInteger[] arrayOf(long... values) {
+        LargeInteger[] result = new LargeInteger[values.length];
+        for (int i = 0; i < values.length; i++) {
+            result[i] = LargeInteger.of(values[i]);
+        }
+        return result;
+    }
+
+    public static LargeInteger[] arrayOf(String... values) {
+        LargeInteger[] result = new LargeInteger[values.length];
+        for (int i = 0; i < values.length; i++) {
+            result[i] = LargeInteger.of(values[i]);
+        }
+        return result;
+    }
+    
+    public static LargeInteger[] arrayOf(BigInteger... values) {
+        LargeInteger[] result = new LargeInteger[values.length];
+        for (int i = 0; i < values.length; i++) {
+            result[i] = LargeInteger.of(values[i]);
+        }
+        return result;
+    }
+    
+    public static LargeInteger[] arrayOf(LargeInteger... values) {
+        return Arrays.copyOf(values, values.length);
     }
     
 
