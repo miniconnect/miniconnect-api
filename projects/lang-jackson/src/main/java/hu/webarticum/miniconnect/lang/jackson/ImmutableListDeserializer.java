@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.type.ArrayType;
+import com.fasterxml.jackson.databind.type.LogicalType;
 
 import hu.webarticum.miniconnect.lang.ImmutableList;
 
@@ -66,6 +67,12 @@ public class ImmutableListDeserializer extends StdDeserializer<ImmutableList<?>>
                 
             };
             return ImmutableList.of(parser.readValueAs(arrayTypeReference));
+        }
+        
+        @Override
+        public LogicalType logicalType() {
+            // TODO Auto-generated method stub
+            return super.logicalType();
         }
 
     }
