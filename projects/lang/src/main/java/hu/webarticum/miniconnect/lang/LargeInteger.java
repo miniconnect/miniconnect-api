@@ -106,6 +106,18 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     }
 
     public static LargeInteger of(BitSet bitSet) {
+        return of(toBytes(bitSet));
+    }
+
+    public static LargeInteger nonNegativeOf(byte[] bytes) {
+        return of(new BigInteger(1, bytes));
+    }
+
+    public static LargeInteger nonNegativeOf(BitSet bitSet) {
+        return nonNegativeOf(toBytes(bitSet));
+    }
+
+    public static byte[] toBytes(BitSet bitSet) {
         byte[] bytes = bitSet.toByteArray();
         int halfLength = bytes.length / 2;
         for (int i = 0; i < halfLength; i++) {
@@ -114,7 +126,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
             bytes[i] = bytes[flipIndex];
             bytes[flipIndex] = v;
         }
-        return of(bytes);
+        return bytes;
     }
 
     public static LargeInteger[] arrayOf(long... values) {
