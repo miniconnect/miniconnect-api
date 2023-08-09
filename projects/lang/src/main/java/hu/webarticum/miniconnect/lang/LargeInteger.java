@@ -379,7 +379,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         @Override
         public int compareTo(LargeInteger other) {
             if (other instanceof ImplBig) {
-                return ((ImplBig) other).value.signum();
+                return -((ImplBig) other).value.signum();
             }
             
             return Long.compare(value, other.longValueExact());
