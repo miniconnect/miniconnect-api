@@ -170,7 +170,7 @@ public final class ImmutableList<T> implements ReversibleIterable<T>, Serializab
 
     public ReversibleIterable<T> reverseOrder() {
         ListIterator<T> listIterator = data.listIterator(data.size());
-        return ReversibleIterable.of(() -> new Iterator<T>() {
+        return ReversibleIterable.reversedOfReference(() -> new Iterator<T>() {
     
             @Override
             public boolean hasNext() {
