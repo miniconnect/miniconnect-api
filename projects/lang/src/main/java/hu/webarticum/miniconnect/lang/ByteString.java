@@ -12,13 +12,15 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 /**
  * Simple immutable wrapper for byte arrays
  */
-public final class ByteString implements Serializable {
+public final class ByteString implements Iterable<Byte>, Serializable {
 
     private static final long serialVersionUID = 2392643209772967829L;
     
@@ -125,6 +127,11 @@ public final class ByteString implements Serializable {
 
     public byte byteAt(int position) {
         return bytes[position];
+    }
+    
+    @Override
+    public Iterator<Byte> iterator() {
+        return new ByteStringIterator();
     }
     
     public ByteString substring(int beginIndex) {
@@ -248,6 +255,28 @@ public final class ByteString implements Serializable {
         return new Reader();
     }
 
+    
+    public class ByteStringIterator implements Iterator<Byte> {
+        
+        private int position = 0;
+        
+
+        @Override
+        public boolean hasNext() {
+            return position < bytes.length;
+        }
+
+        @Override
+        public Byte next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            
+            return bytes[position];
+        }
+        
+    }
+    
 
     public static class Builder {
 
