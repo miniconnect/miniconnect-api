@@ -90,8 +90,8 @@ public final class ByteString implements Iterable<Byte>, Serializable {
         return fromInputStream(inputStream, 1024);
     }
     
-    public static ByteString fromInputStream(InputStream inputStream, int size) {
-        ByteArrayOutputStream resultBuilder = new ByteArrayOutputStream();
+    public static ByteString fromInputStream(InputStream inputStream, int sizeHint) {
+        ByteArrayOutputStream resultBuilder = new ByteArrayOutputStream(sizeHint);
 
         int readLength;
         byte[] buffer = new byte[1024];
@@ -173,7 +173,7 @@ public final class ByteString implements Iterable<Byte>, Serializable {
 
     private void checkBounds(int beginIndex, int length) {
         if (beginIndex < 0 || length < 0 || (beginIndex + length) > bytes.length) {
-            throw new IllegalArgumentException(String.format(
+            throw new IndexOutOfBoundsException(String.format(
                     "Invalid substring, beginIndex: %d, length: %d, content length: %d",
                     beginIndex, length, bytes.length));
         }
@@ -272,7 +272,7 @@ public final class ByteString implements Iterable<Byte>, Serializable {
                 throw new NoSuchElementException();
             }
             
-            return bytes[position];
+            return bytes[position++];
         }
         
     }
