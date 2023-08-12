@@ -2,16 +2,21 @@ package hu.webarticum.miniconnect.lang;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
 class ByteStringTest {
     
     @Test
-    void testEmpty() {
+    void testEmptyInstance() {
         ByteString emptyByteString = ByteString.empty();
         assertThat(emptyByteString.isEmpty()).isTrue();
         assertThat(emptyByteString.length()).isZero();
@@ -87,6 +92,14 @@ class ByteStringTest {
     }
 
     @Test
+    void testIsEmpty() {
+        assertThat(ByteString.empty().isEmpty()).isTrue();
+        assertThat(ByteString.of("").isEmpty()).isTrue();
+        assertThat(ByteString.ofByte((byte) 0).isEmpty()).isFalse();
+        assertThat(ByteString.of("lorem").isEmpty()).isFalse();
+    }
+
+    @Test
     void testByteAt() {
         ByteString byteString = ByteString.of("lorem");
         assertThatThrownBy(() -> byteString.byteAt(10)).isInstanceOf(IndexOutOfBoundsException.class);
@@ -147,6 +160,83 @@ class ByteStringTest {
                 .isEqualTo("\u03A6\u1FFC");
         assertThat(ByteString.of("\u0152\u019D\u03A6\u1FFC").extractLength(1, 6))
                 .containsExactly(146, 198, 157, 206, 166, 225);
+    }
+
+    @Test
+    void testExtractToException() {
+        ByteString emptyByteString = ByteString.empty();
+        assertThatThrownBy(() -> emptyByteString.extractTo(new byte[1], 1, 1, 0))
+                .isInstanceOf(IndexOutOfBoundsException.class);
+        ByteString shortByteString = ByteString.of("r");
+        assertThatThrownBy(() -> shortByteString.extractTo(new byte[0], 1, 1, 0))
+                .isInstanceOf(IndexOutOfBoundsException.class);
+    }
+
+    @Test
+    void testExtractToEmpty() {
+        assertDoesNotThrow(() -> ByteString.empty().extractTo(new byte[0], 0, 0, 0));
+    }
+
+    @Test
+    void testExtractTo() {
+        byte[] target = new byte[5];
+        
+        ByteString.empty().extractTo(target, 0, 0, 0);
+        assertThat(target).containsExactly(0, 0, 0, 0, 0);
+
+        ByteString.of("lorem").extractTo(target, 1, 3, 2);
+        assertThat(target).containsExactly(0, 101, 109, 0, 0);
+
+        ByteString.of("lorem").extractTo(target, 0, 0, 2);
+        assertThat(target).containsExactly(108, 111, 109, 0, 0);
+    }
+
+    @Test
+    void testWriteTo() throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ByteString.empty().writeTo(out);
+        ByteString.of("lorem").writeTo(out);
+        ByteString.empty().writeTo(out);
+        ByteString.of(" ipsum").writeTo(out);
+        assertThat(out.toByteArray()).asString(StandardCharsets.UTF_8).isEqualTo("lorem ipsum");
+    }
+
+    @Test
+    void testAsBuffer() throws IOException {
+        assertThat(bytesOf(ByteString.empty().asBuffer())).isEmpty();
+        assertThat(bytesOf(ByteString.of("lorem").asBuffer())).asString(StandardCharsets.UTF_8).isEqualTo("lorem");
+        assertThat(bytesOf(ByteString.of("\u0152\u019D\u03A6\u1FFC").asBuffer())).asString(StandardCharsets.UTF_8)
+                .isEqualTo("\u0152\u019D\u03A6\u1FFC");
+    }
+    
+    private byte[] bytesOf(ByteBuffer buffer) {
+        byte[] result = new byte[buffer.remaining()];
+        buffer.get(result);
+        return result;
+    }
+
+    @Test
+    void testInputStream() throws IOException {
+        assertThat(ByteString.empty().inputStream()).isEmpty();
+        assertThat(ByteString.of("lorem").inputStream()).asString(StandardCharsets.UTF_8).isEqualTo("lorem");
+        assertThat(ByteString.of("\u0152\u019D\u03A6\u1FFC").inputStream()).asString(StandardCharsets.UTF_8)
+                .isEqualTo("\u0152\u019D\u03A6\u1FFC");
+    }
+
+    @Test
+    void testInputStreamOffset() throws IOException {
+        assertThat(ByteString.empty().inputStream(0, 0)).isEmpty();
+        assertThat(ByteString.of("lorem").inputStream(1, 0)).isEmpty();
+        assertThat(ByteString.of("lorem").inputStream(1, 2)).asString(StandardCharsets.UTF_8).isEqualTo("or");
+        assertThat(ByteString.of("\u0152\u019D\u03A6\u1FFC").inputStream(2, 2)).asString(StandardCharsets.UTF_8)
+                .isEqualTo("\u019D");
+    }
+
+    @Test
+    void testHashCode() throws IOException {
+        assertThat(ByteString.empty().hashCode()).isEqualTo(Arrays.hashCode(new byte[0]));
+        assertThat(ByteString.of("lorem").hashCode())
+                    .isEqualTo(Arrays.hashCode("lorem".getBytes(StandardCharsets.UTF_8)));
     }
     
     @Test
