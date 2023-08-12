@@ -104,6 +104,7 @@ class ByteStringTest {
     void testSubstringUntil() {
         ByteString byteString = ByteString.of("lorem");
         assertThatThrownBy(() -> byteString.substring(2, 10)).isInstanceOf(IndexOutOfBoundsException.class);
+        assertThat(byteString.substring(1, 1)).isEqualTo(ByteString.empty());
         assertThat(byteString.substring(1, 3)).isEqualTo(ByteString.of("or"));
     }
 
@@ -111,10 +112,43 @@ class ByteStringTest {
     void testSubstringLength() {
         ByteString byteString = ByteString.of("lorem");
         assertThatThrownBy(() -> byteString.substringLength(3, 5)).isInstanceOf(IndexOutOfBoundsException.class);
+        assertThat(byteString.substringLength(1, 0)).isEqualTo(ByteString.empty());
         assertThat(byteString.substringLength(2, 3)).isEqualTo(ByteString.of("rem"));
         assertThat(byteString.substringLength(0, 5)).isSameAs(byteString);
     }
 
+    @Test
+    void testExtract() {
+        assertThat(ByteString.empty().extract()).isEmpty();
+        assertThat(ByteString.of(new byte[] { 0, 0, 1, -3, 100 }).extract()).containsExactly(0, 0, 1, -3, 100);
+        assertThat(ByteString.of("lorem ipsum").extract()).asString(StandardCharsets.UTF_8).isEqualTo("lorem ipsum");
+        assertThat(ByteString.of("\u0152\u019D\u03A6\u1FFC").extract()).asString(StandardCharsets.UTF_8)
+                .isEqualTo("\u0152\u019D\u03A6\u1FFC");
+    }
+
+    @Test
+    void testExtractUntil() {
+        assertThat(ByteString.empty().extract(0, 0)).isEmpty();
+        assertThat(ByteString.of(new byte[] { 0, 0, 1, -3, 100 }).extract(1, 4)).containsExactly(0, 1, -3);
+        assertThat(ByteString.of("lorem ipsum").extract(1, 1)).isEmpty();
+        assertThat(ByteString.of("lorem ipsum").extract(3, 7)).asString(StandardCharsets.UTF_8).isEqualTo("em i");
+        assertThat(ByteString.of("\u0152\u019D\u03A6\u1FFC").extract(2, 6)).asString(StandardCharsets.UTF_8)
+                .isEqualTo("\u019D\u03A6");
+        assertThat(ByteString.of("\u0152\u019D\u03A6\u1FFC").extract(3, 7)).containsExactly(157, 206, 166, 225);
+    }
+
+    @Test
+    void testExtractLength() {
+        assertThat(ByteString.empty().extractLength(0, 0)).isEmpty();
+        assertThat(ByteString.of(new byte[] { 0, 0, 1, -3, 100 }).extractLength(1, 4)).containsExactly(0, 1, -3, 100);
+        assertThat(ByteString.of("lorem ipsum").extractLength(1, 0)).isEmpty();
+        assertThat(ByteString.of("lorem ipsum").extractLength(3, 3)).asString(StandardCharsets.UTF_8).isEqualTo("em ");
+        assertThat(ByteString.of("\u0152\u019D\u03A6\u1FFC").extractLength(4, 5)).asString(StandardCharsets.UTF_8)
+                .isEqualTo("\u03A6\u1FFC");
+        assertThat(ByteString.of("\u0152\u019D\u03A6\u1FFC").extractLength(1, 6))
+                .containsExactly(146, 198, 157, 206, 166, 225);
+    }
+    
     @Test
     void test() {
         
