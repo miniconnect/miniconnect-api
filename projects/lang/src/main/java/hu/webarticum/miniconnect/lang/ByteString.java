@@ -58,6 +58,10 @@ public final class ByteString implements Iterable<Byte>, Serializable {
         return wrap(string.getBytes(charset));
     }
 
+    public static ByteString ofByte(int b) {
+        return ofByte((byte) b);
+    }
+
     public static ByteString ofByte(byte b) {
         return wrap(new byte[] { b });
     }

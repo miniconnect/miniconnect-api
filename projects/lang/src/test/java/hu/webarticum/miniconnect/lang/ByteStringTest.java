@@ -37,6 +37,8 @@ class ByteStringTest {
                 .containsExactly(108, 111, 114, 101, 109);
         assertThat(ByteString.ofByte((byte) 123).extract())
                 .containsExactly(123);
+        assertThat(ByteString.ofByte(3700).extract())
+                .containsExactly(116);
         assertThat(ByteString.ofChar('r').extract())
                 .containsExactly(0, 114);
         assertThat(ByteString.ofShort((short) 123).extract())
@@ -95,7 +97,7 @@ class ByteStringTest {
     void testIsEmpty() {
         assertThat(ByteString.empty().isEmpty()).isTrue();
         assertThat(ByteString.of("").isEmpty()).isTrue();
-        assertThat(ByteString.ofByte((byte) 0).isEmpty()).isFalse();
+        assertThat(ByteString.ofByte(0).isEmpty()).isFalse();
         assertThat(ByteString.of("lorem").isEmpty()).isFalse();
     }
 
