@@ -241,7 +241,7 @@ public final class ByteString implements Iterable<Byte>, Serializable {
     }
     
     private String toHexadecimalString(byte b) {
-        String stringValue = Integer.toString(Byte.toUnsignedInt(b), 16);
+        String stringValue = Integer.toString(Byte.toUnsignedInt(b), 16).toUpperCase();
         return stringValue.length() < 2 ? "0" + stringValue : stringValue;
     }
 
