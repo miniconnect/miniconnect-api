@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.Test;
 
@@ -109,6 +111,16 @@ class ByteStringTest {
     }
 
     @Test
+    void testIterator() {
+        Iterator<Byte> exhaustedIterator = ByteString.empty().iterator();
+        assertThat(exhaustedIterator).isExhausted();
+        assertThatThrownBy(() -> exhaustedIterator.next()).isInstanceOf(NoSuchElementException.class);
+        assertThat(ByteString.of("lorem").iterator()).hasNext();
+        assertThat((Iterable<Byte>) ByteString.of("lorem"))
+                .containsExactly((byte) 108, (byte) 111, (byte) 114, (byte) 101, (byte) 109);
+    }
+
+    @Test
     void testSubstring() {
         ByteString byteString = ByteString.of("lorem");
         assertThatThrownBy(() -> byteString.substring(9)).isInstanceOf(IndexOutOfBoundsException.class);
@@ -139,6 +151,16 @@ class ByteStringTest {
         assertThat(ByteString.of("lorem ipsum").extract()).asString(StandardCharsets.UTF_8).isEqualTo("lorem ipsum");
         assertThat(ByteString.of("\u0152\u019D\u03A6\u1FFC").extract()).asString(StandardCharsets.UTF_8)
                 .isEqualTo("\u0152\u019D\u03A6\u1FFC");
+    }
+
+    @Test
+    void testExtractFrom() {
+        assertThat(ByteString.empty().extract(0)).isEmpty();
+        assertThat(ByteString.of(new byte[] { 0, 0, 1, -3, 100 }).extract(1)).containsExactly(0, 1, -3, 100);
+        assertThat(ByteString.of("lorem ipsum").extract(2)).asString(StandardCharsets.UTF_8).isEqualTo("rem ipsum");
+        assertThat(ByteString.of("\u0152\u019D\u03A6\u1FFC").extract(2)).asString(StandardCharsets.UTF_8)
+                .isEqualTo("\u019D\u03A6\u1FFC");
+        assertThat(ByteString.of("\u0152\u019D\u03A6\u1FFC").extract(3)).containsExactly(157, 206, 166, 225, 191, 188);
     }
 
     @Test
@@ -240,13 +262,78 @@ class ByteStringTest {
         assertThat(ByteString.of("lorem").hashCode())
                     .isEqualTo(Arrays.hashCode("lorem".getBytes(StandardCharsets.UTF_8)));
     }
+
+    @Test
+    @SuppressWarnings("unlikely-arg-type")
+    void testEqualsFalse() throws IOException {
+        assertThat(ByteString.empty().equals("")).isFalse();
+        assertThat(ByteString.of("abc").equals("abc")).isFalse();
+        assertThat(ByteString.of("xyz").equals("abc")).isFalse();
+        assertThat(ByteString.empty().equals(ByteString.of("abc"))).isFalse();
+        assertThat(ByteString.of("abc").equals(ByteString.empty())).isFalse();
+        assertThat(ByteString.of("xyz").equals(ByteString.of("abc"))).isFalse();
+        assertThat(ByteString.of("abc").equals(ByteString.of("abcd"))).isFalse();
+    }
+
+    @Test
+    void testEqualsTrue() throws IOException {
+        assertThat(ByteString.empty().equals(ByteString.empty())).isTrue();
+        assertThat(ByteString.ofByte(114).equals(ByteString.of("r"))).isTrue();
+        assertThat(ByteString.of("abc").equals(ByteString.of("abc"))).isTrue();
+    }
     
     @Test
-    void test() {
-        
-        // TODO
-        //assertThat(true).isFalse();
-        
+    void testToString() throws IOException {
+        assertThat(ByteString.empty()).hasToString("");
+        assertThat(ByteString.ofByte(114)).hasToString("r");
+        assertThat(ByteString.of("lorem")).hasToString("lorem");
+        assertThat(ByteString.of("\u0000lorem \u1FFCipsum")).hasToString("[00]lorem [E1][BF][BC]ipsum");
+    }
+
+    @Test
+    void testToStringCharset() throws IOException {
+        assertThat(ByteString.empty().toString(StandardCharsets.UTF_8)).isEmpty();
+        assertThat(ByteString.ofByte(114).toString(StandardCharsets.UTF_8)).isEqualTo("r");
+        assertThat(ByteString.of("lorem").toString(StandardCharsets.UTF_8)).isEqualTo("lorem");
+        assertThat(ByteString.of("\u0000lorem \u1FFCipsum").toString(StandardCharsets.UTF_8))
+                .isEqualTo("\u0000lorem \u1FFCipsum");
+        assertThat(ByteString.of(new byte[] { 0, 0, 0, 108, 0, 111, 0, 114, 0, 101, 0, 109, 0, 32, 31, -4, 0, 105, 0, 112, 0, 115, 0, 117, 0, 109 }).toString(StandardCharsets.UTF_16BE))
+                .isEqualTo("\u0000lorem \u1FFCipsum");
+    }
+
+    @Test
+    void testToArrayString() throws IOException {
+        assertThat(ByteString.empty().toArrayString()).isEqualTo(Arrays.toString(new byte[] {}));
+        assertThat(ByteString.ofByte((byte) 114).toArrayString()).isEqualTo(Arrays.toString(new byte[] { 114 }));
+        assertThat(ByteString.of("lorem").toArrayString())
+                .isEqualTo(Arrays.toString("lorem".getBytes(StandardCharsets.UTF_8)));
+    }
+
+    @Test
+    void testReader() throws IOException {
+        ByteString.Reader reader = ByteString.of(new byte [] {
+            0, -4, 12,
+            12,
+            7, 3, 0, -55,
+            0, 114,
+            10, 52,
+            0, 3, 31, 112,
+            0, 0, 57, -123, -95, 26, -31, 111,
+            -61, -127, -128, 0,
+            64, 41, 0, 0, 0, 0, 0, 0,
+            12, 43, 0, 1, -80,
+        }).reader();
+        assertThat(reader.skip(3)).isSameAs(reader);
+        assertThat(reader.read()).isEqualTo((byte) 12);
+        assertThat(reader.read(4)).containsExactly(7, 3, 0, -55);
+        assertThat(reader.readChar()).isEqualTo('r');
+        assertThat(reader.readShort()).isEqualTo((short) 2612);
+        assertThat(reader.readInt()).isEqualTo(204656);
+        assertThat(reader.readLong()).isEqualTo(63246096327023L);
+        assertThat(reader.readFloat()).isEqualTo(-259f);
+        assertThat(reader.readDouble()).isEqualTo(12.5);
+        assertThat(reader.readRemaining()).containsExactly(12, 43, 0, 1, -80);
+        assertThatThrownBy(() -> reader.read()).isInstanceOf(IndexOutOfBoundsException.class);
     }
     
 }
