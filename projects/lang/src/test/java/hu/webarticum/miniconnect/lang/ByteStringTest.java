@@ -10,22 +10,11 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.Test;
 
 class ByteStringTest {
-    
-    @Test
-    void testEmptyInstance() {
-        ByteString emptyByteString = ByteString.empty();
-        assertThat(emptyByteString.isEmpty()).isTrue();
-        assertThat(emptyByteString.length()).isZero();
-        assertThat(emptyByteString.extract()).isEmpty();
-        assertThat(emptyByteString.iterator()).isExhausted();
-        assertThatThrownBy(() -> emptyByteString.extract(10, 20)).isInstanceOf(IndexOutOfBoundsException.class);
-    }
     
     @Test
     void testCreators() {
@@ -104,6 +93,15 @@ class ByteStringTest {
     }
 
     @Test
+    void testLength() {
+        assertThat(ByteString.empty().length()).isZero();
+        assertThat(ByteString.of("").length()).isZero();
+        assertThat(ByteString.ofByte(0).length()).isOne();
+        assertThat(ByteString.of("lorem").length()).isEqualTo(5);
+        assertThat(ByteString.of(new byte[35]).length()).isEqualTo(35);
+    }
+
+    @Test
     void testByteAt() {
         ByteString byteString = ByteString.of("lorem");
         assertThatThrownBy(() -> byteString.byteAt(10)).isInstanceOf(IndexOutOfBoundsException.class);
@@ -112,9 +110,9 @@ class ByteStringTest {
 
     @Test
     void testIterator() {
-        Iterator<Byte> exhaustedIterator = ByteString.empty().iterator();
-        assertThat(exhaustedIterator).isExhausted();
-        assertThatThrownBy(() -> exhaustedIterator.next()).isInstanceOf(NoSuchElementException.class);
+        assertThat(ByteString.empty().iterator()).isExhausted();
+        assertThat(ByteString.empty().iterator())
+                .satisfies(it -> assertThatThrownBy(() -> it.next()).isInstanceOf(NoSuchElementException.class));
         assertThat(ByteString.of("lorem").iterator()).hasNext();
         assertThat((Iterable<Byte>) ByteString.of("lorem"))
                 .containsExactly((byte) 108, (byte) 111, (byte) 114, (byte) 101, (byte) 109);
@@ -166,6 +164,8 @@ class ByteStringTest {
     @Test
     void testExtractUntil() {
         assertThat(ByteString.empty().extract(0, 0)).isEmpty();
+        assertThat(ByteString.empty()).satisfies(bs -> assertThatThrownBy(() ->
+                ((ByteString) bs).extract(10, 20)).isInstanceOf(IndexOutOfBoundsException.class));
         assertThat(ByteString.of(new byte[] { 0, 0, 1, -3, 100 }).extract(1, 4)).containsExactly(0, 1, -3);
         assertThat(ByteString.of("lorem ipsum").extract(1, 1)).isEmpty();
         assertThat(ByteString.of("lorem ipsum").extract(3, 7)).asString(StandardCharsets.UTF_8).isEqualTo("em i");
