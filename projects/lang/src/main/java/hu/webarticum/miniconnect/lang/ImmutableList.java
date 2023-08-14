@@ -212,8 +212,7 @@ public final class ImmutableList<T> implements ReversibleIterable<T>, Serializab
         
         List<T> newData = new ArrayList<>(newSize);
         newData.addAll(data);
-        int remainingSize = newSize - currentSize;
-        for (int i = 0; i < remainingSize; i++) {
+        for (int i = currentSize; i < newSize; i++) {
             newData.add(fillSupplier.apply(i));
         }
         return new ImmutableList<>(newData);
