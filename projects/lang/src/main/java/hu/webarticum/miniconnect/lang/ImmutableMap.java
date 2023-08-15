@@ -297,14 +297,6 @@ public final class ImmutableMap<K, V> implements Serializable {
         return new ImmutableMap<>(mappedData);
     }
     
-    public Map<K, V> asMap() {
-        return Collections.unmodifiableMap(data);
-    }
-
-    public HashMap<K, V> toHashMap() { // NOSONAR
-        return new HashMap<>(data);
-    }
-    
     public void forEach(BiConsumer<K, V> action) {
         asMap().forEach(action);
     }
@@ -329,6 +321,14 @@ public final class ImmutableMap<K, V> implements Serializable {
         Map<K, V> mergedData = new HashMap<>(data);
         mergedData.putAll(otherMap.data);
         return new ImmutableMap<>(mergedData);
+    }
+
+    public Map<K, V> asMap() {
+        return Collections.unmodifiableMap(data);
+    }
+
+    public HashMap<K, V> toHashMap() { // NOSONAR
+        return new HashMap<>(data);
     }
     
     @Override
