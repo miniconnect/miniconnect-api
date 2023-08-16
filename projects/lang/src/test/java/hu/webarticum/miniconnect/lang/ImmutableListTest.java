@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -166,14 +167,14 @@ class ImmutableListTest {
     }
 
     @Test
-    void testSorted() {
+    void testSort() {
         assertThat(ImmutableList.empty().sort()).isEmpty();
         assertThat(ImmutableList.of(1, 2, 3).sort()).containsExactly(1, 2, 3);
         assertThat(ImmutableList.of(7, 3, 5, 2, 4, 6, 2, 1, 3).sort()).containsExactly(1, 2, 2, 3, 3, 4, 5, 6, 7);
     }
 
     @Test
-    void testSortedComparator() {
+    void testSortComparator() {
         assertThat(ImmutableList.<Integer>empty().sort(Comparator.reverseOrder())).isEmpty();
         assertThat(ImmutableList.of(1, 2, 3).sort(Comparator.reverseOrder())).containsExactly(3, 2, 1);
         assertThat(ImmutableList.of(7, 3, 5, 2, 4, 6, 2, 1, 3).sort(Comparator.reverseOrder()))
@@ -201,13 +202,117 @@ class ImmutableListTest {
         assertThat(ImmutableList.of(1, 2, 3, 4).resize(5, i -> null).asList()).containsExactly(1, 2, 3, 4, null);
         assertThat(ImmutableList.of(1, 2, 3, 4).resize(6, i -> i).asList()).containsExactly(1, 2, 3, 4, 4, 5);
     }
+
+    @Test
+    void testBinarySearch() {
+        assertThat(ImmutableList.empty().binarySearch(0)).isEqualTo(-1);
+        assertThat(ImmutableList.of(1, 2, 2, 3, 5, 7).binarySearch(3)).isEqualTo(3);
+        assertThat(ImmutableList.of(1, 2, 2, 3, 5, 7).binarySearch(2)).isBetween(1, 2);
+        assertThat(ImmutableList.of(1, 2, 2, 3, 5, 7).binarySearch(0)).isEqualTo(-1);
+        assertThat(ImmutableList.of(1, 2, 2, 3, 5, 7).binarySearch(4)).isEqualTo(-5);
+        assertThat(ImmutableList.of(1, 2, 2, 3, 5, 7).binarySearch(9)).isEqualTo(-7);
+    }
+
+    @Test
+    void testBinarySearchComparator() {
+        @SuppressWarnings("unchecked")
+        Comparator<Integer> comparator = (Comparator<Integer>) (Comparator<?>) Comparator.naturalOrder().reversed();
+        assertThat(ImmutableList.<Integer>empty().binarySearch(0, comparator)).isEqualTo(-1);
+        assertThat(ImmutableList.of(9, 4, 2, 2, 1).binarySearch(4, comparator)).isEqualTo(1);
+        assertThat(ImmutableList.of(9, 4, 2, 2, 1).binarySearch(2, comparator)).isBetween(2, 3);
+        assertThat(ImmutableList.of(9, 4, 2, 2, 1).binarySearch(12, comparator)).isEqualTo(-1);
+        assertThat(ImmutableList.of(9, 4, 2, 2, 1).binarySearch(6, comparator)).isEqualTo(-2);
+        assertThat(ImmutableList.of(9, 4, 2, 2, 1).binarySearch(0, comparator)).isEqualTo(-6);
+    }
+
+    @Test
+    void testStream() {
+        assertThat(ImmutableList.empty().stream()).isEmpty();
+        assertThat(ImmutableList.of(1, 2, 3).stream()).containsExactly(1, 2, 3);
+        assertThat(ImmutableList.of(1, 2, null, null, 3).stream()).containsExactly(1, 2, null, null, 3);
+    }
+
+    @Test
+    void testToArray() {
+        assertThat(ImmutableList.empty().toArray()).isEmpty();
+        assertThat(ImmutableList.of(1, 2, 3).toArray()).containsExactly(1, 2, 3);
+        assertThat(ImmutableList.of(1, 2, null, null, 3).toArray()).containsExactly(1, 2, null, null, 3);
+    }
+
+    @Test
+    void testAsList() {
+        assertThat(ImmutableList.empty().asList()).isEmpty();
+        assertThat(ImmutableList.of(1, 2, 3).asList()).containsExactly(1, 2, 3);
+        assertThat(ImmutableList.of(1, 2, null, null, 3).asList()).containsExactly(1, 2, null, null, 3);
+    }
+
+    @Test
+    void testToArrayList() {
+        assertThat(ImmutableList.empty().toArrayList()).isEmpty();
+        assertThat(ImmutableList.of(1, 2, 3).toArrayList()).containsExactly(1, 2, 3);
+        assertThat(ImmutableList.of(1, 2, null, null, 3).toArrayList()).containsExactly(1, 2, null, null, 3);
+    }
+
+    @Test
+    void testAssign() {
+        assertThat(ImmutableList.empty().assign(v -> v)).isEqualTo(ImmutableMap.empty());
+        assertThat(ImmutableList.of(1, 2, 3).assign(v -> v)).isEqualTo(ImmutableMap.of(1, 1, 2, 2, 3, 3));
+        assertThat(ImmutableList.of(1, 2, null, null, 3).assign(v -> v))
+                .isEqualTo(ImmutableMap.of(null, null, 1, 1, 2, 2, 3, 3));
+        assertThat(ImmutableList.of(1, 2, 3).assign(v -> v + "")).isEqualTo(ImmutableMap.of(1, "1", 2, "2", 3, "3"));
+        assertThat(ImmutableList.of(1, 2, null, null, 3).assign(v -> v + ""))
+                .isEqualTo(ImmutableMap.of(null, "null", 1, "1", 2, "2", 3, "3"));
+    }
+
+    @Test
+    void testAssignIndex() {
+        assertThat(ImmutableList.empty().assign((v, i) -> v)).isEqualTo(ImmutableMap.empty());
+        assertThat(ImmutableList.of(1, 2, 3).assign((v, i) -> v + i)).isEqualTo(ImmutableMap.of(1, 1, 2, 3, 3, 5));
+        assertThat(ImmutableList.of(1, 2, null, null, 3).assign((v, i) -> v))
+                .isEqualTo(ImmutableMap.of(null, null, 1, 1, 2, 2, 3, 3));
+        assertThat(ImmutableList.of(1, 2, 3).assign((v, i) -> i + ":" + v))
+                .isEqualTo(ImmutableMap.of(1, "0:1", 2, "1:2", 3, "2:3"));
+        assertThat(ImmutableList.of(1, 2, null, null, 3).assign((v, i) -> i + ":" + v))
+                .isEqualTo(ImmutableMap.of(null, "3:null", 1, "0:1", 2, "1:2", 3, "4:3"));
+    }
+
+    @Test
+    void testHashCode() {
+        assertThat(ImmutableList.empty()).hasSameHashCodeAs(Collections.emptyList());
+        assertThat(ImmutableList.of(1, 2, 3)).hasSameHashCodeAs(Arrays.asList(1, 2, 3));
+    }
+
+    @Test
+    void testEquals() {
+        assertThat(ImmutableList.empty()).satisfies(c -> assertThat(c).isEqualTo(c));
+        assertThat(ImmutableList.empty()).isNotEqualTo(new ArrayList<>());
+        assertThat(ImmutableList.empty()).isNotEqualTo(null);
+        assertThat(ImmutableList.empty()).isEqualTo(ImmutableList.empty());
+        assertThat(ImmutableList.empty()).isNotEqualTo(ImmutableList.of(1, 2, 3));
+        assertThat(ImmutableList.of(1, 2, 3)).isNotEqualTo(ImmutableList.empty());
+        assertThat(ImmutableList.of(1, 2, 3)).isEqualTo(ImmutableList.of(1, 2, 3));
+        assertThat(ImmutableList.of(1, 2, 3)).isNotEqualTo(ImmutableList.of(1, 2, 3, 4));
+    }
+
+    @Test
+    void testToString() {
+        assertThat(ImmutableList.empty()).hasToString(Collections.emptyList().toString());
+        assertThat(ImmutableList.of(1, 2, 3)).hasToString(Arrays.asList(1, 2, 3).toString());
+    }
     
     @Test
-    void test() {
-        
-        // TODO
-        //assertThat(true).isFalse();
-        
+    void testCreateCollector() {
+        assertThat(Arrays.asList().stream().collect(ImmutableList.createCollector())).isEqualTo(ImmutableList.empty());
+        ImmutableList<String> immutableList1 = Arrays.asList(1, 4, 3, 6, 2, null, null, 3, null, 4).stream()
+                .filter(v -> v != Integer.valueOf(4))
+                .map(v -> v + "")
+                .collect(ImmutableList.createCollector());
+        assertThat(immutableList1).isEqualTo(ImmutableList.of("1", "3", "6", "2", "null", "null", "3", "null"));
+        ImmutableList<String> immutableList2 = Arrays.asList(1, 4, 3, 6, 2, null, null, 3, null, 4).parallelStream()
+                .filter(v -> v != Integer.valueOf(4))
+                .map(v -> v + "")
+                .collect(ImmutableList.createCollector());
+        assertThat(immutableList2).isEqualTo(ImmutableList.of("1", "3", "6", "2", "null", "null", "3", "null"));
     }
     
 }
