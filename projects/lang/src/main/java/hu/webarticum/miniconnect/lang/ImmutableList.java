@@ -223,7 +223,7 @@ public final class ImmutableList<T> implements ReversibleIterable<T>, Serializab
         return binarySearch(value, (Comparator<T>) Comparator.naturalOrder());
     }
 
-    public int binarySearch(T value, Comparator<T> comparator) {
+    public int binarySearch(T value, Comparator<? super T> comparator) {
         return Collections.binarySearch(data, value, comparator);
     }
     
