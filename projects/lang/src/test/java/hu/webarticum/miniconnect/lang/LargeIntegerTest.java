@@ -104,12 +104,13 @@ class LargeIntegerTest {
     }
     
     private byte[] convertHexToBytes(String bytesHex) {
-        int length = bytesHex.length();
-        byte[] result = new byte[length / 2];
-        for (int i = 0; i < length; i += 2) {
-            String byteHex = bytesHex.substring(i, i + 2);
-            byte b = (byte) Integer.parseInt(byteHex, 16);
-            result[i / 2] = b;
+        if (bytesHex.isEmpty()) {
+            return new byte[0];
+        }
+        String[] byteHexes = bytesHex.split(" ");
+        byte[] result = new byte[byteHexes.length];
+        for (int i = 0; i < byteHexes.length; i++) {
+            result[i] = (byte) Short.parseShort(byteHexes[i], 16);
         }
         return result;
     }
