@@ -2,6 +2,8 @@ package hu.webarticum.miniconnect.lang;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.math.BigInteger;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
@@ -102,20 +104,34 @@ class LargeIntegerTest {
         
     }
 
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/isProbablePrime-cases.csv", numLinesToSkip = 1)
+    void testIsProbablePrime(LargeInteger n, int certainty, boolean isProbablePrime) {
+        assertThat(n.isProbablePrime(certainty)).isEqualTo(isProbablePrime);
+    }
+    
     @Test
-    void testIsProbablePrime() {
+    void testIsProbablePrimeSameAsByBigInteger() {
+        for (int i = 1; i <= 100; i++) {
+            assertThat(LargeInteger.of(i).isProbablePrime(10)).isEqualTo(BigInteger.valueOf(i).isProbablePrime(10));
+        }
+    }
 
-        // TODO
-        // how to test? same as BigInteger?
-        
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/nextProbablePrime-cases.csv", numLinesToSkip = 1)
+    void testNextProbablePrime(LargeInteger n, LargeInteger nextProbablePrime) {
+        assertThat(n.nextProbablePrime()).isEqualTo(nextProbablePrime);
     }
 
     @Test
-    void testNextProbablePrime() {
-
-        // TODO
-        // how to test? same as BigInteger?
-        
+    void testNextProbablePrimeSameAsByBigInteger() {
+        LargeInteger largeIntegerValue = LargeInteger.ONE;
+        BigInteger bigIntegerValue = BigInteger.ONE;
+        for (int i = 1; i <= 100; i++) {
+            largeIntegerValue = largeIntegerValue.nextProbablePrime();
+            bigIntegerValue = bigIntegerValue.nextProbablePrime();
+            assertThat(largeIntegerValue.bigIntegerValue()).isEqualTo(bigIntegerValue);
+        }
     }
 
     @ParameterizedTest
