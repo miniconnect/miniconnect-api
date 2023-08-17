@@ -117,7 +117,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         return nonNegativeOf(toBytes(bitSet));
     }
 
-    public static byte[] toBytes(BitSet bitSet) {
+    private static byte[] toBytes(BitSet bitSet) {
         byte[] bytes = bitSet.toByteArray();
         int halfLength = bytes.length / 2;
         for (int i = 0; i < halfLength; i++) {
