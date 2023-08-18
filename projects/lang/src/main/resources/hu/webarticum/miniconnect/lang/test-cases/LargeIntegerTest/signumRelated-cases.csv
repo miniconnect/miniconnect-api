@@ -1,0 +1,4 @@
+n,signum,zero,positive,nonPositive,negative,nonNegative,abs,negated
+123,1,false,true,false,false,true,123,-123
+
+# TODO

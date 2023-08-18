@@ -4,11 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.math.BigInteger;
+import java.util.BitSet;
 
 import org.assertj.core.data.Percentage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class LargeIntegerTest {
     
@@ -17,16 +19,51 @@ class LargeIntegerTest {
 
     @Test
     void testCreators() {
-        
-        // TODO
-        
+        assertThat(LargeInteger.of((byte) 123).bigIntegerValue()).isEqualTo(123);
+        assertThat(LargeInteger.of((short) 12345).bigIntegerValue()).isEqualTo(12345);
+        assertThat(LargeInteger.of(978675645).bigIntegerValue()).isEqualTo(978675645);
+        assertThat(LargeInteger.of(958678475673645625L).bigIntegerValue()).isEqualTo(958678475673645625L);
+        assertThat(LargeInteger.of(-237352934872934857L).bigIntegerValue()).isEqualTo(-237352934872934857L);
+        assertThat(LargeInteger.of(new BigInteger("73658273647235762749234572072073628073")).bigIntegerValue())
+                .isEqualTo("73658273647235762749234572072073628073");
+        assertThat(LargeInteger.of("52344630590748003749376284693738").bigIntegerValue())
+                .isEqualTo("52344630590748003749376284693738");
+        assertThat(LargeInteger.of("32", 5).bigIntegerValue()).isEqualTo(17);
+        assertThat(LargeInteger.of("32", 30).bigIntegerValue()).isEqualTo(92);
+        assertThat(LargeInteger.of("-32", 30).bigIntegerValue()).isEqualTo(-92);
+        assertThat(LargeInteger.of("11001010011100111010110111001", 2).bigIntegerValue()).isEqualTo(424572345);
+        assertThat(LargeInteger.of("B42AB8BBF1D", 16).bigIntegerValue()).isEqualTo(12380973809437L);
+        assertThat(LargeInteger.of(new byte[0]).bigIntegerValue()).isZero();
+        assertThat(LargeInteger.of(new byte[] { 0 }).bigIntegerValue()).isZero();
+        assertThat(LargeInteger.of(new byte[] { 0, 0, 0, 0, 0 }).bigIntegerValue()).isZero();
+        assertThat(LargeInteger.of(new byte[] { 13, -42, 1, -56, -122, 7, 1, 123 }).bigIntegerValue())
+                .isEqualTo(996986328262836603L);
+        assertThat(LargeInteger.of(new byte[] { 13, -42, 1, -56, -122, 7, 1 }).bigIntegerValue())
+                .isEqualTo(3894477844776705L);
+        assertThat(LargeInteger.of(new byte[] { -13, -42, 1, -56, -122, 7, 1 }).bigIntegerValue())
+                .isEqualTo(-3423871549700351L);
+        assertThat(LargeInteger.of(new byte[] { 13, -42, 1, -56, -122, 7, 1, 123, 99, -77 }).bigIntegerValue())
+                .isEqualTo("65338496009033259639731");
+        assertThat(LargeInteger.of(BitSet.valueOf(new byte[] { 42, 0, -3, 42, 12 })).bigIntegerValue())
+                .isEqualTo(52260831274L);
+        assertThat(LargeInteger.nonNegativeOf(new byte[] { -13, -42, 1, -56, -122, 7, 1 }).bigIntegerValue())
+                .isEqualTo(68633722488227585L);
+        assertThat(LargeInteger.nonNegativeOf(BitSet.valueOf(new byte[] { 42, 0, -3, 42, -12 })).bigIntegerValue())
+                .isEqualTo(1048693243946L);
     }
 
     @Test
     void testArrayCreators() {
-
-        // TODO
-        
+        assertThat(LargeInteger.arrayOf(3L, 3125L, -1L, 0L)).containsExactly(
+                LargeInteger.of(3L), LargeInteger.of(3125L), LargeInteger.of(-1L), LargeInteger.of(0L));
+        assertThat(LargeInteger.arrayOf("9", "-2556", "173468174555349823472347")).containsExactly(
+                LargeInteger.of(9), LargeInteger.of(-2556), LargeInteger.of("173468174555349823472347"));
+        assertThat(LargeInteger.arrayOf(
+                BigInteger.valueOf(42), BigInteger.valueOf(-234234), new BigInteger("4234782945723"))).containsExactly(
+                LargeInteger.of(42), LargeInteger.of(-234234), LargeInteger.of(4234782945723L));
+        assertThat(LargeInteger.arrayOf(
+                LargeInteger.of(11), LargeInteger.of(-32), LargeInteger.of("58234957934591491745394"))).containsExactly(
+                LargeInteger.of(11), LargeInteger.of(-32), LargeInteger.of("58234957934591491745394"));
     }
 
     @Test
@@ -43,9 +80,24 @@ class LargeIntegerTest {
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = CASE_DATA_DIR + "/compareTo-cases.csv", numLinesToSkip = 1)
-    void testCompareTo(LargeInteger n, LargeInteger m, int cmpSignum) {
+    @CsvFileSource(resources = CASE_DATA_DIR + "/compareToRelated-cases.csv", numLinesToSkip = 1)
+    void testCompareToRelated(
+            LargeInteger n,
+            LargeInteger m,
+            int cmpSignum,
+            boolean equalTo,
+            boolean lessThan,
+            boolean lessThanOrEqualTo,
+            boolean greaterThan,
+            boolean greaterThanOrEqualTo) {
         assertThat(Integer.signum(n.compareTo(m))).as("%s cmp %s", n, m).isEqualTo(cmpSignum);
+        assertThat(n.isEqualTo(m)).as("%s == %s", n, m).isEqualTo(equalTo);
+        assertThat(n.equals(m)).as("%s.equals(%s)", n, m).isEqualTo(equalTo);
+        assertThat(n.isLessThan(m)).as("%s < %s", n, m).isEqualTo(lessThan);
+        assertThat(n.isLessThanOrEqualTo(m)).as("%s <= %s", n, m).isEqualTo(lessThanOrEqualTo);
+        assertThat(n.isGreaterThan(m)).as("%s > %s", n, m).isEqualTo(greaterThan);
+        assertThat(n.isGreaterThanOrEqualTo(m)).as("%s >= %s", n, m).isEqualTo(greaterThanOrEqualTo);
+        
     }
 
     @ParameterizedTest
@@ -204,63 +256,192 @@ class LargeIntegerTest {
         assertThat(n.add(m)).as("%s + %s", n, m).isEqualTo(result);
     }
 
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/subtract-cases.csv", numLinesToSkip = 1)
+    void testSubtract(LargeInteger n, LargeInteger m, LargeInteger result) {
+        assertThat(n.subtract(m)).as("%s - %s", n, m).isEqualTo(result);
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/multiply-cases.csv", numLinesToSkip = 1)
+    void testMultiply(LargeInteger n, LargeInteger m, LargeInteger result) {
+        assertThat(n.multiply(m)).as("%s * %s", n, m).isEqualTo(result);
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/pow-cases.csv", numLinesToSkip = 1)
+    void testPow(LargeInteger n, int exponent, LargeInteger result) {
+        assertThat(n.pow(exponent)).as("%s ^ %d", n, exponent).isEqualTo(result);
+    }
+    
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/divide-cases.csv", numLinesToSkip = 1)
+    void testDivide(LargeInteger n, LargeInteger m, LargeInteger result) {
+        assertThat(n.divide(m)).as("%s / %s", n, m).isEqualTo(result);
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/divideAndRemainder-cases.csv", numLinesToSkip = 1)
+    void testDivideAndRemainder(LargeInteger n, LargeInteger m, LargeInteger result, LargeInteger remainder) {
+        LargeInteger[] resultAndRemainder = n.divideAndRemainder(m);
+        assertThat(resultAndRemainder[0]).as("%s.divideAndRemainder(%s).result", n, m).isEqualTo(result);
+        assertThat(resultAndRemainder[1]).as("%s.divideAndRemainder(%s).remainder", n, m).isEqualTo(remainder);
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/remainder-cases.csv", numLinesToSkip = 1)
+    void testRemainder(LargeInteger n, LargeInteger m, LargeInteger result) {
+        assertThat(n.remainder(m)).as("%s % %s", n, m).isEqualTo(result);
+    }
+    
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/mod-cases.csv", numLinesToSkip = 1)
+    void testMod(LargeInteger n, LargeInteger m, LargeInteger result) {
+        assertThat(n.mod(m)).as("%s mod %s", n, m).isEqualTo(result);
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/modPow-cases.csv", numLinesToSkip = 1)
+    void testModPow(LargeInteger n, LargeInteger pow, LargeInteger m, LargeInteger result) {
+        assertThat(n.modPow(pow, m)).as("%s^%s mod %s", n, pow, m).isEqualTo(result);
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/modInverse-cases.csv", numLinesToSkip = 1)
+    void testModInverse(LargeInteger n, LargeInteger m, LargeInteger result) {
+        assertThat(n.modInverse(m)).as("%s mod-1 %s", n, m).isEqualTo(result);
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/isDivisibleBy-cases.csv", numLinesToSkip = 1)
+    void testIsDivisibleBy(LargeInteger n, LargeInteger m, boolean divisible) {
+        assertThat(n.isDivisibleBy(m)).as("%2$s | %1$s", n, m).isEqualTo(divisible);
+    }
+
     @Test
-    void testXXX() {
+    void testDivisionByZero() {
+        LargeInteger n = LargeInteger.of(123);
+        LargeInteger e = LargeInteger.of(15);
+        assertThatThrownBy(() -> n.divide(LargeInteger.ZERO)).isInstanceOf(ArithmeticException.class);
+        assertThatThrownBy(() -> n.remainder(LargeInteger.ZERO)).isInstanceOf(ArithmeticException.class);
+        assertThatThrownBy(() -> n.divideAndRemainder(LargeInteger.ZERO)).isInstanceOf(ArithmeticException.class);
+        assertThatThrownBy(() -> n.mod(LargeInteger.ZERO)).isInstanceOf(ArithmeticException.class);
+        assertThatThrownBy(() -> n.modPow(e, LargeInteger.ZERO)).isInstanceOf(ArithmeticException.class);
+        assertThatThrownBy(() -> n.modInverse(LargeInteger.ZERO)).isInstanceOf(ArithmeticException.class);
+        assertThatThrownBy(() -> n.modInverse(n)).isInstanceOf(ArithmeticException.class);
+        assertThatThrownBy(() -> n.isDivisibleBy(LargeInteger.ZERO)).isInstanceOf(ArithmeticException.class);
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/gcd-cases.csv", numLinesToSkip = 1)
+    void testGcd(LargeInteger n, LargeInteger m, LargeInteger gcd) {
+        assertThat(n.gcd(m)).as("gcd(%s, %1)", n, m).isEqualTo(gcd);
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/isEvenOddPowerOfTwo-cases.csv", numLinesToSkip = 1)
+    void testIsEvenOddPowerOfTwo(LargeInteger n, boolean even, boolean odd, boolean powerOfTwo) {
+        assertThat(n.isEven()).isEqualTo(even);
+        assertThat(n.isOdd()).isEqualTo(odd);
+        assertThat(n.isPowerOfTwo()).isEqualTo(powerOfTwo);
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/signumRelated-cases.csv", numLinesToSkip = 1)
+    void testSignumRelated(
+            LargeInteger n,
+            int signum,
+            boolean zero,
+            boolean positive,
+            boolean nonPositive,
+            boolean negative,
+            boolean nonNegative,
+            LargeInteger abs,
+            LargeInteger negated) {
+        assertThat(n.signum()).isEqualTo(signum);
+        assertThat(n.isZero()).isEqualTo(zero);
+        assertThat(n.isPositive()).isEqualTo(positive);
+        assertThat(n.isNonPositive()).isEqualTo(nonPositive);
+        assertThat(n.isNegative()).isEqualTo(negative);
+        assertThat(n.isNonNegative()).isEqualTo(nonNegative);
+        assertThat(n.abs()).isEqualTo(abs);
+        assertThat(n.negate()).isEqualTo(negated);
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/incrementDecrement-cases.csv", numLinesToSkip = 1)
+    void testIncrementDecrement(LargeInteger n, LargeInteger incremented, LargeInteger decremented) {
+        assertThat(n.increment()).isEqualTo(incremented);
+        assertThat(n.decrement()).isEqualTo(decremented);
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = { -237682734235L, -32L, 0L, 54L, 132L, 3458793857L, 3458603928750237205L })
+    void testHashCodeSmall(long value) {
+        assertThat(LargeInteger.of(value)).hasSameHashCodeAs(value);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "-23462435820793856783445934", "-32", "0", "54", "527304597834057925806734072474" })
+    void testHashCodeLarge(String value) {
+        assertThat(LargeInteger.of(value)).hasSameHashCodeAs(new BigInteger(value));
         
+    }
+
+    @Test
+    void testEquals() {
+        assertThat(LargeInteger.of(0L)).isEqualTo(LargeInteger.ZERO);
+        assertThat(LargeInteger.of(2354)).isEqualTo(LargeInteger.of(2354));
+        assertThat(LargeInteger.of("24800734658709265845")).isEqualTo(LargeInteger.of("24800734658709265845"));
+        assertThat(LargeInteger.of(4235)).isNotEqualTo(LargeInteger.of(7294));
+        assertThat(LargeInteger.of("562384864853845273459308085003"))
+                .isNotEqualTo(LargeInteger.of("92584759238457857923586795605727502"));
+        assertThat(LargeInteger.of("562384864853845273459308085003"))
+                .isNotEqualTo(new BigInteger("562384864853845273459308085003"));
+        assertThat(LargeInteger.of("562384864853845273459308085003"))
+                .isNotEqualTo(new Object());
+    }
+    
+    @Test
+    void testXXXX() {
+
         // TODO
         
         /*
-        subtract(LargeInteger val)
-        multiply(LargeInteger val)
-        divide(LargeInteger val)
-        divideAndRemainder(LargeInteger val)
-        remainder(LargeInteger val)
-        pow(int exponent)
-        gcd(LargeInteger val)
-        abs()
-        negate()
-        signum()
-        mod(LargeInteger m)
-        modPow(LargeInteger exponent, LargeInteger m)
-        modInverse(LargeInteger m)
-        shiftLeft(int n)
-        shiftRight(int n)
-        and(LargeInteger val)
-        or(LargeInteger val)
-        xor(LargeInteger val)
-        not()
-        andNot(LargeInteger val)
-        testBit(int n)
-        setBit(int n)
-        clearBit(int n)
-        flipBit(int n)
-        getLowestSetBit()
-        bitLength()
-        bitCount()
-        toBitSet()
+        toString()
         toString(int radix)
         bigIntegerValue()
         bigDecimalValue()
+        toBitSet()
+        
+        // in one case file:
         isFittingInLong()
         isFittingInInt()
         isFittingInShort()
         isFittingInByte()
-        isZero()
-        isPositive()
-        isNonPositive()
-        isNegative()
-        isNonNegative()
-        isEven()
-        isOdd()
-        isDivisibleBy(LargeInteger val)
-        isEqualTo(LargeInteger val)
-        isLessThan(LargeInteger val)
-        isLessThanOrEqualTo(LargeInteger val)
-        isGreaterThan(LargeInteger val)
-        isGreaterThanOrEqualTo(LargeInteger val)
-        isPowerOfTwo()
-        increment()
-        decrement()
+        
+        getLowestSetBit()
+        bitLength()
+        bitCount()
+        
+        // ------------------------------------------------
+        
+        // in one case file:
+        and(LargeInteger val)
+        or(LargeInteger val)
+        xor(LargeInteger val)
+        andNot(LargeInteger val)  !!!  long?
+        
+        not()                     !!!  long?
+        
+        shiftLeft(int n)
+        shiftRight(int n)         !!!  long?
+        testBit(int n)
+        clearBit(int n)
+        
+        setBit(int n)             !!!  long?  large bit --> BigInteger
+        flipBit(int n)            !!!  long?  large bit --> BigInteger
+        
         */
     }
     
