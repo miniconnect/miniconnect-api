@@ -1,9 +1,11 @@
 package hu.webarticum.miniconnect.lang;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.math.BigInteger;
 
+import org.assertj.core.data.Percentage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
@@ -12,12 +14,32 @@ class LargeIntegerTest {
     
     private static final String CASE_DATA_DIR = "/hu/webarticum/miniconnect/lang/test-cases/LargeIntegerTest";
     
-    
+
     @Test
     void testCreators() {
+        
+        // TODO
+        
+    }
+
+    @Test
+    void testArrayCreators() {
 
         // TODO
         
+    }
+
+    @Test
+    void testCache() {
+        assertThat(LargeInteger.of(-1)).isSameAs(LargeInteger.NEGATIVE_ONE);
+        assertThat(LargeInteger.of(0)).isSameAs(LargeInteger.ZERO);
+        assertThat(LargeInteger.of(1)).isSameAs(LargeInteger.ONE);
+        assertThat(LargeInteger.of(2)).isSameAs(LargeInteger.TWO);
+        assertThat(LargeInteger.of(10)).isSameAs(LargeInteger.TEN);
+        assertThat(LargeInteger.of(-7)).isSameAs(LargeInteger.of(-7));
+        assertThat(LargeInteger.of(5)).isSameAs(LargeInteger.of(5));
+        assertThat(LargeInteger.of(21)).isSameAs(LargeInteger.of(21));
+        assertThat(LargeInteger.of("266363024420535859")).isNotSameAs(LargeInteger.of("266363024420535859"));
     }
 
     @ParameterizedTest
@@ -34,9 +56,13 @@ class LargeIntegerTest {
 
     @Test
     void testByteValueExact() {
-
-        // TODO
-        
+        assertThat(LargeInteger.ZERO.byteValueExact()).isZero();
+        assertThat(LargeInteger.of(10).byteValueExact()).isEqualTo((byte) 10);
+        assertThat(LargeInteger.of(-10).byteValueExact()).isEqualTo((byte) -10);
+        assertThat(LargeInteger.of(-200)).satisfies(n ->
+                assertThatThrownBy(() -> n.byteValueExact()).isInstanceOf(ArithmeticException.class));
+        assertThat(LargeInteger.of(200)).satisfies(n ->
+                assertThatThrownBy(() -> n.byteValueExact()).isInstanceOf(ArithmeticException.class));
     }
 
     @ParameterizedTest
@@ -47,9 +73,15 @@ class LargeIntegerTest {
 
     @Test
     void testShortValueExact() {
-
-        // TODO
-        
+        assertThat(LargeInteger.ZERO.shortValueExact()).isZero();
+        assertThat(LargeInteger.of(10).shortValueExact()).isEqualTo((short) 10);
+        assertThat(LargeInteger.of(-10).shortValueExact()).isEqualTo((short) -10);
+        assertThat(LargeInteger.of(-200).shortValueExact()).isEqualTo((short) -200);
+        assertThat(LargeInteger.of(200).shortValueExact()).isEqualTo((short) 200);
+        assertThat(LargeInteger.of(-40000)).satisfies(n ->
+                assertThatThrownBy(() -> n.shortValueExact()).isInstanceOf(ArithmeticException.class));
+        assertThat(LargeInteger.of(40000)).satisfies(n ->
+                assertThatThrownBy(() -> n.shortValueExact()).isInstanceOf(ArithmeticException.class));
     }
 
     @ParameterizedTest
@@ -60,9 +92,17 @@ class LargeIntegerTest {
 
     @Test
     void testIntValueExact() {
-
-        // TODO
-        
+        assertThat(LargeInteger.ZERO.intValueExact()).isZero();
+        assertThat(LargeInteger.of(10).intValueExact()).isEqualTo(10);
+        assertThat(LargeInteger.of(-10).intValueExact()).isEqualTo(-10);
+        assertThat(LargeInteger.of(-200).intValueExact()).isEqualTo(-200);
+        assertThat(LargeInteger.of(200).intValueExact()).isEqualTo(200);
+        assertThat(LargeInteger.of(-40000).intValueExact()).isEqualTo(-40000);
+        assertThat(LargeInteger.of(40000).intValueExact()).isEqualTo(40000);
+        assertThat(LargeInteger.of(-3000000000L)).satisfies(n ->
+                assertThatThrownBy(() -> n.intValueExact()).isInstanceOf(ArithmeticException.class));
+        assertThat(LargeInteger.of(3000000000L)).satisfies(n ->
+                assertThatThrownBy(() -> n.intValueExact()).isInstanceOf(ArithmeticException.class));
     }
 
     @ParameterizedTest
@@ -73,27 +113,31 @@ class LargeIntegerTest {
 
     @Test
     void testLongValueExact() {
-
-        // TODO
-        
+        assertThat(LargeInteger.ZERO.longValueExact()).isZero();
+        assertThat(LargeInteger.of(10).longValueExact()).isEqualTo(10L);
+        assertThat(LargeInteger.of(-10).longValueExact()).isEqualTo(-10L);
+        assertThat(LargeInteger.of(-200).longValueExact()).isEqualTo(-200L);
+        assertThat(LargeInteger.of(200).longValueExact()).isEqualTo(200L);
+        assertThat(LargeInteger.of(-40000).longValueExact()).isEqualTo(-40000L);
+        assertThat(LargeInteger.of(40000).longValueExact()).isEqualTo(40000L);
+        assertThat(LargeInteger.of(-3000000000L).longValueExact()).isEqualTo(-3000000000L);
+        assertThat(LargeInteger.of(3000000000L).longValueExact()).isEqualTo(3000000000L);
+        assertThat(LargeInteger.of("-10000000000000000000")).satisfies(n ->
+                assertThatThrownBy(() -> n.longValueExact()).isInstanceOf(ArithmeticException.class));
+        assertThat(LargeInteger.of("10000000000000000000")).satisfies(n ->
+                assertThatThrownBy(() -> n.longValueExact()).isInstanceOf(ArithmeticException.class));
     }
 
     @ParameterizedTest
     @CsvFileSource(resources = CASE_DATA_DIR + "/floatValue-cases.csv", numLinesToSkip = 1)
     void testFloatValue(LargeInteger n, float floatValue) {
-        
-        // TODO
-        // approximation...
-        
+        assertThat(n.floatValue()).isCloseTo(floatValue, Percentage.withPercentage(1e-5));
     }
 
     @ParameterizedTest
     @CsvFileSource(resources = CASE_DATA_DIR + "/doubleValue-cases.csv", numLinesToSkip = 1)
     void testDoubleValue(LargeInteger n, double doubleValue) {
-        
-        // TODO
-        // approximation...
-        
+        assertThat(n.doubleValue()).isCloseTo(doubleValue, Percentage.withPercentage(1e-10));
     }
 
     @ParameterizedTest
@@ -104,9 +148,6 @@ class LargeIntegerTest {
     }
     
     private byte[] convertHexToBytes(String bytesHex) {
-        if (bytesHex.isEmpty()) {
-            return new byte[0];
-        }
         String[] byteHexes = bytesHex.split(" ");
         byte[] result = new byte[byteHexes.length];
         for (int i = 0; i < byteHexes.length; i++) {
