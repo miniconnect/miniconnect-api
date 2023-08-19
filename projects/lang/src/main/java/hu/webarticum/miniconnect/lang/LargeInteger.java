@@ -608,10 +608,24 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         }
         
         public LargeInteger shiftLeft(int n) {
+            
+            // FIXME
+            //LargeInteger.of(Long.MAX_VALUE - 10L).shiftLeft(3)
+            //BigInteger.valueOf(Long.MAX_VALUE - 10L).shiftLeft(3)
+
+            // FIXME
+            //LargeInteger.of(Long.MAX_VALUE - 10L).shiftLeft(-3)
+            //BigInteger.valueOf(Long.MAX_VALUE - 10L).shiftLeft(-3)
+            
             return ofSmall(value << n);
         }
         
         public LargeInteger shiftRight(int n) {
+
+            // FIXME
+            //LargeInteger.of(Long.MAX_VALUE - 10L).shiftRight(-5)
+            //BigInteger.valueOf(Long.MAX_VALUE - 10L).shiftRight(-5)
+            
             return ofSmall(value >> n);
         }
         
@@ -656,6 +670,11 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         }
         
         public LargeInteger setBit(int n) {
+
+            // FIXME
+            //LargeInteger.of(Long.MAX_VALUE - 10L).setBit(150)
+            //BigInteger.valueOf(Long.MAX_VALUE - 10L).setBit(150)
+            
             return ofSmall(value | (1 << n));
         }
         
@@ -664,6 +683,11 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         }
         
         public LargeInteger flipBit(int n) {
+
+            // FIXME
+            //LargeInteger.of(Long.MAX_VALUE - 10L).flipBit(150)
+            //BigInteger.valueOf(Long.MAX_VALUE - 10L).flipBit(150)
+            
             return ofSmall(value ^ (1 << n));
         }
         
