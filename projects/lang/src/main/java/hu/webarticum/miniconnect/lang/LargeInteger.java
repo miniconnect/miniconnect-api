@@ -621,7 +621,9 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         }
         
         public LargeInteger shiftRight(int n) {
-            if (n < 0 && n > -32 && value > -MAX_SMALL_MULTIPLIER && value <= MAX_SMALL_MULTIPLIER) {
+            if (n == 0) {
+                return this;
+            } else if (n < 0 && n > -32 && value > -MAX_SMALL_MULTIPLIER && value <= MAX_SMALL_MULTIPLIER) {
                 return ofSmall(value << -n);
             } else if (n < 0) {
                 return of(bigIntegerValue().shiftRight(n));
