@@ -3,6 +3,7 @@ package hu.webarticum.miniconnect.lang;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.BitSet;
 
@@ -199,15 +200,6 @@ class LargeIntegerTest {
         assertThat(n.toByteArray()).containsExactly(bytes);
     }
     
-    private byte[] convertHexToBytes(String bytesHex) {
-        String[] byteHexes = bytesHex.split(" ");
-        byte[] result = new byte[byteHexes.length];
-        for (int i = 0; i < byteHexes.length; i++) {
-            result[i] = (byte) Short.parseShort(byteHexes[i], 16);
-        }
-        return result;
-    }
-
     @ParameterizedTest
     @CsvFileSource(resources = CASE_DATA_DIR + "/isProbablePrime-cases.csv", numLinesToSkip = 1)
     void testIsProbablePrime(LargeInteger n, int certainty, boolean isProbablePrime) {
@@ -382,10 +374,9 @@ class LargeIntegerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "-23462435820793856783445934", "-32", "0", "54", "527304597834057925806734072474" })
+    @ValueSource(strings = { "-23462435820793856783445934", "527304597834057925806734072474" })
     void testHashCodeLarge(String value) {
         assertThat(LargeInteger.of(value)).hasSameHashCodeAs(new BigInteger(value));
-        
     }
 
     @Test
@@ -401,48 +392,114 @@ class LargeIntegerTest {
         assertThat(LargeInteger.of("562384864853845273459308085003"))
                 .isNotEqualTo(new Object());
     }
-    
-    @Test
-    void testXXXX() {
 
-        // TODO
-        
-        /*
-        toString()
-        toString(int radix)
-        bigIntegerValue()
-        bigDecimalValue()
-        toBitSet()
-        
-        // in one case file:
-        isFittingInLong()
-        isFittingInInt()
-        isFittingInShort()
-        isFittingInByte()
-        
-        getLowestSetBit()
-        bitLength()
-        bitCount()
-        
-        // ------------------------------------------------
-        
-        // in one case file:
-        and(LargeInteger val)
-        or(LargeInteger val)
-        xor(LargeInteger val)
-        andNot(LargeInteger val)  !!!  long?
-        
-        not()                     !!!  long?
-        
-        shiftLeft(int n)
-        shiftRight(int n)         !!!  long?
-        testBit(int n)
-        clearBit(int n)
-        
-        setBit(int n)             !!!  long?  large bit --> BigInteger
-        flipBit(int n)            !!!  long?  large bit --> BigInteger
-        
-        */
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/toString-cases.csv", numLinesToSkip = 1)
+    void testToString(LargeInteger n, String stringValue) {
+        assertThat(n).hasToString(stringValue);
     }
-    
+
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/toStringRadix-cases.csv", numLinesToSkip = 1)
+    void testToStringRadix(LargeInteger n, int toRadix, String stringValue) {
+        assertThat(n.toString(toRadix)).as("%s --> (%d)", n, toRadix).isEqualTo(stringValue);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "-23462435820793856783445934", "-32", "0", "54", "527304597834057925806734072474" })
+    void testBigIntegerValue(String value) {
+        assertThat(LargeInteger.of(value).bigIntegerValue()).isEqualTo(new BigInteger(value));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "-23462435820793856783445934", "-32", "0", "54", "527304597834057925806734072474" })
+    void testBigDecimalValue(String value) {
+        assertThat(LargeInteger.of(value).bigDecimalValue()).isEqualTo(new BigDecimal(new BigInteger(value)));
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/toBitSet-cases.csv", numLinesToSkip = 1)
+    void testToBitSet(LargeInteger n, String bitSetBytesHex) {
+        assertThat(n.toBitSet()).isEqualTo(BitSet.valueOf(convertHexToBytes(bitSetBytesHex)));
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/fittingIn-cases.csv", numLinesToSkip = 1)
+    void testFittingIn(
+            LargeInteger n,
+            boolean fittingInLong,
+            boolean fittingInInt,
+            boolean fittingInShort,
+            boolean fittingInByte) {
+        assertThat(n.isFittingInLong()).as("%s.isFittingInLong()", n).isEqualTo(fittingInLong);
+        assertThat(n.isFittingInInt()).as("%s.isFittingInInt()", n).isEqualTo(fittingInInt);
+        assertThat(n.isFittingInShort()).as("%s.isFittingInShort()", n).isEqualTo(fittingInShort);
+        assertThat(n.isFittingInByte()).as("%s.isFittingInByte()", n).isEqualTo(fittingInByte);
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/bitStat-cases.csv", numLinesToSkip = 1)
+    void testBitStat(LargeInteger n, int lowestSetBit, int bitLength, int bitCount) {
+        assertThat(n.getLowestSetBit()).as("%s.getLowestSetBit()", n).isEqualTo(lowestSetBit);
+        assertThat(n.bitLength()).as("%s.bitLength()", n).isEqualTo(bitLength);
+        assertThat(n.bitCount()).as("%s.bitCount()", n).isEqualTo(bitCount);
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/binaryBinary-cases.csv", numLinesToSkip = 1)
+    void testBinaryBinary(
+            LargeInteger n,
+            LargeInteger m,
+            LargeInteger andResult,
+            LargeInteger orResult,
+            LargeInteger xorResult,
+            LargeInteger andNotResult) {
+        assertThat(n.and(m)).as("%s & %s", n, m).isEqualTo(andResult);
+        assertThat(n.or(m)).as("%s | %s", n, m).isEqualTo(orResult);
+        assertThat(n.xor(m)).as("%s xor %s", n, m).isEqualTo(xorResult);
+        assertThat(n.andNot(m)).as("%s & not %s", n, m).isEqualTo(andNotResult);
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/not-cases.csv", numLinesToSkip = 1)
+    void testNot(LargeInteger n, LargeInteger result) {
+        assertThat(n.not()).as("not %s", n).isEqualTo(result);
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/bitBased-cases.csv", numLinesToSkip = 1)
+    void testBitBased(
+            LargeInteger n,
+            int bitIndex,
+            boolean set,
+            LargeInteger setResult,
+            LargeInteger clearResult,
+            LargeInteger flipResult) {
+        assertThat(n.testBit(bitIndex)).as("%s[%d]", n, bitIndex).isEqualTo(set);
+        assertThat(n.setBit(bitIndex)).as("set %s[%d]", n, bitIndex).isEqualTo(setResult);
+        assertThat(n.clearBit(bitIndex)).as("clear %s[%d]", n, bitIndex).isEqualTo(clearResult);
+        assertThat(n.flipBit(bitIndex)).as("flip %s[%d]", n, bitIndex).isEqualTo(flipResult);
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/shiftLeft-cases.csv", numLinesToSkip = 1)
+    void testShiftLeft(LargeInteger n, int p, LargeInteger result) {
+        assertThat(n.shiftLeft(p)).as("%s << %d", n, p).isEqualTo(result);
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/shiftRight-cases.csv", numLinesToSkip = 1)
+    void testShiftRight(LargeInteger n, int p, LargeInteger result) {
+        assertThat(n.shiftRight(p)).as("%s >> %d", n, p).isEqualTo(result);
+    }
+
+    private byte[] convertHexToBytes(String bytesHex) {
+        String[] byteHexes = bytesHex.split(" ");
+        byte[] result = new byte[byteHexes.length];
+        for (int i = 0; i < byteHexes.length; i++) {
+            result[i] = (byte) Short.parseShort(byteHexes[i], 16);
+        }
+        return result;
+    }
+
 }
