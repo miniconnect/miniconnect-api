@@ -227,20 +227,22 @@ class LargeIntegerTest {
     @ParameterizedTest
     @CsvFileSource(resources = CASE_DATA_DIR + "/isProbablePrime-cases.csv", numLinesToSkip = 1)
     void testIsProbablePrime(LargeInteger n, int certainty, boolean isProbablePrime) {
-        assertThat(n.isProbablePrime(certainty)).isEqualTo(isProbablePrime);
+        assertThat(n.isProbablePrime(certainty)).as("%s.isProbablePrime(%d)", n, certainty).isEqualTo(isProbablePrime);
     }
     
     @Test
     void testIsProbablePrimeSameAsByBigInteger() {
+        int certainty = 10;
         for (int i = 1; i <= 100; i++) {
-            assertThat(LargeInteger.of(i).isProbablePrime(10)).isEqualTo(BigInteger.valueOf(i).isProbablePrime(10));
+            assertThat(LargeInteger.of(i).isProbablePrime(certainty)).as("%d.isProbablePrime(%d)", i, certainty)
+                    .isEqualTo(BigInteger.valueOf(i).isProbablePrime(certainty));
         }
     }
 
     @ParameterizedTest
     @CsvFileSource(resources = CASE_DATA_DIR + "/nextProbablePrime-cases.csv", numLinesToSkip = 1)
     void testNextProbablePrime(LargeInteger n, LargeInteger nextProbablePrime) {
-        assertThat(n.nextProbablePrime()).isEqualTo(nextProbablePrime);
+        assertThat(n.nextProbablePrime()).as("%s.nextProbablePrime()", n).isEqualTo(nextProbablePrime);
     }
 
     @Test
@@ -250,7 +252,8 @@ class LargeIntegerTest {
         for (int i = 1; i <= 100; i++) {
             largeIntegerValue = largeIntegerValue.nextProbablePrime();
             bigIntegerValue = bigIntegerValue.nextProbablePrime();
-            assertThat(largeIntegerValue.bigIntegerValue()).isEqualTo(bigIntegerValue);
+            assertThat(largeIntegerValue.bigIntegerValue()).as("%s.nextProbablePrime()", largeIntegerValue)
+                    .isEqualTo(bigIntegerValue);
         }
     }
 
@@ -357,9 +360,9 @@ class LargeIntegerTest {
     @ParameterizedTest
     @CsvFileSource(resources = CASE_DATA_DIR + "/isEvenOddPowerOfTwo-cases.csv", numLinesToSkip = 1)
     void testIsEvenOddPowerOfTwo(LargeInteger n, boolean even, boolean odd, boolean powerOfTwo) {
-        assertThat(n.isEven()).isEqualTo(even);
-        assertThat(n.isOdd()).isEqualTo(odd);
-        assertThat(n.isPowerOfTwo()).isEqualTo(powerOfTwo);
+        assertThat(n.isEven()).as("%s is even", n).isEqualTo(even);
+        assertThat(n.isOdd()).as("%s is odd", n).isEqualTo(odd);
+        assertThat(n.isPowerOfTwo()).as("%s is power-of-two", n).isEqualTo(powerOfTwo);
     }
 
     @ParameterizedTest
@@ -374,21 +377,21 @@ class LargeIntegerTest {
             boolean nonNegative,
             LargeInteger abs,
             LargeInteger negated) {
-        assertThat(n.signum()).isEqualTo(signum);
-        assertThat(n.isZero()).isEqualTo(zero);
-        assertThat(n.isPositive()).isEqualTo(positive);
-        assertThat(n.isNonPositive()).isEqualTo(nonPositive);
-        assertThat(n.isNegative()).isEqualTo(negative);
-        assertThat(n.isNonNegative()).isEqualTo(nonNegative);
-        assertThat(n.abs()).isEqualTo(abs);
-        assertThat(n.negate()).isEqualTo(negated);
+        assertThat(n.signum()).as("%s.signum()", n).isEqualTo(signum);
+        assertThat(n.isZero()).as("%s.isZero()", n).isEqualTo(zero);
+        assertThat(n.isPositive()).as("%s.isPositive()", n).isEqualTo(positive);
+        assertThat(n.isNonPositive()).as("%s.isNonPositive()", n).isEqualTo(nonPositive);
+        assertThat(n.isNegative()).as("%s.isNegative()", n).isEqualTo(negative);
+        assertThat(n.isNonNegative()).as("%s.isNonNegative()", n).isEqualTo(nonNegative);
+        assertThat(n.abs()).as("%s.abs()", n).isEqualTo(abs);
+        assertThat(n.negate()).as("%s.negate()", n).isEqualTo(negated);
     }
 
     @ParameterizedTest
     @CsvFileSource(resources = CASE_DATA_DIR + "/incrementDecrement-cases.csv", numLinesToSkip = 1)
     void testIncrementDecrement(LargeInteger n, LargeInteger incremented, LargeInteger decremented) {
-        assertThat(n.increment()).isEqualTo(incremented);
-        assertThat(n.decrement()).isEqualTo(decremented);
+        assertThat(n.increment()).as("%s++", n).isEqualTo(incremented);
+        assertThat(n.decrement()).as("%s--", n).isEqualTo(decremented);
     }
 
     @ParameterizedTest
@@ -444,7 +447,7 @@ class LargeIntegerTest {
     @ParameterizedTest
     @CsvFileSource(resources = CASE_DATA_DIR + "/toBitSet-cases.csv", numLinesToSkip = 1)
     void testToBitSet(LargeInteger n, String bitSetBytesHex) {
-        assertThat(n.toBitSet()).isEqualTo(BitSet.valueOf(convertHexToBytes(bitSetBytesHex)));
+        assertThat(n.toBitSet()).as("%s.toBitSet()", n).isEqualTo(BitSet.valueOf(convertHexToBytes(bitSetBytesHex)));
     }
 
     @ParameterizedTest
