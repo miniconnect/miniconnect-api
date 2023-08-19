@@ -29,9 +29,9 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     
     private static final int MAX_SAFE_LONG_RADIX = 36;
     
-    private static final long MAX_SMALL_ADDITIVE = 4611686018427387903L;
+    private static final long MAX_SMALL_ADDITIVE = Long.MAX_VALUE / 2;
     
-    private static final long MAX_SMALL_MULTIPLIER = 3037000499L;
+    private static final long MAX_SMALL_MULTIPLIER = (long) Math.sqrt(Long.MAX_VALUE);
     
     private static final int MAX_SMALL_POW_EXPONENT = 4;
     
@@ -621,10 +621,11 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         }
         
         public LargeInteger shiftRight(int n) {
-
-            // FIXME
-            //LargeInteger.of(Long.MAX_VALUE - 10L).shiftRight(-5)
-            //BigInteger.valueOf(Long.MAX_VALUE - 10L).shiftRight(-5)
+            if (n < 0 && n > -32 && value > -MAX_SMALL_MULTIPLIER && value <= MAX_SMALL_MULTIPLIER) {
+                return ofSmall(value << -n);
+            } else if (n < 0) {
+                return of(bigIntegerValue().shiftRight(n));
+            }
             
             return ofSmall(value >> n);
         }
