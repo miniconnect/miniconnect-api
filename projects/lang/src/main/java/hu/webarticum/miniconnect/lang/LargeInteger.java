@@ -608,14 +608,13 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         }
         
         public LargeInteger shiftLeft(int n) {
-            
-            // FIXME
-            //LargeInteger.of(Long.MAX_VALUE - 10L).shiftLeft(3)
-            //BigInteger.valueOf(Long.MAX_VALUE - 10L).shiftLeft(3)
-
-            // FIXME
-            //LargeInteger.of(Long.MAX_VALUE - 10L).shiftLeft(-3)
-            //BigInteger.valueOf(Long.MAX_VALUE - 10L).shiftLeft(-3)
+            if (n == 0) {
+                return this;
+            } else if (n < 0) {
+                return ofSmall(value >> -n);
+            } else if (n >= 32 || value > MAX_SMALL_MULTIPLIER) {
+                return of(bigIntegerValue().shiftLeft(n));
+            }
             
             return ofSmall(value << n);
         }
