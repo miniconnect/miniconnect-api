@@ -504,6 +504,14 @@ class LargeIntegerTest {
         assertThat(n.clearBit(bitIndex)).as("clear %s[%d]", n, bitIndex).isEqualTo(clearResult);
         assertThat(n.flipBit(bitIndex)).as("flip %s[%d]", n, bitIndex).isEqualTo(flipResult);
     }
+    
+    @Test
+    void testBitBasedThrow() {
+        assertThatThrownBy(() -> LargeInteger.ONE.testBit(-1)).isInstanceOf(ArithmeticException.class);
+        assertThatThrownBy(() -> LargeInteger.ONE.setBit(-1)).isInstanceOf(ArithmeticException.class);
+        assertThatThrownBy(() -> LargeInteger.ONE.clearBit(-1)).isInstanceOf(ArithmeticException.class);
+        assertThatThrownBy(() -> LargeInteger.ONE.flipBit(-1)).isInstanceOf(ArithmeticException.class);
+    }
 
     @ParameterizedTest
     @CsvFileSource(resources = CASE_DATA_DIR + "/shiftLeft-cases.csv", numLinesToSkip = 1)

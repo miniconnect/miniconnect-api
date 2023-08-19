@@ -23,6 +23,8 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     }
     
 
+    private static final int LONG_BIT_COUNT = Long.BYTES * 8;
+    
     private static final int MAX_SAFE_LONG_STR_LENGTH = 18;
     
     private static final int MAX_SAFE_LONG_RADIX_STR_LENGTH = 12;
@@ -696,32 +698,46 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
         @Override
         public boolean testBit(int n) {
-            return (value & (1 <<n )) != 0;
+            if (n < 0) {
+                throw negativeBitAddress();
+            }
+            
+            return (value & (1 << n)) != 0;
         }
 
         @Override
         public LargeInteger setBit(int n) {
-
-            // FIXME
-            //LargeInteger.of(Long.MAX_VALUE - 10L).setBit(150)
-            //BigInteger.valueOf(Long.MAX_VALUE - 10L).setBit(150)
+            if (n >= LONG_BIT_COUNT) {
+                return of(bigIntegerValue().setBit(n));
+            } else if (n < 0) {
+                throw negativeBitAddress();
+            }
             
             return ofSmall(value | (1 << n));
         }
 
         @Override
         public LargeInteger clearBit(int n) {
+            if (n < 0) {
+                throw negativeBitAddress();
+            }
+            
             return ofSmall(value & ~(1 << n));
         }
 
         @Override
         public LargeInteger flipBit(int n) {
+            if (n >= LONG_BIT_COUNT) {
+                return of(bigIntegerValue().flipBit(n));
+            } else if (n < 0) {
+                throw negativeBitAddress();
+            }
 
-            // FIXME
-            //LargeInteger.of(Long.MAX_VALUE - 10L).flipBit(150)
-            //BigInteger.valueOf(Long.MAX_VALUE - 10L).flipBit(150)
-            
             return ofSmall(value ^ (1 << n));
+        }
+        
+        private ArithmeticException negativeBitAddress() {
+            return new ArithmeticException("Negative bit address");
         }
 
         @Override
