@@ -19,19 +19,18 @@ class LargeIntegerTest {
     
 
     @Test
-    void testCreators() {
+    void testCreatorsPrimitive() {
         assertThat(LargeInteger.of((byte) 123).bigIntegerValue()).isEqualTo(123);
         assertThat(LargeInteger.of((short) 12345).bigIntegerValue()).isEqualTo(12345);
         assertThat(LargeInteger.of(978675645).bigIntegerValue()).isEqualTo(978675645);
         assertThat(LargeInteger.of(958678475673645625L).bigIntegerValue()).isEqualTo(958678475673645625L);
         assertThat(LargeInteger.of(-237352934872934857L).bigIntegerValue()).isEqualTo(-237352934872934857L);
-        assertThat(LargeInteger.of(new BigInteger("73658273647235762749234572072073628073")).bigIntegerValue())
-                .isEqualTo("73658273647235762749234572072073628073");
+    }
+
+    @Test
+    void testCreatorsString() {
         assertThat(LargeInteger.of("52344630590748003749376284693738").bigIntegerValue())
                 .isEqualTo("52344630590748003749376284693738");
-        assertThatThrownBy(() -> LargeInteger.of("2346i73")).isInstanceOf(NumberFormatException.class);
-        assertThatThrownBy(() -> LargeInteger.of("52845723948573458975845738745x437"))
-                .isInstanceOf(NumberFormatException.class);
         assertThat(LargeInteger.of("32", 5).bigIntegerValue()).isEqualTo(17);
         assertThat(LargeInteger.of("32", 30).bigIntegerValue()).isEqualTo(92);
         assertThat(LargeInteger.of("-32", 30).bigIntegerValue()).isEqualTo(-92);
@@ -39,9 +38,20 @@ class LargeIntegerTest {
         assertThat(LargeInteger.of("B42AB8BBF1D", 16).bigIntegerValue()).isEqualTo(12380973809437L);
         assertThat(LargeInteger.of("4AF607BCC3482EDA3467A0643AF7E428EB34", 16).bigIntegerValue())
                 .isEqualTo("6530028905921377813337721059013328158386996");
+    }
+
+    @Test
+    void testCreatorsStringThrow() {
+        assertThatThrownBy(() -> LargeInteger.of("2346i73")).isInstanceOf(NumberFormatException.class);
+        assertThatThrownBy(() -> LargeInteger.of("52845723948573458975845738745x437"))
+                .isInstanceOf(NumberFormatException.class);
         assertThatThrownBy(() -> LargeInteger.of("B42AB8BBF1D", 15)).isInstanceOf(NumberFormatException.class);
         assertThatThrownBy(() -> LargeInteger.of("4AF607BCC3482EDA3467A0643AF7E428EB34", 15))
                 .isInstanceOf(NumberFormatException.class);
+    }
+
+    @Test
+    void testCreatorsBytes() {
         assertThat(LargeInteger.of(new byte[0]).bigIntegerValue()).isZero();
         assertThat(LargeInteger.of(new byte[] { 0 }).bigIntegerValue()).isZero();
         assertThat(LargeInteger.of(new byte[] { 0, 0, 0, 0, 0 }).bigIntegerValue()).isZero();
@@ -53,14 +63,20 @@ class LargeIntegerTest {
                 .isEqualTo(-3423871549700351L);
         assertThat(LargeInteger.of(new byte[] { 13, -42, 1, -56, -122, 7, 1, 123, 99, -77 }).bigIntegerValue())
                 .isEqualTo("65338496009033259639731");
-        assertThat(LargeInteger.of(BitSet.valueOf(new byte[] { 42, 0, -3, 42, 12 })).bigIntegerValue())
-                .isEqualTo(52260831274L);
         assertThat(LargeInteger.nonNegativeOf(new byte[] { -13, -42, 1, -56, -122, 7, 1 }).bigIntegerValue())
                 .isEqualTo(68633722488227585L);
+    }
+
+    @Test
+    void testCreatorsObject() {
+        assertThat(LargeInteger.of(new BigInteger("73658273647235762749234572072073628073")).bigIntegerValue())
+                .isEqualTo("73658273647235762749234572072073628073");
+        assertThat(LargeInteger.of(BitSet.valueOf(new byte[] { 42, 0, -3, 42, 12 })).bigIntegerValue())
+                .isEqualTo(52260831274L);
         assertThat(LargeInteger.nonNegativeOf(BitSet.valueOf(new byte[] { 42, 0, -3, 42, -12 })).bigIntegerValue())
                 .isEqualTo(1048693243946L);
     }
-
+    
     @Test
     void testArrayCreators() {
         assertThat(LargeInteger.arrayOf(3L, 3125L, -1L, 0L)).containsExactly(
