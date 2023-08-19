@@ -727,14 +727,11 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         }
         
         public boolean isPowerOfTwo() {
-            if (value > 0L) {
-                return (value & (value - 1L)) == 0;
-            } else if (value == Long.MIN_VALUE) {
-                return true;
-            } else {
-                long absValue = Math.abs(value);
-                return (absValue & (absValue - 1L)) == 0;
+            if (value <= 0L) {
+                return false;
             }
+            
+            return (value & (value - 1L)) == 0;
         }
 
         public LargeInteger increment() {
@@ -1005,8 +1002,11 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         }
         
         public boolean isPowerOfTwo() {
-            BigInteger absValue = value.abs();
-            return absValue.and(absValue.subtract(BigInteger.ONE)).equals(BigInteger.ZERO);
+            if (isNonPositive()) {
+                return false;
+            }
+            
+            return value.and(value.subtract(BigInteger.ONE)).equals(BigInteger.ZERO);
         }
 
         public LargeInteger increment() {
