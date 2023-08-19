@@ -170,6 +170,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         return new ImplSmall(value);
     }
     
+    /** Value must be out of the long range. */
     private static LargeInteger ofBig(BigInteger value) {
         return new ImplBig(value);
     }
@@ -285,24 +286,22 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     }
 
     public boolean isPositive() {
-        return compareTo(ZERO) > 0;
+        return signum() > 0;
     }
 
     public boolean isNonPositive() {
-        return compareTo(ZERO) <= 0;
+        return signum() <= 0;
     }
 
     public boolean isNegative() {
-        return compareTo(ZERO) < 0;
+        return signum() < 0;
     }
 
     public boolean isNonNegative() {
-        return compareTo(ZERO) >= 0;
+        return signum() >= 0;
     }
 
-    public boolean isEven() {
-        return isDivisibleBy(TWO);
-    }
+    public abstract boolean isEven();
 
     public boolean isOdd() {
         return !isEven();
@@ -478,12 +477,14 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         public LargeInteger add(LargeInteger val) {
             if (value == 0) {
                 return val;
-            } else if (val instanceof ImplBig || value == Long.MIN_VALUE || Math.abs(value) > MAX_SMALL_ADDITIVE) {
+            } else if (val instanceof ImplBig || Math.abs(value) > MAX_SMALL_ADDITIVE || value == Long.MIN_VALUE) {
                 return of(bigIntegerValue().add(val.bigIntegerValue()));
             }
 
             ImplSmall smallVal = (ImplSmall) val;
-            if (smallVal.value == Long.MIN_VALUE || Math.abs(smallVal.value) > MAX_SMALL_ADDITIVE) {
+            if (smallVal.value == 0) {
+                return this;
+            } else if (Math.abs(smallVal.value) > MAX_SMALL_ADDITIVE || smallVal.value == Long.MIN_VALUE) {
                 return ofBig(bigIntegerValue().multiply(smallVal.bigIntegerValue()));
             }
 
@@ -497,12 +498,12 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         public LargeInteger multiply(LargeInteger val) {
             if (value == 0) {
                 return ZERO;
-            } else if (val instanceof ImplBig || value == Long.MIN_VALUE || Math.abs(value) > MAX_SMALL_MULTIPLIER) {
+            } else if (val instanceof ImplBig || Math.abs(value) > MAX_SMALL_MULTIPLIER || value == Long.MIN_VALUE) {
                 return ofBig(bigIntegerValue().multiply(val.bigIntegerValue()));
             }
             
             ImplSmall smallVal = (ImplSmall) val;
-            if (smallVal.value == Long.MIN_VALUE || Math.abs(smallVal.value) > MAX_SMALL_MULTIPLIER) {
+            if (Math.abs(smallVal.value) > MAX_SMALL_MULTIPLIER || smallVal.value == Long.MIN_VALUE) {
                 return ofBig(bigIntegerValue().multiply(smallVal.bigIntegerValue()));
             }
             
@@ -537,9 +538,9 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
             } else if (exponent == 1) {
                 return this;
             } else if (
-                    value == Long.MIN_VALUE ||
                     Math.abs(value) > MAX_SMALL_POW_BASE_ABS ||
-                    exponent > MAX_SMALL_POW_EXPONENT) {
+                    exponent > MAX_SMALL_POW_EXPONENT ||
+                    value == Long.MIN_VALUE) {
                 return of(bigIntegerValue().pow(exponent));
             }
             
@@ -710,15 +711,19 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         }
         
         public boolean isFittingInInt() {
-            return value >= Integer.MIN_VALUE && value <= Integer.MAX_VALUE;
+            return value <= Integer.MAX_VALUE && value >= Integer.MIN_VALUE; 
         }
         
         public boolean isFittingInShort() {
-            return value >= Short.MIN_VALUE && value <= Short.MAX_VALUE;
+            return value <= Short.MAX_VALUE && value >= Short.MIN_VALUE;
         }
         
         public boolean isFittingInByte() {
-            return value >= Byte.MIN_VALUE && value <= Byte.MAX_VALUE;
+            return value <= Byte.MAX_VALUE && value >= Byte.MIN_VALUE;
+        }
+        
+        public boolean isEven() {
+            return (value & 1) == 0;
         }
         
         public boolean isPowerOfTwo() {
@@ -995,6 +1000,10 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
             return false;
         }
 
+        public boolean isEven() {
+            return !value.testBit(0);
+        }
+        
         public boolean isPowerOfTwo() {
             BigInteger absValue = value.abs();
             return absValue.and(absValue.subtract(BigInteger.ONE)).equals(BigInteger.ZERO);
