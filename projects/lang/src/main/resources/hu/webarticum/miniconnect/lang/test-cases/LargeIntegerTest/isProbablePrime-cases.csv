@@ -1,9 +1,50 @@
 n,certainty,isProbablePrime
-1,10,false
-2,10,true
-7,10,true
-100,10,false
-34517430780183128257,100,true
-34517430780183128261,100,false
 
-# TODO
+### zero: ###
+0,10,false
+0,10000,false
+
+### one: ###
+1,10,false
+1,10000,false
+
+### small composite numbers: ###
+4,100,false
+27,100,false
+9673,100,false
+34861,100,false
+4618960,100,false
+10000000000,100,false
+
+### small prime numbers: ###
+2,10,true
+2,100,true
+5,10,true
+5,100,true
+13,10,true
+13,100,true
+269,10,true
+269,100,true
+9677,10,true
+9677,100,true
+7278793,10,true
+7278793,100,true
+
+### large composite numbers: ###
+1860738381925200,10000,false
+355227421317360560058618,10000,false
+10000000000000000000000000000000,10000,false
+
+### large prime numbers: ###
+737087815633632845783270003774363,10000,true
+346806384608473460801861638421490707377,10000,true
+
+### negative numbers: ###
+-1,100,false
+-2,100,true
+-25,100,false
+-71,100,true
+-4618960,100,false
+-7278793,100,true
+-355227421317360560058618,10000,false
+-346806384608473460801861638421490707377,10000,true
