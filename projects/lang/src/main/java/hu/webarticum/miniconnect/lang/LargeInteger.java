@@ -1107,12 +1107,20 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
         @Override
         public LargeInteger increment() {
-            return ofBig(value.add(BigInteger.ONE));
+            if (isPositive()) {
+                return ofBig(value.add(BigInteger.ONE));
+            } else {
+                return of(value.add(BigInteger.ONE));
+            }
         }
 
         @Override
         public LargeInteger decrement() {
-            return ofBig(value.subtract(BigInteger.ONE));
+            if (isNegative()) {
+                return ofBig(value.subtract(BigInteger.ONE));
+            } else {
+                return of(value.subtract(BigInteger.ONE));
+            }
         }
 
     }
