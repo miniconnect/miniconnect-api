@@ -295,25 +295,21 @@ class LargeIntegerTest {
     }
     
     @ParameterizedTest
-    @CsvFileSource(resources = CASE_DATA_DIR + "/divide-cases.csv", numLinesToSkip = 1)
-    void testDivide(LargeInteger n, LargeInteger m, LargeInteger result) {
-        assertThat(n.divide(m)).as("%s / %s", n, m).isEqualTo(result);
+    @CsvFileSource(resources = CASE_DATA_DIR + "/multiply-cases.csv", numLinesToSkip = 1)
+    void testDivideRelated(LargeInteger n, LargeInteger m, LargeInteger result) {
+        assertThat(result.divide(m)).as("%s / %s", result, m).isEqualTo(n);
     }
 
     @ParameterizedTest
     @CsvFileSource(resources = CASE_DATA_DIR + "/divideAndRemainder-cases.csv", numLinesToSkip = 1)
-    void testDivideAndRemainder(LargeInteger n, LargeInteger m, LargeInteger result, LargeInteger remainder) {
+    void testDivideAndRemainderRelated(LargeInteger n, LargeInteger m, LargeInteger result, LargeInteger remainder) {
+        assertThat(n.divide(m)).as("%s / %s", n, m).isEqualTo(result);
+        assertThat(n.remainder(m)).as("%s % %s", n, m).isEqualTo(remainder);
         LargeInteger[] resultAndRemainder = n.divideAndRemainder(m);
         assertThat(resultAndRemainder[0]).as("%s.divideAndRemainder(%s).result", n, m).isEqualTo(result);
         assertThat(resultAndRemainder[1]).as("%s.divideAndRemainder(%s).remainder", n, m).isEqualTo(remainder);
     }
 
-    @ParameterizedTest
-    @CsvFileSource(resources = CASE_DATA_DIR + "/remainder-cases.csv", numLinesToSkip = 1)
-    void testRemainder(LargeInteger n, LargeInteger m, LargeInteger result) {
-        assertThat(n.remainder(m)).as("%s % %s", n, m).isEqualTo(result);
-    }
-    
     @ParameterizedTest
     @CsvFileSource(resources = CASE_DATA_DIR + "/mod-cases.csv", numLinesToSkip = 1)
     void testMod(LargeInteger n, LargeInteger m, LargeInteger result) {
