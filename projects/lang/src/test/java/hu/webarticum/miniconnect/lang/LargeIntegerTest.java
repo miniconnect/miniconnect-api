@@ -310,12 +310,8 @@ class LargeIntegerTest {
         LargeInteger[] resultAndRemainder = n.divideAndRemainder(m);
         assertThat(resultAndRemainder[0]).as("%s.divideAndRemainder(%s).result", n, m).isEqualTo(result);
         assertThat(resultAndRemainder[1]).as("%s.divideAndRemainder(%s).remainder", n, m).isEqualTo(remainder);
-    }
-
-    @ParameterizedTest
-    @CsvFileSource(resources = CASE_DATA_DIR + "/mod-cases.csv", numLinesToSkip = 1)
-    void testMod(LargeInteger n, LargeInteger m, LargeInteger result) {
-        assertThat(n.mod(m)).as("%s mod %s", n, m).isEqualTo(result);
+        LargeInteger mod = remainder.isNegative() ? m.add(remainder) : remainder;
+        assertThat(n.mod(m)).as("%s mod %s", n, m).isEqualTo(mod);
     }
 
     @ParameterizedTest
