@@ -271,14 +271,15 @@ class LargeIntegerTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = CASE_DATA_DIR + "/add-cases.csv", numLinesToSkip = 1)
-    void testAdd(LargeInteger n, LargeInteger m, LargeInteger result) {
+    void testAddSubtract(LargeInteger n, LargeInteger m, LargeInteger result) {
         assertThat(n.add(m)).as("%s + %s", n, m).isEqualTo(result);
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = CASE_DATA_DIR + "/subtract-cases.csv", numLinesToSkip = 1)
+    @CsvFileSource(resources = CASE_DATA_DIR + "/add-cases.csv", numLinesToSkip = 1)
     void testSubtract(LargeInteger n, LargeInteger m, LargeInteger result) {
-        assertThat(n.subtract(m)).as("%s - %s", n, m).isEqualTo(result);
+        LargeInteger negatedM = m.negate();
+        assertThat(n.subtract(negatedM)).as("%s - %s", n, negatedM).isEqualTo(result);
     }
 
     @ParameterizedTest
