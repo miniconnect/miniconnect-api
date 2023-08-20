@@ -298,8 +298,26 @@ class LargeIntegerTest {
     
     @ParameterizedTest
     @CsvFileSource(resources = CASE_DATA_DIR + "/multiply-cases.csv", numLinesToSkip = 1)
-    void testDivideRelated(LargeInteger n, LargeInteger m, LargeInteger result) {
+    void testDivideRelatedNoRemainder(LargeInteger n, LargeInteger m, LargeInteger result) {
         assertThat(result.divide(m)).as("%s / %s", result, m).isEqualTo(n);
+
+        assertThat(result.remainder(n)).as("%s % %s", result, n).isEqualTo(LargeInteger.ZERO);
+        assertThat(result.remainder(m)).as("%s % %s", result, m).isEqualTo(LargeInteger.ZERO);
+        
+        LargeInteger[] quotientAndRemainderN = result.divideAndRemainder(n);
+        assertThat(quotientAndRemainderN[0]).as("%s.divideAndRemainder(%s).result", result, n).isEqualTo(m);
+        assertThat(quotientAndRemainderN[1]).as("%s.divideAndRemainder(%s).remainder", result, n)
+                .isEqualTo(LargeInteger.ZERO);
+        LargeInteger[] quotientAndRemainderM = result.divideAndRemainder(m);
+        assertThat(quotientAndRemainderM[0]).as("%s.divideAndRemainder(%s).result", result, m).isEqualTo(n);
+        assertThat(quotientAndRemainderM[1]).as("%s.divideAndRemainder(%s).remainder", result, m)
+                .isEqualTo(LargeInteger.ZERO);
+
+        assertThat(result.mod(n)).as("%s mod %s", result, n).isEqualTo(LargeInteger.ZERO);
+        assertThat(result.mod(m)).as("%s mod %s", result, m).isEqualTo(LargeInteger.ZERO);
+        
+        assertThat(result.isDivisibleBy(n)).as("%s.isDivisibleBy(%s)", result, n).isTrue();
+        assertThat(result.isDivisibleBy(m)).as("%s.isDivisibleBy(%s)", result, m).isTrue();
     }
 
     @ParameterizedTest
@@ -307,11 +325,13 @@ class LargeIntegerTest {
     void testDivideAndRemainderRelated(LargeInteger n, LargeInteger m, LargeInteger result, LargeInteger remainder) {
         assertThat(n.divide(m)).as("%s / %s", n, m).isEqualTo(result);
         assertThat(n.remainder(m)).as("%s % %s", n, m).isEqualTo(remainder);
-        LargeInteger[] resultAndRemainder = n.divideAndRemainder(m);
-        assertThat(resultAndRemainder[0]).as("%s.divideAndRemainder(%s).result", n, m).isEqualTo(result);
-        assertThat(resultAndRemainder[1]).as("%s.divideAndRemainder(%s).remainder", n, m).isEqualTo(remainder);
+        LargeInteger[] quotientAndRemainder = n.divideAndRemainder(m);
+        assertThat(quotientAndRemainder[0]).as("%s.divideAndRemainder(%s).result", n, m).isEqualTo(result);
+        assertThat(quotientAndRemainder[1]).as("%s.divideAndRemainder(%s).remainder", n, m).isEqualTo(remainder);
         LargeInteger mod = remainder.isNegative() ? m.add(remainder) : remainder;
         assertThat(n.mod(m)).as("%s mod %s", n, m).isEqualTo(mod);
+        assertThat(result.isDivisibleBy(n)).as("%s.isDivisibleBy(%s)", result, n).isEqualTo(remainder.isZero());
+        assertThat(result.isDivisibleBy(m)).as("%s.isDivisibleBy(%s)", result, m).isEqualTo(remainder.isZero());
     }
 
     @ParameterizedTest
@@ -324,12 +344,6 @@ class LargeIntegerTest {
     @CsvFileSource(resources = CASE_DATA_DIR + "/modInverse-cases.csv", numLinesToSkip = 1)
     void testModInverse(LargeInteger n, LargeInteger m, LargeInteger result) {
         assertThat(n.modInverse(m)).as("%s mod-1 %s", n, m).isEqualTo(result);
-    }
-
-    @ParameterizedTest
-    @CsvFileSource(resources = CASE_DATA_DIR + "/isDivisibleBy-cases.csv", numLinesToSkip = 1)
-    void testIsDivisibleBy(LargeInteger n, LargeInteger m, boolean divisible) {
-        assertThat(n.isDivisibleBy(m)).as("%2$s | %1$s", n, m).isEqualTo(divisible);
     }
 
     @Test
