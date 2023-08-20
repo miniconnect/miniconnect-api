@@ -125,9 +125,21 @@ class LargeIntegerTest {
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = CASE_DATA_DIR + "/byteValue-cases.csv", numLinesToSkip = 1)
-    void testByteValue(LargeInteger n, byte byteValue) {
+    @CsvFileSource(resources = CASE_DATA_DIR + "/primitiveValue-cases.csv", numLinesToSkip = 1)
+    void testPrimitiveValue(
+            LargeInteger n,
+            byte byteValue,
+            short shortValue,
+            int intValue,
+            long longValue,
+            float floatValue,
+            double doubleValue) {
         assertThat(n.byteValue()).as("%s.byteValue()", n).isEqualTo(byteValue);
+        assertThat(n.shortValue()).as("%s.shortValue()", n).isEqualTo(shortValue);
+        assertThat(n.intValue()).as("%s.intValue()", n).isEqualTo(intValue);
+        assertThat(n.longValue()).as("%s.longValue()", n).isEqualTo(longValue);
+        assertThat(n.floatValue()).isCloseTo(floatValue, Percentage.withPercentage(1e-5));
+        assertThat(n.doubleValue()).isCloseTo(doubleValue, Percentage.withPercentage(1e-10));
     }
 
     @Test
@@ -141,12 +153,6 @@ class LargeIntegerTest {
                 assertThatThrownBy(() -> n.byteValueExact()).isInstanceOf(ArithmeticException.class));
     }
 
-    @ParameterizedTest
-    @CsvFileSource(resources = CASE_DATA_DIR + "/shortValue-cases.csv", numLinesToSkip = 1)
-    void testShortValue(LargeInteger n, short shortValue) {
-        assertThat(n.shortValue()).as("%s.shortValue()", n).isEqualTo(shortValue);
-    }
-
     @Test
     void testShortValueExact() {
         assertThat(LargeInteger.ZERO.shortValueExact()).isZero();
@@ -158,12 +164,6 @@ class LargeIntegerTest {
                 assertThatThrownBy(() -> n.shortValueExact()).isInstanceOf(ArithmeticException.class));
         assertThat(LargeInteger.of(40000)).satisfies(n ->
                 assertThatThrownBy(() -> n.shortValueExact()).isInstanceOf(ArithmeticException.class));
-    }
-
-    @ParameterizedTest
-    @CsvFileSource(resources = CASE_DATA_DIR + "/intValue-cases.csv", numLinesToSkip = 1)
-    void testIntValue(LargeInteger n, int intValue) {
-        assertThat(n.intValue()).as("%s.intValue()", n).isEqualTo(intValue);
     }
 
     @Test
@@ -181,12 +181,6 @@ class LargeIntegerTest {
                 assertThatThrownBy(() -> n.intValueExact()).isInstanceOf(ArithmeticException.class));
     }
 
-    @ParameterizedTest
-    @CsvFileSource(resources = CASE_DATA_DIR + "/longValue-cases.csv", numLinesToSkip = 1)
-    void testLongValue(LargeInteger n, long longValue) {
-        assertThat(n.longValue()).as("%s.longValue()", n).isEqualTo(longValue);
-    }
-
     @Test
     void testLongValueExact() {
         assertThat(LargeInteger.ZERO.longValueExact()).isZero();
@@ -202,18 +196,6 @@ class LargeIntegerTest {
                 assertThatThrownBy(() -> n.longValueExact()).isInstanceOf(ArithmeticException.class));
         assertThat(LargeInteger.of("10000000000000000000")).satisfies(n ->
                 assertThatThrownBy(() -> n.longValueExact()).isInstanceOf(ArithmeticException.class));
-    }
-
-    @ParameterizedTest
-    @CsvFileSource(resources = CASE_DATA_DIR + "/floatValue-cases.csv", numLinesToSkip = 1)
-    void testFloatValue(LargeInteger n, float floatValue) {
-        assertThat(n.floatValue()).isCloseTo(floatValue, Percentage.withPercentage(1e-5));
-    }
-
-    @ParameterizedTest
-    @CsvFileSource(resources = CASE_DATA_DIR + "/doubleValue-cases.csv", numLinesToSkip = 1)
-    void testDoubleValue(LargeInteger n, double doubleValue) {
-        assertThat(n.doubleValue()).isCloseTo(doubleValue, Percentage.withPercentage(1e-10));
     }
 
     @ParameterizedTest
