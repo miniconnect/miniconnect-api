@@ -357,7 +357,7 @@ class LargeIntegerTest {
     @ParameterizedTest
     @CsvFileSource(resources = CASE_DATA_DIR + "/gcd-cases.csv", numLinesToSkip = 1)
     void testGcd(LargeInteger n, LargeInteger m, LargeInteger gcd) {
-        assertThat(n.gcd(m)).as("gcd(%s, %1)", n, m).isEqualTo(gcd);
+        assertThat(n.gcd(m)).as("gcd(%s, %s)", n, m).isEqualTo(gcd);
     }
 
     @ParameterizedTest
