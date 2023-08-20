@@ -261,8 +261,8 @@ class LargeIntegerTest {
     @ParameterizedTest
     @CsvFileSource(resources = CASE_DATA_DIR + "/max-cases.csv", numLinesToSkip = 1)
     void testMin(LargeInteger max, LargeInteger other) {
-        assertThat(max.max(other)).as("min(%s, %s)", max, other).isEqualTo(other);
-        assertThat(other.max(max)).as("min(%s, %s)", other, max).isEqualTo(other);
+        assertThat(max.min(other)).as("min(%s, %s)", max, other).isEqualTo(other);
+        assertThat(other.min(max)).as("min(%s, %s)", other, max).isEqualTo(other);
     }
 
     @ParameterizedTest
