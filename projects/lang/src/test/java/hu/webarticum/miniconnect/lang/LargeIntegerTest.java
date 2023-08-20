@@ -16,7 +16,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 class LargeIntegerTest {
     
     private static final String CASE_DATA_DIR = "/hu/webarticum/miniconnect/lang/test-cases/LargeIntegerTest";
-    
 
     @Test
     void testCreatorsPrimitive() {
@@ -460,8 +459,8 @@ class LargeIntegerTest {
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = CASE_DATA_DIR + "/fittingIn-cases.csv", numLinesToSkip = 1)
-    void testFittingIn(
+    @CsvFileSource(resources = CASE_DATA_DIR + "/isFittingIn-cases.csv", numLinesToSkip = 1)
+    void testIsFittingIn(
             LargeInteger n,
             boolean fittingInLong,
             boolean fittingInInt,
