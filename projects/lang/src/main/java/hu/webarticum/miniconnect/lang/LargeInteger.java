@@ -577,7 +577,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
                 return of(bigIntegerValue().gcd(val.bigIntegerValue()));
             }
             
-            return ofSmall(longGcd(value, ((ImplSmall) val).value));
+            return ofSmall(longGcd(value, ((ImplSmall) val).value)).abs();
         }
         
         private static long longGcd(long a, long b) {
