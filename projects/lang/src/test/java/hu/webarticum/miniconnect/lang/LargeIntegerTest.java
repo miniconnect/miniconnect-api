@@ -258,15 +258,17 @@ class LargeIntegerTest {
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = CASE_DATA_DIR + "/min-cases.csv", numLinesToSkip = 1)
-    void testMin(LargeInteger n, LargeInteger m, LargeInteger min) {
-        assertThat(n.min(m)).as("min(%s, %s)", n, m).isEqualTo(min);
+    @CsvFileSource(resources = CASE_DATA_DIR + "/max-cases.csv", numLinesToSkip = 1)
+    void testMax(LargeInteger max, LargeInteger other) {
+        assertThat(max.max(other)).as("max(%s, %s)", max, other).isEqualTo(max);
+        assertThat(other.max(max)).as("max(%s, %s)", other, max).isEqualTo(max);
     }
 
     @ParameterizedTest
     @CsvFileSource(resources = CASE_DATA_DIR + "/max-cases.csv", numLinesToSkip = 1)
-    void testMax(LargeInteger n, LargeInteger m, LargeInteger max) {
-        assertThat(n.max(m)).as("max(%s, %s)", n, m).isEqualTo(max);
+    void testMin(LargeInteger max, LargeInteger other) {
+        assertThat(max.max(other)).as("min(%s, %s)", max, other).isEqualTo(other);
+        assertThat(other.max(max)).as("min(%s, %s)", other, max).isEqualTo(other);
     }
 
     @ParameterizedTest
