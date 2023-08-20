@@ -420,6 +420,7 @@ class LargeIntegerTest {
         assertThat(LargeInteger.of(2354)).isEqualTo(LargeInteger.of(2354));
         assertThat(LargeInteger.of("24800734658709265845")).isEqualTo(LargeInteger.of("24800734658709265845"));
         assertThat(LargeInteger.of(4235)).isNotEqualTo(LargeInteger.of(7294));
+        assertThat(LargeInteger.of(4235)).isNotEqualTo(new Object());
         assertThat(LargeInteger.of("562384864853845273459308085003"))
                 .isNotEqualTo(LargeInteger.of("92584759238457857923586795605727502"));
         assertThat(LargeInteger.of("562384864853845273459308085003"))
