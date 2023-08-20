@@ -484,8 +484,8 @@ class LargeIntegerTest {
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = CASE_DATA_DIR + "/binaryBinary-cases.csv", numLinesToSkip = 1)
-    void testBinaryBinary(
+    @CsvFileSource(resources = CASE_DATA_DIR + "/binaryBitwise-cases.csv", numLinesToSkip = 1)
+    void testBinaryBitwise(
             LargeInteger n,
             LargeInteger m,
             LargeInteger andResult,
