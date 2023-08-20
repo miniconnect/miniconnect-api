@@ -238,6 +238,19 @@ class LargeIntegerTest {
         }
     }
 
+    @Test
+    void testNextProbablePrimeThrow() {
+        assertThat(LargeInteger.of(-1)).satisfies(n -> assertThatThrownBy(() -> n.nextProbablePrime())
+                .isInstanceOf(ArithmeticException.class));
+        assertThat(LargeInteger.of(-4637)).satisfies(n -> assertThatThrownBy(() -> n.nextProbablePrime())
+                .isInstanceOf(ArithmeticException.class));
+        assertThat(LargeInteger.of(Long.MIN_VALUE)).satisfies(n -> assertThatThrownBy(() -> n.nextProbablePrime())
+                .isInstanceOf(ArithmeticException.class));
+        assertThat(LargeInteger.of("-7516823740682704672346173480673234"))
+                .satisfies(n -> assertThatThrownBy(() -> n.nextProbablePrime())
+                .isInstanceOf(ArithmeticException.class));
+    }
+
     @ParameterizedTest
     @CsvFileSource(resources = CASE_DATA_DIR + "/max-cases.csv", numLinesToSkip = 1)
     void testMax(LargeInteger max, LargeInteger other) {
