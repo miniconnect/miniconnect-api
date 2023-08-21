@@ -742,7 +742,11 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
         @Override
         public int getLowestSetBit() {
-            return 63 - Long.numberOfTrailingZeros(Long.lowestOneBit(value));
+            if(value == 0L) {
+                return -1;
+            }
+            
+            return Long.numberOfTrailingZeros(value);
         }
 
         @Override
