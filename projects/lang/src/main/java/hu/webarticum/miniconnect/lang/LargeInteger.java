@@ -751,12 +751,12 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
         @Override
         public int bitLength() {
-            return bigIntegerValue().bitLength();
+            return 64 - Long.numberOfLeadingZeros(value >= 0L ? value : ~value);
         }
 
         @Override
         public int bitCount() {
-            return bigIntegerValue().bitCount();
+            return Long.bitCount(value >= 0L ? value : ~value);
         }
 
         @Override
