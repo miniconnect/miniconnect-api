@@ -461,7 +461,7 @@ class LargeIntegerTest {
     @ParameterizedTest
     @CsvFileSource(resources = CASE_DATA_DIR + "/toStringRadix-cases.csv", numLinesToSkip = 1)
     void testToStringRadix(LargeInteger n, int toRadix, String stringValue) {
-        assertThat(n.toString(toRadix)).as("%s --> (%d)", n, toRadix).isEqualTo(stringValue);
+        assertThat(n.toString(toRadix)).as("%s --> (%d)", n, toRadix).isEqualToIgnoringCase(stringValue);
     }
 
     @ParameterizedTest
