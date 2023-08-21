@@ -289,6 +289,17 @@ class LargeIntegerTest {
     void testPow(LargeInteger n, int exponent, LargeInteger result) {
         assertThat(n.pow(exponent)).as("%s ^ %d", n, exponent).isEqualTo(result);
     }
+
+    @Test
+    void testPowThrow() {
+        assertThatThrownBy(() -> LargeInteger.TEN.pow(-1)).isInstanceOf(ArithmeticException.class);
+        assertThatThrownBy(() -> LargeInteger.TEN.pow(-3)).isInstanceOf(ArithmeticException.class);
+        assertThatThrownBy(() -> LargeInteger.TEN.pow(-32342)).isInstanceOf(ArithmeticException.class);
+        LargeInteger largeValue = LargeInteger.of("431827054723472902916834285349");
+        assertThatThrownBy(() -> largeValue.pow(-1)).isInstanceOf(ArithmeticException.class);
+        assertThatThrownBy(() -> largeValue.pow(-3)).isInstanceOf(ArithmeticException.class);
+        assertThatThrownBy(() -> largeValue.pow(-32342)).isInstanceOf(ArithmeticException.class);
+    }
     
     @ParameterizedTest
     @CsvFileSource(resources = CASE_DATA_DIR + "/multiply-cases.csv", numLinesToSkip = 1)
