@@ -431,10 +431,20 @@ class LargeIntegerTest {
                 .isNotEqualTo(new Object());
     }
 
-    @ParameterizedTest
-    @CsvFileSource(resources = CASE_DATA_DIR + "/toString-cases.csv", numLinesToSkip = 1)
-    void testToString(LargeInteger n, String stringValue) {
-        assertThat(n).hasToString(stringValue);
+    @Test
+    void testToString() {
+        assertThat(LargeInteger.ZERO).hasToString("0");
+        assertThat(LargeInteger.ONE).hasToString("1");
+        assertThat(LargeInteger.NEGATIVE_ONE).hasToString("-1");
+        assertThat(LargeInteger.TWO).hasToString("2");
+        assertThat(LargeInteger.TEN).hasToString("10");
+        assertThat(LargeInteger.of(-325)).hasToString("-325");
+        assertThat(LargeInteger.of(4143534)).hasToString("4143534");
+        assertThat(LargeInteger.of(-4143534)).hasToString("-4143534");
+        assertThat(LargeInteger.of(Long.MAX_VALUE)).hasToString(Long.toString(Long.MAX_VALUE));
+        assertThat(LargeInteger.of(Long.MIN_VALUE)).hasToString(Long.toString(Long.MIN_VALUE));
+        assertThat(LargeInteger.of("3246723045291384725909688254217")).hasToString("3246723045291384725909688254217");
+        assertThat(LargeInteger.of("-3246723045291384725909688254217")).hasToString("-3246723045291384725909688254217");
     }
 
     @ParameterizedTest
