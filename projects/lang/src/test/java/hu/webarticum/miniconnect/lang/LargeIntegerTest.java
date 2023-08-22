@@ -282,6 +282,7 @@ class LargeIntegerTest {
     @CsvFileSource(resources = CASE_DATA_DIR + "/multiply-cases.csv", numLinesToSkip = 1)
     void testMultiply(LargeInteger n, LargeInteger m, LargeInteger result) {
         assertThat(n.multiply(m)).as("%s * %s", n, m).isEqualTo(result);
+        assertThat(m.multiply(n)).as("%s * %s", m, n).isEqualTo(result);
     }
 
     @ParameterizedTest
@@ -304,25 +305,25 @@ class LargeIntegerTest {
     @ParameterizedTest
     @CsvFileSource(resources = CASE_DATA_DIR + "/multiply-cases.csv", numLinesToSkip = 1)
     void testDivideRelatedNoRemainder(LargeInteger n, LargeInteger m, LargeInteger result) {
-        assertThat(result.divide(m)).as("%s / %s", result, m).isEqualTo(n);
+        if (!n.isZero()) {
+            testDivideRelatedNoRemainderOneWay(result, n, m);
+        } else if (!m.isZero()) {
+            testDivideRelatedNoRemainderOneWay(result, m, n);
+        }
+    }
+    
+    void testDivideRelatedNoRemainderOneWay(LargeInteger toBeDivided, LargeInteger dividing, LargeInteger quotient) {
+        assertThat(toBeDivided.divide(dividing)).as("%s / %s", toBeDivided, dividing).isEqualTo(quotient);
+        assertThat(toBeDivided.remainder(dividing)).as("%s % %s", toBeDivided, dividing).isEqualTo(LargeInteger.ZERO);
+        assertThat(toBeDivided.mod(dividing)).as("%s mod %s", toBeDivided, dividing).isEqualTo(LargeInteger.ZERO);
+        assertThat(toBeDivided.isDivisibleBy(dividing)).as("%s.isDivisibleBy(%s)", toBeDivided, dividing).isTrue();
 
-        assertThat(result.remainder(n)).as("%s % %s", result, n).isEqualTo(LargeInteger.ZERO);
-        assertThat(result.remainder(m)).as("%s % %s", result, m).isEqualTo(LargeInteger.ZERO);
-        
-        LargeInteger[] quotientAndRemainderN = result.divideAndRemainder(n);
-        assertThat(quotientAndRemainderN[0]).as("%s.divideAndRemainder(%s).result", result, n).isEqualTo(m);
-        assertThat(quotientAndRemainderN[1]).as("%s.divideAndRemainder(%s).remainder", result, n)
-                .isEqualTo(LargeInteger.ZERO);
-        LargeInteger[] quotientAndRemainderM = result.divideAndRemainder(m);
-        assertThat(quotientAndRemainderM[0]).as("%s.divideAndRemainder(%s).result", result, m).isEqualTo(n);
-        assertThat(quotientAndRemainderM[1]).as("%s.divideAndRemainder(%s).remainder", result, m)
+        LargeInteger[] quotientAndRemainder = toBeDivided.divideAndRemainder(dividing);
+        assertThat(quotientAndRemainder[0]).as("%s.divideAndRemainder(%s).result", toBeDivided, dividing)
+                .isEqualTo(quotient);
+        assertThat(quotientAndRemainder[1]).as("%s.divideAndRemainder(%s).remainder", toBeDivided, dividing)
                 .isEqualTo(LargeInteger.ZERO);
 
-        assertThat(result.mod(n)).as("%s mod %s", result, n).isEqualTo(LargeInteger.ZERO);
-        assertThat(result.mod(m)).as("%s mod %s", result, m).isEqualTo(LargeInteger.ZERO);
-        
-        assertThat(result.isDivisibleBy(n)).as("%s.isDivisibleBy(%s)", result, n).isTrue();
-        assertThat(result.isDivisibleBy(m)).as("%s.isDivisibleBy(%s)", result, m).isTrue();
     }
 
     @ParameterizedTest
