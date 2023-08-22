@@ -698,7 +698,9 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
         @Override
         public boolean testBit(int n) {
-            if (n < 0) {
+            if (n >= LONG_BIT_COUNT - 1) {
+                return value < 0;
+            } else if (n < 0) {
                 throw negativeBitAddress();
             }
             
@@ -707,33 +709,35 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
         @Override
         public LargeInteger setBit(int n) {
-            if (n >= LONG_BIT_COUNT) {
+            if (n >= LONG_BIT_COUNT - 1) {
                 return of(bigIntegerValue().setBit(n));
             } else if (n < 0) {
                 throw negativeBitAddress();
             }
             
-            return ofSmall(value | (1 << n));
+            return ofSmall(value | (1L << n));
         }
 
         @Override
         public LargeInteger clearBit(int n) {
-            if (n < 0) {
-                throw negativeBitAddress();
-            }
-            
-            return ofSmall(value & ~(1 << n));
-        }
-
-        @Override
-        public LargeInteger flipBit(int n) {
-            if (n >= LONG_BIT_COUNT) {
+            if (value < 0 && n >= LONG_BIT_COUNT - 1) {
                 return of(bigIntegerValue().flipBit(n));
             } else if (n < 0) {
                 throw negativeBitAddress();
             }
 
-            return ofSmall(value ^ (1 << n));
+            return ofSmall(value & ~(1L << n));
+        }
+
+        @Override
+        public LargeInteger flipBit(int n) {
+            if (n >= LONG_BIT_COUNT - 1) {
+                return of(bigIntegerValue().flipBit(n));
+            } else if (n < 0) {
+                throw negativeBitAddress();
+            }
+
+            return ofSmall(value ^ (1L << n));
         }
         
         private ArithmeticException negativeBitAddress() {
