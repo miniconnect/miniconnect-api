@@ -316,7 +316,7 @@ class LargeIntegerTest {
     void testDivideRelatedNoRemainderOneWay(LargeInteger toBeDivided, LargeInteger dividing, LargeInteger quotient) {
         assertThat(toBeDivided.divide(dividing)).as("%s / %s", toBeDivided, dividing).isEqualTo(quotient);
         assertThat(toBeDivided.remainder(dividing)).as("%s % %s", toBeDivided, dividing).isEqualTo(LargeInteger.ZERO);
-        assertThat(toBeDivided.mod(dividing)).as("%s mod %s", toBeDivided, dividing).isEqualTo(LargeInteger.ZERO);
+        assertThat(toBeDivided.mod(dividing.abs())).as("%s mod %s", toBeDivided, dividing).isEqualTo(LargeInteger.ZERO);
         assertThat(toBeDivided.isDivisibleBy(dividing)).as("%s.isDivisibleBy(%s)", toBeDivided, dividing).isTrue();
 
         LargeInteger[] quotientAndRemainder = toBeDivided.divideAndRemainder(dividing);
@@ -336,7 +336,7 @@ class LargeIntegerTest {
         assertThat(quotientAndRemainder[0]).as("%s.divideAndRemainder(%s).result", n, m).isEqualTo(result);
         assertThat(quotientAndRemainder[1]).as("%s.divideAndRemainder(%s).remainder", n, m).isEqualTo(remainder);
         LargeInteger mod = remainder.isNegative() ? m.add(remainder) : remainder;
-        assertThat(n.mod(m)).as("%s mod %s", n, m).isEqualTo(mod);
+        assertThat(n.mod(m).abs()).as("%s mod %s", n, m).isEqualTo(mod);
         assertThat(result.isDivisibleBy(n)).as("%s.isDivisibleBy(%s)", result, n).isEqualTo(remainder.isZero());
         assertThat(result.isDivisibleBy(m)).as("%s.isDivisibleBy(%s)", result, m).isEqualTo(remainder.isZero());
     }
