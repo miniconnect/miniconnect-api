@@ -506,15 +506,15 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
         @Override
         public LargeInteger multiply(LargeInteger val) {
-            if (value == 0) {
+            if (value == 0 || val.isZero()) {
                 return ZERO;
             } else if (val instanceof ImplBig || Math.abs(value) > MAX_SMALL_MULTIPLIER || value == Long.MIN_VALUE) {
-                return ofBig(bigIntegerValue().multiply(val.bigIntegerValue()));
+                return of(bigIntegerValue().multiply(val.bigIntegerValue()));
             }
             
             ImplSmall smallVal = (ImplSmall) val;
             if (Math.abs(smallVal.value) > MAX_SMALL_MULTIPLIER || smallVal.value == Long.MIN_VALUE) {
-                return ofBig(bigIntegerValue().multiply(smallVal.bigIntegerValue()));
+                return of(bigIntegerValue().multiply(smallVal.bigIntegerValue()));
             }
             
             return ofSmall(value * smallVal.value);
