@@ -493,7 +493,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
             if (smallVal.value == 0) {
                 return this;
             } else if (Math.abs(smallVal.value) > MAX_SMALL_ADDITIVE || smallVal.value == Long.MIN_VALUE) {
-                return ofBig(bigIntegerValue().add(smallVal.bigIntegerValue()));
+                return of(bigIntegerValue().add(smallVal.bigIntegerValue()));
             }
 
             return ofSmall(value + smallVal.value);
