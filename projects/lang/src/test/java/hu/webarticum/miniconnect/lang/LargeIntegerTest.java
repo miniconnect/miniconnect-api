@@ -354,6 +354,40 @@ class LargeIntegerTest {
     }
 
     @Test
+    void testModInverseNonPositiveThrow() {
+        assertThat(LargeInteger.of(123)).satisfies(n -> assertThatThrownBy(() -> n.modInverse(LargeInteger.ZERO))
+                .isInstanceOf(ArithmeticException.class));
+        
+        LargeInteger negativeExponent = LargeInteger.of(-3);
+        assertThat(LargeInteger.of(7)).satisfies(n -> assertThatThrownBy(() -> n.modInverse(negativeExponent))
+                .isInstanceOf(ArithmeticException.class));
+        assertThat(LargeInteger.of(-4248452)).satisfies(n -> assertThatThrownBy(() -> n.modInverse(negativeExponent))
+                .isInstanceOf(ArithmeticException.class));
+        assertThat(LargeInteger.of("5710824587203948283245672477"))
+                .satisfies(n -> assertThatThrownBy(() -> n.modInverse(negativeExponent))
+                .isInstanceOf(ArithmeticException.class));
+        assertThat(LargeInteger.of("-5060740937372951929237635638"))
+                .satisfies(n -> assertThatThrownBy(() -> n.modInverse(negativeExponent))
+                .isInstanceOf(ArithmeticException.class));
+    }
+
+    @Test
+    void testModInverseSmallNoInverseThrow() {
+        LargeInteger n = LargeInteger.of(4);
+        LargeInteger m = LargeInteger.of(6);
+        assertThatThrownBy(() -> m.modInverse(n)).isInstanceOf(ArithmeticException.class);
+        assertThatThrownBy(() -> n.modInverse(m)).isInstanceOf(ArithmeticException.class);
+    }
+
+    @Test
+    void testModInverseLargeNoInverseThrow() {
+        LargeInteger n = LargeInteger.of("444444444444444444444444444444444444444444");
+        LargeInteger m = LargeInteger.of("666666666666666666666666666666666666666666");
+        assertThatThrownBy(() -> m.modInverse(n)).isInstanceOf(ArithmeticException.class);
+        assertThatThrownBy(() -> n.modInverse(m)).isInstanceOf(ArithmeticException.class);
+    }
+
+    @Test
     void testDivisionByZero() {
         LargeInteger n = LargeInteger.of(123);
         LargeInteger e = LargeInteger.of(15);
@@ -362,8 +396,6 @@ class LargeIntegerTest {
         assertThatThrownBy(() -> n.divideAndRemainder(LargeInteger.ZERO)).isInstanceOf(ArithmeticException.class);
         assertThatThrownBy(() -> n.mod(LargeInteger.ZERO)).isInstanceOf(ArithmeticException.class);
         assertThatThrownBy(() -> n.modPow(e, LargeInteger.ZERO)).isInstanceOf(ArithmeticException.class);
-        assertThatThrownBy(() -> n.modInverse(LargeInteger.ZERO)).isInstanceOf(ArithmeticException.class);
-        assertThatThrownBy(() -> n.modInverse(n)).isInstanceOf(ArithmeticException.class);
         assertThatThrownBy(() -> n.isDivisibleBy(LargeInteger.ZERO)).isInstanceOf(ArithmeticException.class);
     }
 
