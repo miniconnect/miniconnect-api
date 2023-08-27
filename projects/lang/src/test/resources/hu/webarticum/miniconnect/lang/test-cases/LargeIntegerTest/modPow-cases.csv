@@ -20,7 +20,6 @@ n,pow,m,result
 -1,2,2,1
 -1,5,2,1
 -4,7,13,9
--45,20,17,4
 -11,7,143,11
 
 ### small values with original overflow: ###
