@@ -121,7 +121,6 @@ class LargeIntegerTest {
         assertThat(n.isLessThanOrEqualTo(m)).as("%s <= %s", n, m).isEqualTo(lessThanOrEqualTo);
         assertThat(n.isGreaterThan(m)).as("%s > %s", n, m).isEqualTo(greaterThan);
         assertThat(n.isGreaterThanOrEqualTo(m)).as("%s >= %s", n, m).isEqualTo(greaterThanOrEqualTo);
-        
     }
 
     @ParameterizedTest
@@ -347,6 +346,46 @@ class LargeIntegerTest {
         assertThat(n.modPow(pow, m)).as("%s^%s mod %s", n, pow, m).isEqualTo(result);
     }
 
+    @Test
+    void testModPowNonPositiveModulusThrow() {
+        LargeInteger negativeExponent = LargeInteger.of(-3);
+        LargeInteger negativeModulus = LargeInteger.of("-4315351552345256003240342342355054");
+        
+        assertThat(LargeInteger.of(123)).satisfies(n -> assertThatThrownBy(() ->
+                n.modPow(LargeInteger.TWO, LargeInteger.ZERO))
+                .isInstanceOf(ArithmeticException.class));
+        assertThat(LargeInteger.of(7)).satisfies(n -> assertThatThrownBy(() ->
+                n.modPow(negativeExponent, negativeModulus))
+                .isInstanceOf(ArithmeticException.class));
+        assertThat(LargeInteger.of(-4248452)).satisfies(n -> assertThatThrownBy(() ->
+                n.modPow(negativeExponent, negativeModulus))
+                .isInstanceOf(ArithmeticException.class));
+        assertThat(LargeInteger.of("5710824587203948283245672477"))
+                .satisfies(n -> assertThatThrownBy(() -> n.modPow(negativeExponent, negativeModulus))
+                .isInstanceOf(ArithmeticException.class));
+        assertThat(LargeInteger.of("-5060740937372951929237635638"))
+                .satisfies(n -> assertThatThrownBy(() -> n.modPow(negativeExponent, negativeModulus))
+                .isInstanceOf(ArithmeticException.class));
+    }
+
+    @Test
+    void testModPowSmallNoInverseThrow() {
+        LargeInteger n = LargeInteger.of(4);
+        LargeInteger m = LargeInteger.of(6);
+        LargeInteger negativeExponent = LargeInteger.of(-3);
+        assertThatThrownBy(() -> m.modPow(negativeExponent, n)).isInstanceOf(ArithmeticException.class);
+        assertThatThrownBy(() -> n.modPow(negativeExponent, m)).isInstanceOf(ArithmeticException.class);
+    }
+
+    @Test
+    void testModPowLargeNoInverseThrow() {
+        LargeInteger n = LargeInteger.of("444444444444444444444444444444444444444444");
+        LargeInteger m = LargeInteger.of("666666666666666666666666666666666666666666");
+        LargeInteger negativeExponent = LargeInteger.of(-3);
+        assertThatThrownBy(() -> m.modPow(negativeExponent, n)).isInstanceOf(ArithmeticException.class);
+        assertThatThrownBy(() -> n.modPow(negativeExponent, m)).isInstanceOf(ArithmeticException.class);
+    }
+
     @ParameterizedTest
     @CsvFileSource(resources = CASE_DATA_DIR + "/modInverse-cases.csv", numLinesToSkip = 1)
     void testModInverse(LargeInteger n, LargeInteger m, LargeInteger result) {
@@ -354,20 +393,20 @@ class LargeIntegerTest {
     }
 
     @Test
-    void testModInverseNonPositiveThrow() {
+    void testModInverseNonPositiveModulusThrow() {
+        LargeInteger negativeModulus = LargeInteger.of(-3);
+        
         assertThat(LargeInteger.of(123)).satisfies(n -> assertThatThrownBy(() -> n.modInverse(LargeInteger.ZERO))
                 .isInstanceOf(ArithmeticException.class));
-        
-        LargeInteger negativeExponent = LargeInteger.of(-3);
-        assertThat(LargeInteger.of(7)).satisfies(n -> assertThatThrownBy(() -> n.modInverse(negativeExponent))
+        assertThat(LargeInteger.of(7)).satisfies(n -> assertThatThrownBy(() -> n.modInverse(negativeModulus))
                 .isInstanceOf(ArithmeticException.class));
-        assertThat(LargeInteger.of(-4248452)).satisfies(n -> assertThatThrownBy(() -> n.modInverse(negativeExponent))
+        assertThat(LargeInteger.of(-4248452)).satisfies(n -> assertThatThrownBy(() -> n.modInverse(negativeModulus))
                 .isInstanceOf(ArithmeticException.class));
         assertThat(LargeInteger.of("5710824587203948283245672477"))
-                .satisfies(n -> assertThatThrownBy(() -> n.modInverse(negativeExponent))
+                .satisfies(n -> assertThatThrownBy(() -> n.modInverse(negativeModulus))
                 .isInstanceOf(ArithmeticException.class));
         assertThat(LargeInteger.of("-5060740937372951929237635638"))
-                .satisfies(n -> assertThatThrownBy(() -> n.modInverse(negativeExponent))
+                .satisfies(n -> assertThatThrownBy(() -> n.modInverse(negativeModulus))
                 .isInstanceOf(ArithmeticException.class));
     }
 
