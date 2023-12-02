@@ -9,6 +9,7 @@ import scala.math.BigInt;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
@@ -29,66 +30,54 @@ import org.openjdk.jmh.infra.Blackhole;
  */
 @State(Scope.Benchmark)
 @Fork(value = 1, warmups = 0)
-@Warmup(iterations = 3, time = 2, timeUnit = TimeUnit.SECONDS)
-@Measurement(iterations = 5, time = 2, timeUnit = TimeUnit.SECONDS)
+@Warmup(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
+@Measurement(iterations = 15, time = 1, timeUnit = TimeUnit.SECONDS)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-public class LargeIntegerBenchmarkSimple {
+public class LargeIntegerBenchmarkSmallNumbersSimple {
 
     private Random random = new Random();
     
 
-    private long[] primitiveLongValues;
+    private long[] longValues;
 
-    private Long[] longValues;
-    
     private BigInteger[] bigIntegerValues;
+
+    private LargeInteger[] largeIntegerValues;
     
     private BigInt[] scalaBigIntValues;
     
-    private LargeInteger[] largeIntegerValues;
-    
-    
-    @Setup
+
+    @Setup(Level.Iteration)
     public void setup() {
-        primitiveLongValues = new long[] {
+        longValues = new long[] {
                 random.nextInt(1000) + 200L,
                 random.nextInt(20) + 10L,
                 random.nextInt(10000) + 2000L,
                 random.nextInt(100) + 50L,
         };
 
-        longValues = new Long[primitiveLongValues.length];
-        for (int i = 0; i < primitiveLongValues.length; i++) {
-            longValues[i] = Long.valueOf(primitiveLongValues[i]);
-        }
-        
         bigIntegerValues = new BigInteger[longValues.length];
         for (int i = 0; i < longValues.length; i++) {
             bigIntegerValues[i] = BigInteger.valueOf(longValues[i]);
-        }
-        
-        scalaBigIntValues = new BigInt[longValues.length];
-        for (int i = 0; i < longValues.length; i++) {
-            scalaBigIntValues[i] = BigInt.apply(longValues[i]);
         }
         
         largeIntegerValues = new LargeInteger[longValues.length];
         for (int i = 0; i < longValues.length; i++) {
             largeIntegerValues[i] = LargeInteger.of(longValues[i]);
         }
+        
+        scalaBigIntValues = new BigInt[longValues.length];
+        for (int i = 0; i < longValues.length; i++) {
+            scalaBigIntValues[i] = BigInt.apply(longValues[i]);
+        }
     }
     
 
     @Benchmark
-    public void benchmarkPrimitiveLong(Blackhole blackhole) {
-        blackhole.consume(
-                ((primitiveLongValues[0] * primitiveLongValues[1]) + primitiveLongValues[2]) / primitiveLongValues[3]);
-    }
-
-    @Benchmark
     public void benchmarkLong(Blackhole blackhole) {
-        blackhole.consume(((longValues[0] * longValues[1]) + longValues[2]) / longValues[3]);
+        blackhole.consume(
+                ((longValues[0] * longValues[1]) + longValues[2]) / longValues[3]);
     }
 
     @Benchmark
@@ -101,21 +90,21 @@ public class LargeIntegerBenchmarkSimple {
     }
 
     @Benchmark
-    public void benchmarkScalaBigInt(Blackhole blackhole) {
-        blackhole.consume(
-                scalaBigIntValues[0]
-                        .$times(scalaBigIntValues[1])
-                        .$plus(scalaBigIntValues[2])
-                        .$div(scalaBigIntValues[3]));
-    }
-
-    @Benchmark
     public void benchmarkLargeInteger(Blackhole blackhole) {
         blackhole.consume(
                 largeIntegerValues[0]
                         .multiply(largeIntegerValues[1])
                         .add(largeIntegerValues[2])
                         .divide(largeIntegerValues[3]));
+    }
+
+    @Benchmark
+    public void benchmarkScalaBigInt(Blackhole blackhole) {
+        blackhole.consume(
+                scalaBigIntValues[0]
+                        .$times(scalaBigIntValues[1])
+                        .$plus(scalaBigIntValues[2])
+                        .$div(scalaBigIntValues[3]));
     }
 
 }

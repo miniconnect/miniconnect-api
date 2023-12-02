@@ -506,7 +506,20 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
         @Override
         public LargeInteger multiply(LargeInteger val) {
-            if (value == 0 || val.isZero()) {
+            if (value == 0) {
+                return ZERO;
+            } else if (val instanceof ImplSmall) {
+                ImplSmall smallVal = (ImplSmall) val;
+                long candidate = value * smallVal.value;
+                if (smallVal.value == candidate / value) {
+                    return ofSmall(candidate);
+                }
+            }
+            
+            return of(bigIntegerValue().multiply(val.bigIntegerValue()));
+            
+            
+            /*/if (value == 0 || val.isZero()) {
                 return ZERO;
             } else if (val instanceof ImplBig || Math.abs(value) > MAX_SMALL_MULTIPLIER || value == Long.MIN_VALUE) {
                 return of(bigIntegerValue().multiply(val.bigIntegerValue()));
@@ -517,7 +530,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
                 return of(bigIntegerValue().multiply(smallVal.bigIntegerValue()));
             }
             
-            return ofSmall(value * smallVal.value);
+            return ofSmall(value * smallVal.value);*/
         }
 
         @Override

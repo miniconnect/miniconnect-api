@@ -9,6 +9,7 @@ import scala.math.BigInt;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
@@ -35,29 +36,30 @@ import org.openjdk.jmh.infra.Blackhole;
  */
 @State(Scope.Benchmark)
 @Fork(value = 1, warmups = 0)
-@Warmup(iterations = 3, time = 2, timeUnit = TimeUnit.SECONDS)
-@Measurement(iterations = 5, time = 2, timeUnit = TimeUnit.SECONDS)
+@Warmup(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
+@Measurement(iterations = 15, time = 1, timeUnit = TimeUnit.SECONDS)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-public class LargeIntegerBenchmarkComplex {
+public class LargeIntegerBenchmarkSmallNumbers {
+    
+    private static final BigInt SCALA_BIGINT_ONE = BigInt.apply(1);
+    
     
     private Random random = new Random();
     
 
-    private long[] primitiveLongValues;
+    private long[] longValues;
 
-    private Long[] longValues;
-    
     private BigInteger[] bigIntegerValues;
+
+    private LargeInteger[] largeIntegerValues;
     
     private BigInt[] scalaBigIntValues;
     
-    private LargeInteger[] largeIntegerValues;
-    
-    
-    @Setup
+
+    @Setup(Level.Iteration)
     public void setup() {
-        primitiveLongValues = new long[] {
+        longValues = new long[] {
                 random.nextInt(30) + 100L,
                 random.nextInt(20) + 10L,
                 random.nextInt(5000) + 2000L,
@@ -65,55 +67,33 @@ public class LargeIntegerBenchmarkComplex {
                 random.nextInt(50) + 90L,
         };
 
-        longValues = new Long[primitiveLongValues.length];
-        for (int i = 0; i < primitiveLongValues.length; i++) {
-            longValues[i] = Long.valueOf(primitiveLongValues[i]);
-        }
-        
         bigIntegerValues = new BigInteger[longValues.length];
         for (int i = 0; i < longValues.length; i++) {
             bigIntegerValues[i] = BigInteger.valueOf(longValues[i]);
-        }
-        
-        scalaBigIntValues = new BigInt[longValues.length];
-        for (int i = 0; i < longValues.length; i++) {
-            scalaBigIntValues[i] = BigInt.apply(longValues[i]);
         }
         
         largeIntegerValues = new LargeInteger[longValues.length];
         for (int i = 0; i < longValues.length; i++) {
             largeIntegerValues[i] = LargeInteger.of(longValues[i]);
         }
+        
+        scalaBigIntValues = new BigInt[longValues.length];
+        for (int i = 0; i < longValues.length; i++) {
+            scalaBigIntValues[i] = BigInt.apply(longValues[i]);
+        }
     }
     
 
     @Benchmark
-    public void benchmarkPrimitiveLong(Blackhole blackhole) {
-        long a = primitiveLongValues[0];
-        long b = primitiveLongValues[1];
-        long c = primitiveLongValues[2];
-        long d = primitiveLongValues[3];
-        long e = primitiveLongValues[4];
+    public void benchmarkLong(Blackhole blackhole) {
+        long a = longValues[0];
+        long b = longValues[1];
+        long c = longValues[2];
+        long d = longValues[3];
+        long e = longValues[4];
         long result =
                 Math.abs(
                         (long) Math.pow((((a + b) * (a - b)) + 1L), 3)
-                            %
-                        ((c & d) | e))
-                    +
-                -Math.max(b, d + Math.min(a, e / a));
-        blackhole.consume(result);
-    }
-
-    @Benchmark
-    public void benchmarkLong(Blackhole blackhole) {
-        Long a = longValues[0];
-        Long b = longValues[1];
-        Long c = longValues[2];
-        Long d = longValues[3];
-        Long e = longValues[4];
-        Long result =
-                Math.abs(
-                        (Long) (long) Math.pow((((a + b) * (a - b)) + 1L), 3)
                             %
                         ((c & d) | e))
                     +
@@ -139,23 +119,6 @@ public class LargeIntegerBenchmarkComplex {
     }
 
     @Benchmark
-    public void benchmarkScalaBigInt(Blackhole blackhole) {
-        BigInt a = scalaBigIntValues[0];
-        BigInt b = scalaBigIntValues[1];
-        BigInt c = scalaBigIntValues[2];
-        BigInt d = scalaBigIntValues[3];
-        BigInt e = scalaBigIntValues[4];
-        BigInt result =
-                a.$plus(b)
-                        .$times(a.$minus(b))
-                        .$plus(BigInt.apply(1L))
-                        .pow(3)
-                        .$percent(c.$amp(d).$bar(e)).abs()
-                        .$plus(b.max(d.$plus(a.min(e.$div(a)))).unary_$minus());
-        blackhole.consume(result);
-    }
-
-    @Benchmark
     public void benchmarkLargeInteger(Blackhole blackhole) {
         LargeInteger a = largeIntegerValues[0];
         LargeInteger b = largeIntegerValues[1];
@@ -169,6 +132,23 @@ public class LargeIntegerBenchmarkComplex {
                         .pow(3)
                         .remainder(c.and(d).or(e)).abs()
                         .add(b.max(d.add(a.min(e.divide(a)))).negate());
+        blackhole.consume(result);
+    }
+
+    @Benchmark
+    public void benchmarkScalaBigInt(Blackhole blackhole) {
+        BigInt a = scalaBigIntValues[0];
+        BigInt b = scalaBigIntValues[1];
+        BigInt c = scalaBigIntValues[2];
+        BigInt d = scalaBigIntValues[3];
+        BigInt e = scalaBigIntValues[4];
+        BigInt result =
+                a.$plus(b)
+                        .$times(a.$minus(b))
+                        .$plus(SCALA_BIGINT_ONE)
+                        .pow(3)
+                        .$percent(c.$amp(d).$bar(e)).abs()
+                        .$plus(b.max(d.$plus(a.min(e.$div(a)))).unary_$minus());
         blackhole.consume(result);
     }
 
