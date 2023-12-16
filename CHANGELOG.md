@@ -10,7 +10,7 @@ Released on *2023-12-16*
 - Fixed index handling in resize method of `ImmutableList`
 - Fixed iterator of `ByteString`
 
-### Added:
+### Improved:
 
 - Added a large amount of tests for `lang`
 - Added module definition and utf-8 encoding explicitly
