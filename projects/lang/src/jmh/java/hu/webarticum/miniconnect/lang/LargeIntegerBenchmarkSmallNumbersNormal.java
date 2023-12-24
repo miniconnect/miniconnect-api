@@ -26,7 +26,7 @@ import org.openjdk.jmh.infra.Blackhole;
  * 
  * <pre>
  * abs(
- *   ((((A + B) * (A - B)) + 1) ** 3)
+ *   (((A + B) * (A - B)) + 1)
  *     %
  *   ((C & D) | E)
  * )
@@ -40,7 +40,7 @@ import org.openjdk.jmh.infra.Blackhole;
 @Measurement(iterations = 15, time = 1, timeUnit = TimeUnit.SECONDS)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-public class LargeIntegerBenchmarkSmallNumbers {
+public class LargeIntegerBenchmarkSmallNumbersNormal {
     
     private static final BigInt SCALA_BIGINT_ONE = BigInt.apply(1);
     
@@ -93,7 +93,7 @@ public class LargeIntegerBenchmarkSmallNumbers {
         long e = longValues[4];
         long result =
                 Math.abs(
-                        (long) Math.pow((((a + b) * (a - b)) + 1L), 3)
+                        (((a + b) * (a - b)) + 1L)
                             %
                         ((c & d) | e))
                     +
@@ -108,13 +108,12 @@ public class LargeIntegerBenchmarkSmallNumbers {
         BigInteger c = bigIntegerValues[2];
         BigInteger d = bigIntegerValues[3];
         BigInteger e = bigIntegerValues[4];
-        BigInteger result =
-                a.add(b)
-                        .multiply(a.subtract(b))
-                        .add(BigInteger.ONE)
-                        .pow(3)
-                        .remainder(c.and(d).or(e)).abs()
-                        .add(b.max(d.add(a.min(e.divide(a)))).negate());
+        BigInteger result = a
+                .add(b)
+                .multiply(a.subtract(b))
+                .add(BigInteger.ONE)
+                .remainder(c.and(d).or(e)).abs()
+                .add(b.max(d.add(a.min(e.divide(a)))).negate());
         blackhole.consume(result);
     }
 
@@ -125,13 +124,12 @@ public class LargeIntegerBenchmarkSmallNumbers {
         LargeInteger c = largeIntegerValues[2];
         LargeInteger d = largeIntegerValues[3];
         LargeInteger e = largeIntegerValues[4];
-        LargeInteger result =
-                a.add(b)
-                        .multiply(a.subtract(b))
-                        .increment()
-                        .pow(3)
-                        .remainder(c.and(d).or(e)).abs()
-                        .add(b.max(d.add(a.min(e.divide(a)))).negate());
+        LargeInteger result = a
+                .add(b)
+                .multiply(a.subtract(b))
+                .increment()
+                .remainder(c.and(d).or(e)).abs()
+                .add(b.max(d.add(a.min(e.divide(a)))).negate());
         blackhole.consume(result);
     }
 
@@ -142,13 +140,12 @@ public class LargeIntegerBenchmarkSmallNumbers {
         BigInt c = scalaBigIntValues[2];
         BigInt d = scalaBigIntValues[3];
         BigInt e = scalaBigIntValues[4];
-        BigInt result =
-                a.$plus(b)
-                        .$times(a.$minus(b))
-                        .$plus(SCALA_BIGINT_ONE)
-                        .pow(3)
-                        .$percent(c.$amp(d).$bar(e)).abs()
-                        .$plus(b.max(d.$plus(a.min(e.$div(a)))).unary_$minus());
+        BigInt result = a
+                .$plus(b)
+                .$times(a.$minus(b))
+                .$plus(SCALA_BIGINT_ONE)
+                .$percent(c.$amp(d).$bar(e)).abs()
+                .$plus(b.max(d.$plus(a.min(e.$div(a)))).unary_$minus());
         blackhole.consume(result);
     }
 

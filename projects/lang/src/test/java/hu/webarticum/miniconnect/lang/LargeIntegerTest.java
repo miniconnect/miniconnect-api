@@ -549,6 +549,15 @@ class LargeIntegerTest {
         assertThat(LargeInteger.of(value).bigDecimalValue()).isEqualTo(new BigDecimal(new BigInteger(value)));
     }
 
+    @Test
+    void testCached() {
+        assertThat(LargeInteger.ONE.cached()).isSameAs(LargeInteger.ONE);
+        assertThat(LargeInteger.ZERO.add(LargeInteger.ZERO).cached()).isSameAs(LargeInteger.ZERO);
+        assertThat(LargeInteger.ZERO.add(LargeInteger.ONE).cached()).isSameAs(LargeInteger.ONE);
+        assertThat(LargeInteger.of(7).add(LargeInteger.of(15)).cached()).isSameAs(LargeInteger.of(22));
+        assertThat(LargeInteger.of(5).subtract(LargeInteger.of(12)).cached()).isSameAs(LargeInteger.of(-7));
+    }
+
     @ParameterizedTest
     @CsvFileSource(resources = CASE_DATA_DIR + "/toBitSet-cases.csv", numLinesToSkip = 1)
     void testToBitSet(LargeInteger n, String bitSetBytesHex) {

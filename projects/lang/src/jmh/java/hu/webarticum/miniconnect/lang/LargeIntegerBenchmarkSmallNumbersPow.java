@@ -25,20 +25,14 @@ import org.openjdk.jmh.infra.Blackhole;
  * <p>Based on the following expression:</p>
  * 
  * <pre>
- * (
- *     (
- *         ((E * F) + (C - B) - (D * E))
- *             /
- *         E
- *     ) * -(E + 1) * (D | E)
- * ) + A
+ * abs(
+ *   ((((A + B) * (A - B)) + 1) ** 3)
+ *     %
+ *   ((C & D) | E)
+ * )
+ *   +
+ * -max(B, D + min(A, E / A))
  * </pre>
- * 
- * Here, A is a really large number;
- * B and C are not too large numbers, close to each other;
- * D a number within the @code{long} range, but not too small,
- * E is a small number,
- * and, finally, F is equal to 2.
  */
 @State(Scope.Benchmark)
 @Fork(value = 1, warmups = 0)
@@ -46,7 +40,7 @@ import org.openjdk.jmh.infra.Blackhole;
 @Measurement(iterations = 15, time = 1, timeUnit = TimeUnit.SECONDS)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-public class LargeIntegerBenchmarkMixedNumbers {
+public class LargeIntegerBenchmarkSmallNumbersPow {
     
     private static final BigInt SCALA_BIGINT_ONE = BigInt.apply(1);
     
@@ -54,36 +48,58 @@ public class LargeIntegerBenchmarkMixedNumbers {
     private Random random = new Random();
     
 
+    private long[] longValues;
+
     private BigInteger[] bigIntegerValues;
-    
+
     private LargeInteger[] largeIntegerValues;
     
     private BigInt[] scalaBigIntValues;
     
-    
+
     @Setup(Level.Iteration)
     public void setup() {
-        bigIntegerValues = new BigInteger[] {
-                new BigInteger("2734056287350452551043983294854383045924")
-                        .add(BigInteger.valueOf(random.nextInt(10000000))),
-                BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.valueOf(random.nextInt(1000) + 10000000L)),
-                BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.valueOf(random.nextInt(1000) + 11000000L)),
-                BigInteger.valueOf(((Long.MAX_VALUE / 3) * 2)+ random.nextInt(10000) + 10000L),
-                BigInteger.valueOf(random.nextInt(50) + 300L),
-                BigInteger.valueOf(2),
+        longValues = new long[] {
+                random.nextInt(30) + 100L,
+                random.nextInt(20) + 10L,
+                random.nextInt(5000) + 2000L,
+                random.nextInt(70) + 50L,
+                random.nextInt(50) + 90L,
         };
-        
-        largeIntegerValues = new LargeInteger[bigIntegerValues.length];
-        for (int i = 0; i < bigIntegerValues.length; i++) {
-            largeIntegerValues[i] = LargeInteger.of(bigIntegerValues[i]);
+
+        bigIntegerValues = new BigInteger[longValues.length];
+        for (int i = 0; i < longValues.length; i++) {
+            bigIntegerValues[i] = BigInteger.valueOf(longValues[i]);
         }
         
-        scalaBigIntValues = new BigInt[bigIntegerValues.length];
-        for (int i = 0; i < bigIntegerValues.length; i++) {
-            scalaBigIntValues[i] = BigInt.apply(bigIntegerValues[i]);
+        largeIntegerValues = new LargeInteger[longValues.length];
+        for (int i = 0; i < longValues.length; i++) {
+            largeIntegerValues[i] = LargeInteger.of(longValues[i]);
+        }
+        
+        scalaBigIntValues = new BigInt[longValues.length];
+        for (int i = 0; i < longValues.length; i++) {
+            scalaBigIntValues[i] = BigInt.apply(longValues[i]);
         }
     }
     
+
+    @Benchmark
+    public void benchmarkLong(Blackhole blackhole) {
+        long a = longValues[0];
+        long b = longValues[1];
+        long c = longValues[2];
+        long d = longValues[3];
+        long e = longValues[4];
+        long result =
+                Math.abs(
+                        (long) Math.pow((((a + b) * (a - b)) + 1L), 3)
+                            %
+                        ((c & d) | e))
+                    +
+                -Math.max(b, d + Math.min(a, e / a));
+        blackhole.consume(result);
+    }
 
     @Benchmark
     public void benchmarkBigInteger(Blackhole blackhole) {
@@ -92,15 +108,13 @@ public class LargeIntegerBenchmarkMixedNumbers {
         BigInteger c = bigIntegerValues[2];
         BigInteger d = bigIntegerValues[3];
         BigInteger e = bigIntegerValues[4];
-        BigInteger f = bigIntegerValues[5];
-        BigInteger result = e
-                .multiply(f)
-                .add(c.subtract(b))
-                .subtract(d.multiply(e))
-                .divide(e)
-                .multiply(e.add(BigInteger.ONE).negate())
-                .multiply(d.or(e))
-                .add(a);
+        BigInteger result = a
+                .add(b)
+                .multiply(a.subtract(b))
+                .add(BigInteger.ONE)
+                .pow(3)
+                .remainder(c.and(d).or(e)).abs()
+                .add(b.max(d.add(a.min(e.divide(a)))).negate());
         blackhole.consume(result);
     }
 
@@ -111,15 +125,13 @@ public class LargeIntegerBenchmarkMixedNumbers {
         LargeInteger c = largeIntegerValues[2];
         LargeInteger d = largeIntegerValues[3];
         LargeInteger e = largeIntegerValues[4];
-        LargeInteger f = largeIntegerValues[5];
-        LargeInteger result = e
-                .multiply(f)
-                .add(c.subtract(b))
-                .subtract(d.multiply(e))
-                .divide(e)
-                .multiply(e.increment().negate())
-                .multiply(d.or(e))
-                .add(a);
+        LargeInteger result = a
+                .add(b)
+                .multiply(a.subtract(b))
+                .increment()
+                .pow(3)
+                .remainder(c.and(d).or(e)).abs()
+                .add(b.max(d.add(a.min(e.divide(a)))).negate());
         blackhole.consume(result);
     }
 
@@ -130,16 +142,14 @@ public class LargeIntegerBenchmarkMixedNumbers {
         BigInt c = scalaBigIntValues[2];
         BigInt d = scalaBigIntValues[3];
         BigInt e = scalaBigIntValues[4];
-        BigInt f = scalaBigIntValues[5];
-        BigInt result = e
-                .$times(f)
-                .$plus(c.$minus(b))
-                .$minus(d.$times(e))
-                .$div(e)
-                .$times(e.$plus(SCALA_BIGINT_ONE).unary_$minus())
-                .$times(d.$bar(e))
-                .$plus(a);
+        BigInt result = a
+                .$plus(b)
+                .$times(a.$minus(b))
+                .$plus(SCALA_BIGINT_ONE)
+                .pow(3)
+                .$percent(c.$amp(d).$bar(e)).abs()
+                .$plus(b.max(d.$plus(a.min(e.$div(a)))).unary_$minus());
         blackhole.consume(result);
     }
-    
+
 }

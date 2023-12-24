@@ -13,7 +13,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     
     private static final long CACHE_LOW = -128L;
 
-    private static final long CACHE_HIGH = 129L;
+    private static final long CACHE_HIGH = 127L;
     
     private static final LargeInteger[] cache = new LargeInteger[(int) (CACHE_HIGH - CACHE_LOW)];
     static {
@@ -31,11 +31,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     
     private static final int MAX_SAFE_LONG_RADIX = 36;
     
-    private static final long MAX_SMALL_ADDITIVE = Long.MAX_VALUE / 2;
-    
     private static final long MAX_SMALL_MULTIPLIER = (long) Math.sqrt(Long.MAX_VALUE);
-    
-    private static final int MAX_SMALL_POW_EXPONENT = 4;
     
     private static final long MAX_SMALL_POW_BASE_ABS = 55108L;
     
@@ -64,16 +60,20 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     }
 
     public static LargeInteger of(long value) {
-        return ofSmall(value);
+        if (value < CACHE_HIGH && value >= CACHE_LOW) {
+            return cache[(int) (value - CACHE_LOW)];
+        }
+        
+        return new ImplSmall(value);
     }
     
     public static LargeInteger of(BigInteger value) {
-        return isSmall(value) ? ofSmall(value.longValue()) : ofBig(value);
+        return value.bitLength() <= 63 ? of(value.longValue()) : new ImplBig(value);
     }
 
     public static LargeInteger of(String value) {
         if (value.length() <= MAX_SAFE_LONG_STR_LENGTH) {
-            return ofSmall(Long.parseLong(value));
+            return of(Long.parseLong(value));
         } else {
             return of(new BigInteger(value));
         }
@@ -81,7 +81,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
     public static LargeInteger of(String value, int radix) {
         if (value.length() <= MAX_SAFE_LONG_RADIX_STR_LENGTH && radix <= MAX_SAFE_LONG_RADIX) {
-            return ofSmall(Long.parseLong(value, radix));
+            return of(Long.parseLong(value, radix));
         } else {
             return of(new BigInteger(value, radix));
         }
@@ -89,7 +89,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
     public static LargeInteger of(byte[] bytes) {
         if (bytes.length == Long.BYTES) {
-            return ofSmall(ByteBuffer.wrap(bytes).getLong());
+            return of(ByteBuffer.wrap(bytes).getLong());
         } else if (bytes.length == 0) {
             return ZERO;
         } else if (bytes.length < Long.BYTES) {
@@ -101,7 +101,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
             buffer.put(bytes);
             buffer.position(0);
             long value = buffer.getLong();
-            return ofSmall(value);
+            return of(value);
         } else {
             return of(new BigInteger(bytes));
         }
@@ -158,25 +158,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     public static LargeInteger[] arrayOf(LargeInteger... values) {
         return Arrays.copyOf(values, values.length);
     }
-    
 
-    private static boolean isSmall(BigInteger value) {
-        return value.bitLength() <= 63;
-    }
-
-    private static LargeInteger ofSmall(long value) {
-        if (value < CACHE_HIGH && value >= CACHE_LOW) {
-            return cache[(int) (value - CACHE_LOW)];
-        }
-        
-        return new ImplSmall(value);
-    }
-    
-    /** Value must be out of the long range. */
-    private static LargeInteger ofBig(BigInteger value) {
-        return new ImplBig(value);
-    }
-    
 
     // BigInteger' methods
     
@@ -256,6 +238,8 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     
     
     // additional methods
+    
+    public abstract LargeInteger cached();
     
     public BitSet toBitSet() {
         byte[] bytes = toByteArray();
@@ -352,6 +336,15 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
             this.value = value;
         }
 
+        
+        @Override
+        public LargeInteger cached() {
+            if (value < CACHE_HIGH && value >= CACHE_LOW) {
+                return cache[(int) (value - CACHE_LOW)];
+            }
+            
+            return this;
+        }
         
         @Override
         public String toString() {
@@ -469,7 +462,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
                 return val.signum() > 0 ? this : val;
             }
             
-            return ofSmall(Math.min(value, ((ImplSmall) val).value));
+            return new ImplSmall(Math.min(value, ((ImplSmall) val).value));
         }
 
         @Override
@@ -478,30 +471,33 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
                 return val.signum() < 0 ? this : val;
             }
             
-            return ofSmall(Math.max(value, ((ImplSmall) val).value));
+            return new ImplSmall(Math.max(value, ((ImplSmall) val).value));
         }
 
         @Override
         public LargeInteger add(LargeInteger val) {
-            if (value == 0) {
-                return val;
-            } else if (val instanceof ImplBig || Math.abs(value) > MAX_SMALL_ADDITIVE || value == Long.MIN_VALUE) {
-                return of(bigIntegerValue().add(val.bigIntegerValue()));
+            if (val instanceof ImplSmall) {
+                long otherValue = ((ImplSmall) val).value;
+                long candidate = value + otherValue;
+                if (((value ^ candidate) & (otherValue ^ candidate)) >= 0) {
+                    return new ImplSmall(candidate);
+                }
             }
-
-            ImplSmall smallVal = (ImplSmall) val;
-            if (smallVal.value == 0) {
-                return this;
-            } else if (Math.abs(smallVal.value) > MAX_SMALL_ADDITIVE || smallVal.value == Long.MIN_VALUE) {
-                return of(bigIntegerValue().add(smallVal.bigIntegerValue()));
-            }
-
-            return ofSmall(value + smallVal.value);
+            
+            return of(bigIntegerValue().add(val.bigIntegerValue()));
         }
 
         @Override
         public LargeInteger subtract(LargeInteger val) {
-            return add(val.negate());
+            if (val instanceof ImplSmall) {
+                long otherValue = ((ImplSmall) val).value;
+                long candidate = value - otherValue;
+                if (((value ^ otherValue) & (value ^ candidate)) >= 0) {
+                    return new ImplSmall(candidate);
+                }
+            }
+            
+            return of(bigIntegerValue().subtract(val.bigIntegerValue()));
         }
 
         @Override
@@ -509,28 +505,14 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
             if (value == 0) {
                 return ZERO;
             } else if (val instanceof ImplSmall) {
-                ImplSmall smallVal = (ImplSmall) val;
-                long candidate = value * smallVal.value;
-                if (smallVal.value == candidate / value) {
-                    return ofSmall(candidate);
+                long otherValue = ((ImplSmall) val).value;
+                long candidate = value * otherValue;
+                if (otherValue == candidate / value) {
+                    return new ImplSmall(candidate);
                 }
             }
             
             return of(bigIntegerValue().multiply(val.bigIntegerValue()));
-            
-            
-            /*/if (value == 0 || val.isZero()) {
-                return ZERO;
-            } else if (val instanceof ImplBig || Math.abs(value) > MAX_SMALL_MULTIPLIER || value == Long.MIN_VALUE) {
-                return of(bigIntegerValue().multiply(val.bigIntegerValue()));
-            }
-            
-            ImplSmall smallVal = (ImplSmall) val;
-            if (Math.abs(smallVal.value) > MAX_SMALL_MULTIPLIER || smallVal.value == Long.MIN_VALUE) {
-                return of(bigIntegerValue().multiply(smallVal.bigIntegerValue()));
-            }
-            
-            return ofSmall(value * smallVal.value);*/
         }
 
         @Override
@@ -539,7 +521,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
                 return ZERO;
             }
             
-            return ofSmall(value / ((ImplSmall) val).value);
+            return new ImplSmall(value / ((ImplSmall) val).value);
         }
 
         @Override
@@ -553,20 +535,20 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
                 return this;
             }
             
-            return ofSmall(value % ((ImplSmall) val).value);
+            return new ImplSmall(value % ((ImplSmall) val).value);
         }
 
         @Override
         public LargeInteger pow(int exponent) {
-            if (exponent < 0) {
-                throw new ArithmeticException("Negative exponent");
-            } else if (exponent == 0) {
+            if (exponent == 0) {
                 return ONE;
             } else if (exponent == 1) {
                 return this;
+            } else if (exponent < 0) {
+                throw new ArithmeticException("Negative exponent");
             } else if (
                     Math.abs(value) > MAX_SMALL_POW_BASE_ABS ||
-                    exponent > MAX_SMALL_POW_EXPONENT ||
+                    exponent > 4 ||
                     value == Long.MIN_VALUE) {
                 return of(bigIntegerValue().pow(exponent));
             }
@@ -578,43 +560,71 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
             } else if (exponent == 3) {
                 longResult = square * value;
             } else {
-                // MAX_SMALL_POW_EXPONENT == 4
                 longResult = square * square;
             }
-            return ofSmall(longResult);
+            return new ImplSmall(longResult);
         }
 
         @Override
         public LargeInteger gcd(LargeInteger val) {
-            if (val instanceof ImplBig) {
-                return of(bigIntegerValue().gcd(val.bigIntegerValue()));
+            if (val instanceof ImplSmall && value > Long.MIN_VALUE) {
+                long otherValue = ((ImplSmall) val).value;
+                if (otherValue > Long.MIN_VALUE) {
+                    return new ImplSmall(binaryGcd(Math.abs(value), Math.abs(otherValue)));
+                }
             }
             
-            return ofSmall(longGcd(value, ((ImplSmall) val).value)).abs();
+            return of(bigIntegerValue().gcd(val.bigIntegerValue()));
         }
         
-        private static long longGcd(long a, long b) {
-            return b == 0 ? a : longGcd(b, a % b);
+        public static long binaryGcd(long a, long b) {
+            if (a == 0) {
+                return b;
+            } else if (b == 0) {
+                return a;
+            }
+            
+            int commonFactorsOfTwo = 0;
+            while (((a | b) & 1) == 0) {
+                a >>= 1;
+                b >>= 1;
+                commonFactorsOfTwo++;
+            }
+            while ((a & 1) == 0) {
+                a >>= 1;
+            }
+            while (b != 0) {
+                while ((b & 1) == 0) {
+                    b >>= 1;
+                }
+                if (a > b) {
+                    long tmp = a;
+                    a = b;
+                    b = tmp;
+                }
+                b -= a;
+            }
+            return a << commonFactorsOfTwo;
         }
-
+        
         @Override
         public LargeInteger abs() {
             if (value >= 0L) {
                 return this;
             } else if (value == Long.MIN_VALUE) {
-                return ofBig(bigIntegerValue().negate());
+                return new ImplBig(bigIntegerValue().negate());
             } else {
-                return ofSmall(-value);
+                return new ImplSmall(-value);
             }
         }
 
         @Override
         public LargeInteger negate() {
             if (value == Long.MIN_VALUE) {
-                return ofBig(bigIntegerValue().negate());
+                return new ImplBig(bigIntegerValue().negate());
             }
             
-            return ofSmall(-value);
+            return new ImplSmall(-value);
         }
 
         @Override
@@ -647,12 +657,12 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
             if (n == 0) {
                 return this;
             } else if (n < 0) {
-                return ofSmall(value >> -n);
+                return new ImplSmall(value >> -n);
             } else if (n >= 32 || value > MAX_SMALL_MULTIPLIER) {
                 return of(bigIntegerValue().shiftLeft(n));
             }
             
-            return ofSmall(value << n);
+            return new ImplSmall(value << n);
         }
 
         @Override
@@ -660,12 +670,12 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
             if (n == 0) {
                 return this;
             } else if (n < 0 && n > -32 && value > -MAX_SMALL_MULTIPLIER && value <= MAX_SMALL_MULTIPLIER) {
-                return ofSmall(value << -n);
+                return new ImplSmall(value << -n);
             } else if (n < 0) {
                 return of(bigIntegerValue().shiftRight(n));
             }
             
-            return ofSmall(value >> n);
+            return new ImplSmall(value >> n);
         }
 
         @Override
@@ -674,7 +684,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
                 return of(bigIntegerValue().and(val.bigIntegerValue()));
             }
 
-            return ofSmall(value & ((ImplSmall) val).value);
+            return new ImplSmall(value & ((ImplSmall) val).value);
         }
 
         @Override
@@ -683,7 +693,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
                 return of(bigIntegerValue().or(val.bigIntegerValue()));
             }
 
-            return ofSmall(value | ((ImplSmall) val).value);
+            return new ImplSmall(value | ((ImplSmall) val).value);
         }
 
         @Override
@@ -692,12 +702,12 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
                 return of(bigIntegerValue().xor(val.bigIntegerValue()));
             }
 
-            return ofSmall(value ^ ((ImplSmall) val).value);
+            return new ImplSmall(value ^ ((ImplSmall) val).value);
         }
 
         @Override
         public LargeInteger not() {
-            return ofSmall(~value);
+            return new ImplSmall(~value);
         }
 
         @Override
@@ -706,7 +716,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
                 return of(bigIntegerValue().andNot(val.bigIntegerValue()));
             }
 
-            return ofSmall(value & ~(((ImplSmall) val).value));
+            return new ImplSmall(value & ~(((ImplSmall) val).value));
         }
 
         @Override
@@ -728,7 +738,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
                 throw negativeBitAddress();
             }
             
-            return ofSmall(value | (1L << n));
+            return new ImplSmall(value | (1L << n));
         }
 
         @Override
@@ -739,7 +749,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
                 throw negativeBitAddress();
             }
 
-            return ofSmall(value & ~(1L << n));
+            return new ImplSmall(value & ~(1L << n));
         }
 
         @Override
@@ -750,7 +760,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
                 throw negativeBitAddress();
             }
 
-            return ofSmall(value ^ (1L << n));
+            return new ImplSmall(value ^ (1L << n));
         }
         
         private ArithmeticException negativeBitAddress() {
@@ -759,7 +769,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
         @Override
         public int getLowestSetBit() {
-            if(value == 0L) {
+            if (value == 0L) {
                 return -1;
             }
             
@@ -813,19 +823,19 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         @Override
         public LargeInteger increment() {
             if (value == Long.MAX_VALUE) {
-                return ofBig(bigIntegerValue().add(BigInteger.ONE));
+                return new ImplBig(bigIntegerValue().add(BigInteger.ONE));
             }
             
-            return ofSmall(value + 1);
+            return new ImplSmall(value + 1);
         }
 
         @Override
         public LargeInteger decrement() {
             if (value == Long.MIN_VALUE) {
-                return ofBig(bigIntegerValue().subtract(BigInteger.ONE));
+                return new ImplBig(bigIntegerValue().subtract(BigInteger.ONE));
             }
             
-            return ofSmall(value - 1);
+            return new ImplSmall(value - 1);
         }
 
     }
@@ -843,6 +853,11 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         }
 
 
+        @Override
+        public LargeInteger cached() {
+            return this;
+        }
+        
         @Override
         public String toString() {
             return value.toString();
@@ -1129,7 +1144,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         @Override
         public LargeInteger increment() {
             if (isPositive()) {
-                return ofBig(value.add(BigInteger.ONE));
+                return new ImplBig(value.add(BigInteger.ONE));
             } else {
                 return of(value.add(BigInteger.ONE));
             }
@@ -1138,7 +1153,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         @Override
         public LargeInteger decrement() {
             if (isNegative()) {
-                return ofBig(value.subtract(BigInteger.ONE));
+                return new ImplBig(value.subtract(BigInteger.ONE));
             } else {
                 return of(value.subtract(BigInteger.ONE));
             }
