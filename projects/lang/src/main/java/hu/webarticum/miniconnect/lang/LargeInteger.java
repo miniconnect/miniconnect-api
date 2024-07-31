@@ -271,6 +271,10 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         return equals(ZERO);
     }
 
+    public boolean isNonZero() {
+        return !equals(ZERO);
+    }
+
     public boolean isPositive() {
         return signum() > 0;
     }
