@@ -16,6 +16,7 @@ import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public final class ImmutableList<T> implements ReversibleIterable<T>, Serializable {
@@ -60,7 +61,43 @@ public final class ImmutableList<T> implements ReversibleIterable<T>, Serializab
         iterator.forEachRemaining(data::add);
         return new ImmutableList<>(data);
     }
-    
+
+    public static ImmutableList<Boolean> fromBooleanArray(boolean[] booleanArray) {
+        return IntStream.range(0, booleanArray.length).mapToObj(i -> (Boolean) booleanArray[i]).collect(ImmutableList.createCollector());
+    }
+
+    public static ImmutableList<Byte> fromByteArray(byte[] byteArray) {
+        return IntStream.range(0, byteArray.length).mapToObj(i -> (Byte) byteArray[i]).collect(ImmutableList.createCollector());
+    }
+
+    public static ImmutableList<Short> fromShortArray(short[] shortArray) {
+        return IntStream.range(0, shortArray.length).mapToObj(i -> (Short) shortArray[i]).collect(ImmutableList.createCollector());
+    }
+
+    public static ImmutableList<Integer> fromIntArray(int[] intArray) {
+        return of(Arrays.stream(intArray).boxed().toArray(Integer[]::new));
+    }
+
+    public static ImmutableList<Long> fromLongArray(int[] longArray) {
+        return of(Arrays.stream(longArray).boxed().toArray(Long[]::new));
+    }
+
+    public static ImmutableList<Float> fromFloatArray(float[] floatArray) {
+        return IntStream.range(0, floatArray.length).mapToObj(i -> (Float) floatArray[i]).collect(ImmutableList.createCollector());
+    }
+
+    public static ImmutableList<Double> fromDoubleArray(double[] doubleArray) {
+        return of(Arrays.stream(doubleArray).boxed().toArray(Double[]::new));
+    }
+
+    public static ImmutableList<Character> fromCharArray(char[] charArray) {
+        return IntStream.range(0, charArray.length).mapToObj(i -> (Character) charArray[i]).collect(ImmutableList.createCollector());
+    }
+
+    public static ImmutableList<Character> fromCharArray(String characters) {
+        return fromCharArray(characters.toCharArray());
+    }
+
     public static <T> ImmutableList<T> fill(int size, T item) {
         return fill(size, i -> item);
     }
@@ -84,6 +121,14 @@ public final class ImmutableList<T> implements ReversibleIterable<T>, Serializab
 
     public T get(int index) {
         return data.get(index);
+    }
+
+    public T first() {
+        return data.get(0);
+    }
+
+    public T last() {
+        return data.get(data.size() - 1);
     }
 
     public boolean contains(Object item) {
