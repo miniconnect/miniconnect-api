@@ -1,15 +1,15 @@
 plugins {
     id 'java-library'
-    id 'me.champeau.gradle.jmh' version '0.5.0'
+    id 'me.champeau.jmh' version '0.7.2'
     id 'io.morethan.jmhreport' version '0.9.0'
 }
 
 description "Essential value types"
 
 dependencies {
-    jmh 'org.openjdk.jmh:jmh-core:1.34'
+    jmh 'org.openjdk.jmh:jmh-core:1.37'
     jmh 'org.scala-lang:scala-library:2.13.8'
-    jmhRuntimeOnly 'org.openjdk.jmh:jmh-generator-annprocess:1.34'
+    jmhRuntimeOnly 'org.openjdk.jmh:jmh-generator-annprocess:1.37'
     
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.1'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.7.1'
@@ -23,15 +23,15 @@ jmhJar {
 }
 
 jmh {
-    duplicateClassesStrategy = 'exclude'
+    duplicateClassesStrategy = DuplicatesStrategy.EXCLUDE
     resultFormat = 'JSON'
 }
 
-def jmhReportHtmlDir = 'build/reports/jmh/html'
+def jmhReportHtmlDir = 'build/results/jmh/html'
 project.tasks.getByName("jmhReport").doFirst {
     project.file(jmhReportHtmlDir).mkdirs()
 }
 jmhReport {
-    jmhResultPath = project.file('build/reports/jmh/results.json')
+    jmhResultPath = project.file('build/results/jmh/results.json')
     jmhReportOutput = project.file(jmhReportHtmlDir)
 }
