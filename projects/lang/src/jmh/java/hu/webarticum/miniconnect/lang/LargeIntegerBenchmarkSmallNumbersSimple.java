@@ -5,7 +5,9 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import scala.math.BigInt;
+import spire.math.SafeLong;
 
+import org.apfloat.Apint;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -29,9 +31,9 @@ import org.openjdk.jmh.infra.Blackhole;
  * </pre>
  */
 @State(Scope.Benchmark)
-@Fork(value = 1, warmups = 0)
-@Warmup(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
-@Measurement(iterations = 15, time = 1, timeUnit = TimeUnit.SECONDS)
+@Fork(value = 1)
+@Warmup(iterations = 1, time = 1, timeUnit = TimeUnit.SECONDS)
+@Measurement(iterations = 1, time = 1, timeUnit = TimeUnit.SECONDS)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 public class LargeIntegerBenchmarkSmallNumbersSimple {
@@ -46,6 +48,10 @@ public class LargeIntegerBenchmarkSmallNumbersSimple {
     private LargeInteger[] largeIntegerValues;
     
     private BigInt[] scalaBigIntValues;
+    
+    private SafeLong[] spireSafeLongValues;
+    
+    private Apint[] apfloatApintValues;
     
 
     @Setup(Level.Iteration)
@@ -70,6 +76,16 @@ public class LargeIntegerBenchmarkSmallNumbersSimple {
         scalaBigIntValues = new BigInt[longValues.length];
         for (int i = 0; i < longValues.length; i++) {
             scalaBigIntValues[i] = BigInt.apply(longValues[i]);
+        }
+        
+        spireSafeLongValues = new SafeLong[longValues.length];
+        for (int i = 0; i < longValues.length; i++) {
+            spireSafeLongValues[i] = SafeLong.apply(longValues[i]);
+        }
+        
+        apfloatApintValues = new Apint[longValues.length];
+        for (int i = 0; i < longValues.length; i++) {
+            apfloatApintValues[i] = new Apint(longValues[i]);
         }
     }
     
@@ -105,6 +121,24 @@ public class LargeIntegerBenchmarkSmallNumbersSimple {
                         .$times(scalaBigIntValues[1])
                         .$plus(scalaBigIntValues[2])
                         .$div(scalaBigIntValues[3]));
+    }
+
+    @Benchmark
+    public void benchmarkSpireSafeLong(Blackhole blackhole) {
+        blackhole.consume(
+                spireSafeLongValues[0]
+                        .$times(spireSafeLongValues[1])
+                        .$plus(spireSafeLongValues[2])
+                        .$div(spireSafeLongValues[3]));
+    }
+
+    @Benchmark
+    public void benchmarkApfloatApint(Blackhole blackhole) {
+        blackhole.consume(
+                apfloatApintValues[0]
+                        .multiply(apfloatApintValues[1])
+                        .add(apfloatApintValues[2])
+                        .divide(apfloatApintValues[3]));
     }
 
 }

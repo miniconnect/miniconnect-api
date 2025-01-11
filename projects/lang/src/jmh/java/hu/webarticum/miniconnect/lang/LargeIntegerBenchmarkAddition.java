@@ -4,7 +4,9 @@ import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
 import scala.math.BigInt;
+import spire.math.SafeLong;
 
+import org.apfloat.Apint;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -22,9 +24,9 @@ import org.openjdk.jmh.infra.Blackhole;
  * Compares addition performance of LargeInteger to Long, BigInteger, BigInt.
  */
 @State(Scope.Benchmark)
-@Fork(value = 1, warmups = 0)
-@Warmup(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
-@Measurement(iterations = 15, time = 1, timeUnit = TimeUnit.SECONDS)
+@Fork(value = 1)
+@Warmup(iterations = 1, time = 1, timeUnit = TimeUnit.SECONDS)
+@Measurement(iterations = 1, time = 1, timeUnit = TimeUnit.SECONDS)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 public class LargeIntegerBenchmarkAddition {
@@ -37,12 +39,20 @@ public class LargeIntegerBenchmarkAddition {
     
     private BigInt[] smallScalaBigIntValues;
     
+    private SafeLong[] smallSpireSafeLongValues;
+    
+    private Apint[] smallApfloatApintValues;
+    
 
     private BigInteger[] largeBigIntegerValues;
     
     private LargeInteger[] largeLargeIntegerValues;
     
     private BigInt[] largeScalaBigIntValues;
+    
+    private SafeLong[] largeSpireSafeLongValues;
+    
+    private Apint[] largeApfloatApintValues;
     
     
     @Setup(Level.Iteration)
@@ -71,6 +81,16 @@ public class LargeIntegerBenchmarkAddition {
         for (int i = 0; i < smallBigIntegerValues.length; i++) {
             smallScalaBigIntValues[i] = BigInt.apply(smallBigIntegerValues[i]);
         }
+        
+        smallSpireSafeLongValues = new SafeLong[smallLongValues.length];
+        for (int i = 0; i < smallLongValues.length; i++) {
+            smallSpireSafeLongValues[i] = SafeLong.apply(smallLongValues[i]);
+        }
+        
+        smallApfloatApintValues = new Apint[smallLongValues.length];
+        for (int i = 0; i < smallLongValues.length; i++) {
+            smallApfloatApintValues[i] = new Apint(smallLongValues[i]);
+        }
 
         largeBigIntegerValues = new BigInteger[] {
                 new BigInteger("575810763971431237461446818"), // p
@@ -88,6 +108,16 @@ public class LargeIntegerBenchmarkAddition {
         largeScalaBigIntValues = new BigInt[largeBigIntegerValues.length];
         for (int i = 0; i < largeBigIntegerValues.length; i++) {
             largeScalaBigIntValues[i] = BigInt.apply(largeBigIntegerValues[i]);
+        }
+        
+        largeSpireSafeLongValues = new SafeLong[largeScalaBigIntValues.length];
+        for (int i = 0; i < largeScalaBigIntValues.length; i++) {
+            largeSpireSafeLongValues[i] = SafeLong.apply(largeScalaBigIntValues[i]);
+        }
+        
+        largeApfloatApintValues = new Apint[largeBigIntegerValues.length];
+        for (int i = 0; i < largeBigIntegerValues.length; i++) {
+            largeApfloatApintValues[i] = new Apint(largeBigIntegerValues[i]);
         }
     }
     
@@ -143,6 +173,34 @@ public class LargeIntegerBenchmarkAddition {
         BigInt result = a.$plus(b).$plus(c).$plus(d).$plus(e).$plus(f).$plus(g);
         blackhole.consume(result);
     }
+
+    @Benchmark
+    public void benchmarkSmallAdditionSpireSafeLong(Blackhole blackhole) {
+        SafeLong a = smallSpireSafeLongValues[0];
+        SafeLong b = smallSpireSafeLongValues[1];
+        SafeLong c = smallSpireSafeLongValues[2];
+        SafeLong d = smallSpireSafeLongValues[3];
+        SafeLong e = smallSpireSafeLongValues[4];
+        SafeLong f = smallSpireSafeLongValues[5];
+        SafeLong g = smallSpireSafeLongValues[6];
+        SafeLong result = a.$plus(b).$plus(c).$plus(d).$plus(e).$plus(f).$plus(g);
+        blackhole.consume(result);
+    }
+
+    @Benchmark
+    public void benchmarkSmallAdditionApfloatApint(Blackhole blackhole) {
+        Apint a = smallApfloatApintValues[0];
+        Apint b = smallApfloatApintValues[1];
+        Apint c = smallApfloatApintValues[2];
+        Apint d = smallApfloatApintValues[3];
+        Apint e = smallApfloatApintValues[4];
+        Apint f = smallApfloatApintValues[5];
+        Apint g = smallApfloatApintValues[6];
+        Apint result = a.add(b).add(c).add(d).add(e).add(f).add(g);
+        blackhole.consume(result);
+    }
+
+    //////////////////////////////////////////////////////////////////////////
     
     @Benchmark
     public void benchmarkLargeAdditionBigInteger(Blackhole blackhole) {
@@ -176,6 +234,30 @@ public class LargeIntegerBenchmarkAddition {
         BigInt result = p.$plus(q).$plus(r).$plus(s).$plus(t);
         blackhole.consume(result);
     }
+
+    @Benchmark
+    public void benchmarkLargeAdditionSpireSafeLong(Blackhole blackhole) {
+        SafeLong p = largeSpireSafeLongValues[0];
+        SafeLong q = largeSpireSafeLongValues[1];
+        SafeLong r = largeSpireSafeLongValues[2];
+        SafeLong s = largeSpireSafeLongValues[3];
+        SafeLong t = largeSpireSafeLongValues[4];
+        SafeLong result = p.$plus(q).$plus(r).$plus(s).$plus(t);
+        blackhole.consume(result);
+    }
+
+    @Benchmark
+    public void benchmarLargeAdditionApfloatApint(Blackhole blackhole) {
+        Apint p = largeApfloatApintValues[0];
+        Apint q = largeApfloatApintValues[1];
+        Apint r = largeApfloatApintValues[2];
+        Apint s = largeApfloatApintValues[3];
+        Apint t = largeApfloatApintValues[4];
+        Apint result = p.add(q).add(r).add(s).add(t);
+        blackhole.consume(result);
+    }
+
+    //////////////////////////////////////////////////////////////////////////
     
     @Benchmark
     public void benchmarkMixedAdditionBigInteger(Blackhole blackhole) {
@@ -250,6 +332,56 @@ public class LargeIntegerBenchmarkAddition {
     }
 
     @Benchmark
+    public void benchmarkMixedAdditionSpireSafeLong(Blackhole blackhole) {
+        SafeLong a = smallSpireSafeLongValues[0];
+        SafeLong b = smallSpireSafeLongValues[1];
+        SafeLong c = smallSpireSafeLongValues[2];
+        SafeLong d = smallSpireSafeLongValues[3];
+        SafeLong e = smallSpireSafeLongValues[4];
+        SafeLong f = smallSpireSafeLongValues[5];
+        SafeLong g = smallSpireSafeLongValues[6];
+        SafeLong p = largeSpireSafeLongValues[0];
+        SafeLong q = largeSpireSafeLongValues[1];
+        SafeLong r = largeSpireSafeLongValues[2];
+        SafeLong s = largeSpireSafeLongValues[3];
+        SafeLong t = largeSpireSafeLongValues[4];
+        SafeLong sub1 = a.$plus(p);
+        SafeLong sub2 = b.$plus(q);
+        SafeLong sub3 = g.$plus(f);
+        SafeLong sub4 = f.$plus(f).$plus(f).$plus(f);
+        SafeLong sub5 = d.$plus(t);
+        SafeLong sub6 = c.$plus(r).$plus(e).$plus(s);
+        SafeLong result = sub1.$plus(sub2).$plus(sub3).$plus(sub4).$plus(sub5).$plus(sub6);
+        blackhole.consume(result);
+    }
+
+    @Benchmark
+    public void benchmarkMixedAdditionApfloatApint(Blackhole blackhole) {
+        Apint a = smallApfloatApintValues[0];
+        Apint b = smallApfloatApintValues[1];
+        Apint c = smallApfloatApintValues[2];
+        Apint d = smallApfloatApintValues[3];
+        Apint e = smallApfloatApintValues[4];
+        Apint f = smallApfloatApintValues[5];
+        Apint g = smallApfloatApintValues[6];
+        Apint p = largeApfloatApintValues[0];
+        Apint q = largeApfloatApintValues[1];
+        Apint r = largeApfloatApintValues[2];
+        Apint s = largeApfloatApintValues[3];
+        Apint t = largeApfloatApintValues[4];
+        Apint sub1 = a.add(p);
+        Apint sub2 = b.add(q);
+        Apint sub3 = g.add(f);
+        Apint sub4 = f.add(f).add(f).add(f);
+        Apint sub5 = d.add(t);
+        Apint sub6 = c.add(r).add(e).add(s);
+        Apint result = sub1.add(sub2).add(sub3).add(sub4).add(sub5).add(sub6);
+        blackhole.consume(result);
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    
+    @Benchmark
     public void benchmarkMixedBottleneckAdditionBigInteger(Blackhole blackhole) {
         BigInteger f = smallBigIntegerValues[5];
         BigInteger p = largeBigIntegerValues[0];
@@ -270,6 +402,22 @@ public class LargeIntegerBenchmarkAddition {
         BigInt f = smallScalaBigIntValues[5];
         BigInt p = largeScalaBigIntValues[0];
         BigInt result = p.$plus(f);
+        blackhole.consume(result);
+    }
+
+    @Benchmark
+    public void benchmarkMixedBottleneckAdditionSpireSafeLong(Blackhole blackhole) {
+        SafeLong f = smallSpireSafeLongValues[5];
+        SafeLong p = largeSpireSafeLongValues[0];
+        SafeLong result = p.$plus(f);
+        blackhole.consume(result);
+    }
+
+    @Benchmark
+    public void benchmarkMixedBottleneckAdditionApfloatApint(Blackhole blackhole) {
+        Apint f = smallApfloatApintValues[5];
+        Apint p = largeApfloatApintValues[0];
+        Apint result = p.add(f);
         blackhole.consume(result);
     }
 

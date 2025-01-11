@@ -6,9 +6,18 @@ plugins {
 
 description "Essential value types"
 
+sourceSets {
+    lab {
+        compileClasspath += sourceSets.main.runtimeClasspath
+        runtimeClasspath += sourceSets.main.runtimeClasspath
+    }
+}
+
 dependencies {
     jmh 'org.openjdk.jmh:jmh-core:1.37'
     jmh 'org.scala-lang:scala-library:2.13.8'
+    jmh 'org.typelevel:spire_3:0.18.0'
+    jmh 'org.apfloat:apfloat:1.14.0'
     jmhRuntimeOnly 'org.openjdk.jmh:jmh-generator-annprocess:1.37'
     
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.1'
@@ -16,6 +25,8 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.7.1'
     testImplementation 'org.assertj:assertj-core:3.24.2'
+    
+    labImplementation 'org.openjdk.jol:jol-core:0.17'
 }
 
 jmhJar {

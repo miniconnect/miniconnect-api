@@ -5,7 +5,9 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import scala.math.BigInt;
+import spire.math.SafeLong;
 
+import org.apfloat.Apint;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -41,9 +43,9 @@ import org.openjdk.jmh.infra.Blackhole;
  * and, finally, F is equal to 2.
  */
 @State(Scope.Benchmark)
-@Fork(value = 1, warmups = 0)
-@Warmup(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
-@Measurement(iterations = 15, time = 1, timeUnit = TimeUnit.SECONDS)
+@Fork(value = 1)
+@Warmup(iterations = 1, time = 1, timeUnit = TimeUnit.SECONDS)
+@Measurement(iterations = 1, time = 1, timeUnit = TimeUnit.SECONDS)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 public class LargeIntegerBenchmarkMixedNumbers {
@@ -60,6 +62,10 @@ public class LargeIntegerBenchmarkMixedNumbers {
     
     private BigInt[] scalaBigIntValues;
     
+    private SafeLong[] spireSafeLongValues;
+    
+    private Apint[] apfloatApintValues;
+    
     
     @Setup(Level.Iteration)
     public void setup() {
@@ -68,7 +74,7 @@ public class LargeIntegerBenchmarkMixedNumbers {
                         .add(BigInteger.valueOf(random.nextInt(10000000))),
                 BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.valueOf(random.nextInt(1000) + 10000000L)),
                 BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.valueOf(random.nextInt(1000) + 11000000L)),
-                BigInteger.valueOf(((Long.MAX_VALUE / 3) * 2)+ random.nextInt(10000) + 10000L),
+                BigInteger.valueOf(((Long.MAX_VALUE / 3) * 2) + random.nextInt(10000) + 10000L),
                 BigInteger.valueOf(random.nextInt(50) + 300L),
                 BigInteger.valueOf(2),
         };
@@ -81,6 +87,16 @@ public class LargeIntegerBenchmarkMixedNumbers {
         scalaBigIntValues = new BigInt[bigIntegerValues.length];
         for (int i = 0; i < bigIntegerValues.length; i++) {
             scalaBigIntValues[i] = BigInt.apply(bigIntegerValues[i]);
+        }
+        
+        spireSafeLongValues = new SafeLong[scalaBigIntValues.length];
+        for (int i = 0; i < scalaBigIntValues.length; i++) {
+            spireSafeLongValues[i] = SafeLong.apply(scalaBigIntValues[i]);
+        }
+        
+        apfloatApintValues = new Apint[bigIntegerValues.length];
+        for (int i = 0; i < bigIntegerValues.length; i++) {
+            apfloatApintValues[i] = new Apint(bigIntegerValues[i]);
         }
     }
     
@@ -141,5 +157,43 @@ public class LargeIntegerBenchmarkMixedNumbers {
                 .$plus(a);
         blackhole.consume(result);
     }
-    
+
+    @Benchmark
+    public void benchmarkSpireSafeLong(Blackhole blackhole) {
+        SafeLong a = spireSafeLongValues[0];
+        SafeLong b = spireSafeLongValues[1];
+        SafeLong c = spireSafeLongValues[2];
+        SafeLong d = spireSafeLongValues[3];
+        SafeLong e = spireSafeLongValues[4];
+        SafeLong f = spireSafeLongValues[5];
+        SafeLong result = e
+                .$times(f)
+                .$plus(c.$minus(b))
+                .$minus(d.$times(e))
+                .$div(e)
+                .$times(e.$plus(SCALA_BIGINT_ONE).unary_$minus())
+                .$times(d.$bar(e))
+                .$plus(a);
+        blackhole.consume(result);
+    }
+
+    @Benchmark
+    public void benchmarkApfloatApint(Blackhole blackhole) {
+        Apint a = apfloatApintValues[0];
+        Apint b = apfloatApintValues[1];
+        Apint c = apfloatApintValues[2];
+        Apint d = apfloatApintValues[3];
+        Apint e = apfloatApintValues[4];
+        Apint f = apfloatApintValues[5];
+        Apint result = e
+                .multiply(f)
+                .add(c.subtract(b))
+                .subtract(d.multiply(e))
+                .divide(e)
+                .multiply(e.add(Apint.ONE).negate())
+                .multiply(new Apint(d.longValue() | e.longValue()))
+                .add(a);
+        blackhole.consume(result);
+    }
+
 }
