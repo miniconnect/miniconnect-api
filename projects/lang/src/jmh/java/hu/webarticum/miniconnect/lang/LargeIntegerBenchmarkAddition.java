@@ -43,6 +43,12 @@ public class LargeIntegerBenchmarkAddition {
     
     private Apint[] smallApfloatApintValues;
     
+    private org.jscience.mathematics.number.LargeInteger[] smallJscienceLargeIntegerValues;
+    
+    private org.libj.math.BigInt[] smallLibjBigIntValues;
+    
+    private org.huldra.math.BigInt[] smallHuldraBigIntValues;
+    
 
     private BigInteger[] largeBigIntegerValues;
     
@@ -53,6 +59,12 @@ public class LargeIntegerBenchmarkAddition {
     private SafeLong[] largeSpireSafeLongValues;
     
     private Apint[] largeApfloatApintValues;
+    
+    private org.jscience.mathematics.number.LargeInteger[] largeJscienceLargeIntegerValues;
+    
+    private org.libj.math.BigInt[] largeLibjBigIntValues;
+    
+    private org.huldra.math.BigInt[] largeHuldraBigIntValues;
     
     
     @Setup(Level.Iteration)
@@ -91,6 +103,22 @@ public class LargeIntegerBenchmarkAddition {
         for (int i = 0; i < smallLongValues.length; i++) {
             smallApfloatApintValues[i] = new Apint(smallLongValues[i]);
         }
+        
+        smallJscienceLargeIntegerValues = new org.jscience.mathematics.number.LargeInteger[smallLongValues.length];
+        for (int i = 0; i < smallLongValues.length; i++) {
+            smallJscienceLargeIntegerValues[i] =
+                    org.jscience.mathematics.number.LargeInteger.valueOf(smallLongValues[i]);
+        }
+
+        smallLibjBigIntValues = new org.libj.math.BigInt[smallLongValues.length];
+        for (int i = 0; i < smallLongValues.length; i++) {
+            smallLibjBigIntValues[i] = new org.libj.math.BigInt(smallLongValues[i]);
+        }
+
+        smallHuldraBigIntValues = new org.huldra.math.BigInt[smallLongValues.length];
+        for (int i = 0; i < smallLongValues.length; i++) {
+            smallHuldraBigIntValues[i] = new org.huldra.math.BigInt(smallLongValues[i]);
+        }
 
         largeBigIntegerValues = new BigInteger[] {
                 new BigInteger("575810763971431237461446818"), // p
@@ -118,6 +146,23 @@ public class LargeIntegerBenchmarkAddition {
         largeApfloatApintValues = new Apint[largeBigIntegerValues.length];
         for (int i = 0; i < largeBigIntegerValues.length; i++) {
             largeApfloatApintValues[i] = new Apint(largeBigIntegerValues[i]);
+        }
+
+        largeJscienceLargeIntegerValues =
+                new org.jscience.mathematics.number.LargeInteger[largeBigIntegerValues.length];
+        for (int i = 0; i < largeBigIntegerValues.length; i++) {
+            largeJscienceLargeIntegerValues[i] =
+                    org.jscience.mathematics.number.LargeInteger.valueOf(largeBigIntegerValues[i]);
+        }
+
+        largeLibjBigIntValues = new org.libj.math.BigInt[largeBigIntegerValues.length];
+        for (int i = 0; i < largeBigIntegerValues.length; i++) {
+            largeLibjBigIntValues[i] = new org.libj.math.BigInt(largeBigIntegerValues[i]);
+        }
+
+        largeHuldraBigIntValues = new org.huldra.math.BigInt[largeBigIntegerValues.length];
+        for (int i = 0; i < largeBigIntegerValues.length; i++) {
+            largeHuldraBigIntValues[i] = new org.huldra.math.BigInt(largeBigIntegerValues[i].toString());
         }
     }
     
@@ -200,6 +245,57 @@ public class LargeIntegerBenchmarkAddition {
         blackhole.consume(result);
     }
 
+    @Benchmark
+    public void benchmarkSmallAdditionJscienceLargeInteger(Blackhole blackhole) {
+        org.jscience.mathematics.number.LargeInteger a = smallJscienceLargeIntegerValues[0];
+        org.jscience.mathematics.number.LargeInteger b = smallJscienceLargeIntegerValues[1];
+        org.jscience.mathematics.number.LargeInteger c = smallJscienceLargeIntegerValues[2];
+        org.jscience.mathematics.number.LargeInteger d = smallJscienceLargeIntegerValues[3];
+        org.jscience.mathematics.number.LargeInteger e = smallJscienceLargeIntegerValues[4];
+        org.jscience.mathematics.number.LargeInteger f = smallJscienceLargeIntegerValues[5];
+        org.jscience.mathematics.number.LargeInteger g = smallJscienceLargeIntegerValues[6];
+        org.jscience.mathematics.number.LargeInteger result = a.plus(b).plus(c).plus(d).plus(e).plus(f).plus(g);
+        blackhole.consume(result);
+    }
+
+    @Benchmark
+    public void benchmarkSmallAdditionLibjBigInt(Blackhole blackhole) {
+        org.libj.math.BigInt a = smallLibjBigIntValues[0];
+        org.libj.math.BigInt b = smallLibjBigIntValues[1];
+        org.libj.math.BigInt c = smallLibjBigIntValues[2];
+        org.libj.math.BigInt d = smallLibjBigIntValues[3];
+        org.libj.math.BigInt e = smallLibjBigIntValues[4];
+        org.libj.math.BigInt f = smallLibjBigIntValues[5];
+        org.libj.math.BigInt g = smallLibjBigIntValues[6];
+        org.libj.math.BigInt result = a.clone();
+        result.add(b);
+        result.add(c);
+        result.add(d);
+        result.add(e);
+        result.add(f);
+        result.add(g);
+        blackhole.consume(a);
+    }
+
+    @Benchmark
+    public void benchmarkSmallAdditionHuldraBigInt(Blackhole blackhole) {
+        org.huldra.math.BigInt a = smallHuldraBigIntValues[0];
+        org.huldra.math.BigInt b = smallHuldraBigIntValues[1];
+        org.huldra.math.BigInt c = smallHuldraBigIntValues[2];
+        org.huldra.math.BigInt d = smallHuldraBigIntValues[3];
+        org.huldra.math.BigInt e = smallHuldraBigIntValues[4];
+        org.huldra.math.BigInt f = smallHuldraBigIntValues[5];
+        org.huldra.math.BigInt g = smallHuldraBigIntValues[6];
+        org.huldra.math.BigInt result = a.copy();
+        result.add(b);
+        result.add(c);
+        result.add(d);
+        result.add(e);
+        result.add(f);
+        result.add(g);
+        blackhole.consume(a);
+    }
+
     //////////////////////////////////////////////////////////////////////////
     
     @Benchmark
@@ -254,6 +350,47 @@ public class LargeIntegerBenchmarkAddition {
         Apint s = largeApfloatApintValues[3];
         Apint t = largeApfloatApintValues[4];
         Apint result = p.add(q).add(r).add(s).add(t);
+        blackhole.consume(result);
+    }
+
+    @Benchmark
+    public void benchmarkLargeAdditionJscienceLargeInteger(Blackhole blackhole) {
+        org.jscience.mathematics.number.LargeInteger p = largeJscienceLargeIntegerValues[0];
+        org.jscience.mathematics.number.LargeInteger q = largeJscienceLargeIntegerValues[1];
+        org.jscience.mathematics.number.LargeInteger r = largeJscienceLargeIntegerValues[2];
+        org.jscience.mathematics.number.LargeInteger s = largeJscienceLargeIntegerValues[3];
+        org.jscience.mathematics.number.LargeInteger t = largeJscienceLargeIntegerValues[4];
+        org.jscience.mathematics.number.LargeInteger result = p.plus(q).plus(r).plus(s).plus(t);
+        blackhole.consume(result);
+    }
+
+    @Benchmark
+    public void benchmarLargeAdditionLibjBigInt(Blackhole blackhole) {
+        org.libj.math.BigInt p = largeLibjBigIntValues[0];
+        org.libj.math.BigInt q = largeLibjBigIntValues[1];
+        org.libj.math.BigInt r = largeLibjBigIntValues[2];
+        org.libj.math.BigInt s = largeLibjBigIntValues[3];
+        org.libj.math.BigInt t = largeLibjBigIntValues[4];
+        org.libj.math.BigInt result = p.clone();
+        p.add(q);
+        p.add(r);
+        p.add(s);
+        p.add(t);
+        blackhole.consume(result);
+    }
+
+    @Benchmark
+    public void benchmarLargeAdditionHuldraBigInt(Blackhole blackhole) {
+        org.huldra.math.BigInt p = largeHuldraBigIntValues[0];
+        org.huldra.math.BigInt q = largeHuldraBigIntValues[1];
+        org.huldra.math.BigInt r = largeHuldraBigIntValues[2];
+        org.huldra.math.BigInt s = largeHuldraBigIntValues[3];
+        org.huldra.math.BigInt t = largeHuldraBigIntValues[4];
+        org.huldra.math.BigInt result = p.copy();
+        p.add(q);
+        p.add(r);
+        p.add(s);
+        p.add(t);
         blackhole.consume(result);
     }
 
@@ -379,6 +516,109 @@ public class LargeIntegerBenchmarkAddition {
         blackhole.consume(result);
     }
 
+    @Benchmark
+    public void benchmarkMixedAdditionJscienceLargeInteger(Blackhole blackhole) {
+        org.jscience.mathematics.number.LargeInteger a = smallJscienceLargeIntegerValues[0];
+        org.jscience.mathematics.number.LargeInteger b = smallJscienceLargeIntegerValues[1];
+        org.jscience.mathematics.number.LargeInteger c = smallJscienceLargeIntegerValues[2];
+        org.jscience.mathematics.number.LargeInteger d = smallJscienceLargeIntegerValues[3];
+        org.jscience.mathematics.number.LargeInteger e = smallJscienceLargeIntegerValues[4];
+        org.jscience.mathematics.number.LargeInteger f = smallJscienceLargeIntegerValues[5];
+        org.jscience.mathematics.number.LargeInteger g = smallJscienceLargeIntegerValues[6];
+        org.jscience.mathematics.number.LargeInteger p = largeJscienceLargeIntegerValues[0];
+        org.jscience.mathematics.number.LargeInteger q = largeJscienceLargeIntegerValues[1];
+        org.jscience.mathematics.number.LargeInteger r = largeJscienceLargeIntegerValues[2];
+        org.jscience.mathematics.number.LargeInteger s = largeJscienceLargeIntegerValues[3];
+        org.jscience.mathematics.number.LargeInteger t = largeJscienceLargeIntegerValues[4];
+        org.jscience.mathematics.number.LargeInteger sub1 = a.plus(p);
+        org.jscience.mathematics.number.LargeInteger sub2 = b.plus(q);
+        org.jscience.mathematics.number.LargeInteger sub3 = g.plus(f);
+        org.jscience.mathematics.number.LargeInteger sub4 = f.plus(f).plus(f).plus(f);
+        org.jscience.mathematics.number.LargeInteger sub5 = d.plus(t);
+        org.jscience.mathematics.number.LargeInteger sub6 = c.plus(r).plus(e).plus(s);
+        org.jscience.mathematics.number.LargeInteger result =
+                sub1.plus(sub2).plus(sub3).plus(sub4).plus(sub5).plus(sub6);
+        blackhole.consume(result);
+    }
+
+    @Benchmark
+    public void benchmarkMixedAdditionLibjBigint(Blackhole blackhole) {
+        org.libj.math.BigInt a = smallLibjBigIntValues[0];
+        org.libj.math.BigInt b = smallLibjBigIntValues[1];
+        org.libj.math.BigInt c = smallLibjBigIntValues[2];
+        org.libj.math.BigInt d = smallLibjBigIntValues[3];
+        org.libj.math.BigInt e = smallLibjBigIntValues[4];
+        org.libj.math.BigInt f = smallLibjBigIntValues[5];
+        org.libj.math.BigInt g = smallLibjBigIntValues[6];
+        org.libj.math.BigInt p = largeLibjBigIntValues[0];
+        org.libj.math.BigInt q = largeLibjBigIntValues[1];
+        org.libj.math.BigInt r = largeLibjBigIntValues[2];
+        org.libj.math.BigInt s = largeLibjBigIntValues[3];
+        org.libj.math.BigInt t = largeLibjBigIntValues[4];
+        org.libj.math.BigInt sub1 = a.clone();
+        sub1.add(p);
+        org.libj.math.BigInt sub2 = b.clone();
+        sub2.add(q);
+        org.libj.math.BigInt sub3 = g.clone();
+        sub3.add(f);
+        org.libj.math.BigInt sub4 = f.clone();
+        sub4.add(f);
+        sub4.add(f);
+        sub4.add(f);
+        org.libj.math.BigInt sub5 = d.clone();
+        sub5.add(t);
+        org.libj.math.BigInt sub6 = c.clone();
+        sub6.add(r);
+        sub6.add(e);
+        sub6.add(s);
+        org.libj.math.BigInt result = sub1.clone();
+        result.add(sub2);
+        result.add(sub3);
+        result.add(sub4);
+        result.add(sub5);
+        result.add(sub6);
+        blackhole.consume(result);
+    }
+
+    @Benchmark
+    public void benchmarkMixedAdditionHuldraBigint(Blackhole blackhole) {
+        org.huldra.math.BigInt a = smallHuldraBigIntValues[0];
+        org.huldra.math.BigInt b = smallHuldraBigIntValues[1];
+        org.huldra.math.BigInt c = smallHuldraBigIntValues[2];
+        org.huldra.math.BigInt d = smallHuldraBigIntValues[3];
+        org.huldra.math.BigInt e = smallHuldraBigIntValues[4];
+        org.huldra.math.BigInt f = smallHuldraBigIntValues[5];
+        org.huldra.math.BigInt g = smallHuldraBigIntValues[6];
+        org.huldra.math.BigInt p = largeHuldraBigIntValues[0];
+        org.huldra.math.BigInt q = largeHuldraBigIntValues[1];
+        org.huldra.math.BigInt r = largeHuldraBigIntValues[2];
+        org.huldra.math.BigInt s = largeHuldraBigIntValues[3];
+        org.huldra.math.BigInt t = largeHuldraBigIntValues[4];
+        org.huldra.math.BigInt sub1 = a.copy();
+        sub1.add(p);
+        org.huldra.math.BigInt sub2 = b.copy();
+        sub2.add(q);
+        org.huldra.math.BigInt sub3 = g.copy();
+        sub3.add(f);
+        org.huldra.math.BigInt sub4 = f.copy();
+        sub4.add(f);
+        sub4.add(f);
+        sub4.add(f);
+        org.huldra.math.BigInt sub5 = d.copy();
+        sub5.add(t);
+        org.huldra.math.BigInt sub6 = c.copy();
+        sub6.add(r);
+        sub6.add(e);
+        sub6.add(s);
+        org.huldra.math.BigInt result = sub1.copy();
+        result.add(sub2);
+        result.add(sub3);
+        result.add(sub4);
+        result.add(sub5);
+        result.add(sub6);
+        blackhole.consume(result);
+    }
+
     //////////////////////////////////////////////////////////////////////////
     
     @Benchmark
@@ -418,6 +658,32 @@ public class LargeIntegerBenchmarkAddition {
         Apint f = smallApfloatApintValues[5];
         Apint p = largeApfloatApintValues[0];
         Apint result = p.add(f);
+        blackhole.consume(result);
+    }
+
+    @Benchmark
+    public void benchmarkMixedBottleneckAdditionJscienceLargeInteger(Blackhole blackhole) {
+        org.jscience.mathematics.number.LargeInteger f = smallJscienceLargeIntegerValues[5];
+        org.jscience.mathematics.number.LargeInteger p = largeJscienceLargeIntegerValues[0];
+        org.jscience.mathematics.number.LargeInteger result = p.plus(f);
+        blackhole.consume(result);
+    }
+
+    @Benchmark
+    public void benchmarkMixedBottleneckAdditionLibjBigInt(Blackhole blackhole) {
+        org.libj.math.BigInt f = smallLibjBigIntValues[5];
+        org.libj.math.BigInt p = largeLibjBigIntValues[0];
+        org.libj.math.BigInt result = p.clone();
+        result.add(f);
+        blackhole.consume(result);
+    }
+
+    @Benchmark
+    public void benchmarkMixedBottleneckAdditionHuldraBigInt(Blackhole blackhole) {
+        org.huldra.math.BigInt f = smallHuldraBigIntValues[5];
+        org.huldra.math.BigInt p = largeHuldraBigIntValues[0];
+        org.huldra.math.BigInt result = p.copy();
+        result.add(f);
         blackhole.consume(result);
     }
 

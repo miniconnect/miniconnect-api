@@ -53,6 +53,12 @@ public class LargeIntegerBenchmarkSmallNumbersSimple {
     
     private Apint[] apfloatApintValues;
     
+    private org.jscience.mathematics.number.LargeInteger[] jscienceLargeIntegerValues;
+    
+    private org.libj.math.BigInt[] libjBigIntValues;
+    
+    private org.huldra.math.BigInt[] huldraBigIntValues;
+    
 
     @Setup(Level.Iteration)
     public void setup() {
@@ -86,6 +92,21 @@ public class LargeIntegerBenchmarkSmallNumbersSimple {
         apfloatApintValues = new Apint[longValues.length];
         for (int i = 0; i < longValues.length; i++) {
             apfloatApintValues[i] = new Apint(longValues[i]);
+        }
+
+        jscienceLargeIntegerValues = new org.jscience.mathematics.number.LargeInteger[longValues.length];
+        for (int i = 0; i < longValues.length; i++) {
+            jscienceLargeIntegerValues[i] = org.jscience.mathematics.number.LargeInteger.valueOf(longValues[i]);
+        }
+
+        libjBigIntValues = new org.libj.math.BigInt[longValues.length];
+        for (int i = 0; i < longValues.length; i++) {
+            libjBigIntValues[i] = new org.libj.math.BigInt(longValues[i]);
+        }
+
+        huldraBigIntValues = new org.huldra.math.BigInt[longValues.length];
+        for (int i = 0; i < longValues.length; i++) {
+            huldraBigIntValues[i] = new org.huldra.math.BigInt(longValues[i]);
         }
     }
     
@@ -139,6 +160,33 @@ public class LargeIntegerBenchmarkSmallNumbersSimple {
                         .multiply(apfloatApintValues[1])
                         .add(apfloatApintValues[2])
                         .divide(apfloatApintValues[3]));
+    }
+
+    @Benchmark
+    public void benchmarkJscienceLargeInteger(Blackhole blackhole) {
+        blackhole.consume(
+                jscienceLargeIntegerValues[0]
+                        .times(jscienceLargeIntegerValues[1])
+                        .plus(jscienceLargeIntegerValues[2])
+                        .divide(jscienceLargeIntegerValues[3]));
+    }
+
+    @Benchmark
+    public void benchmarkLibjBigInt(Blackhole blackhole) {
+        org.libj.math.BigInt result = libjBigIntValues[0].clone();
+        result.mul(libjBigIntValues[1]);
+        result.add(libjBigIntValues[2]);
+        result.div(libjBigIntValues[3]);
+        blackhole.consume(result);
+    }
+
+    @Benchmark
+    public void benchmarkHuldraBigInt(Blackhole blackhole) {
+        org.huldra.math.BigInt result = huldraBigIntValues[0].copy();
+        result.mul(huldraBigIntValues[1]);
+        result.add(huldraBigIntValues[2]);
+        result.div(huldraBigIntValues[3]);
+        blackhole.consume(result);
     }
 
 }

@@ -18,6 +18,9 @@ dependencies {
     jmh 'org.scala-lang:scala-library:2.13.8'
     jmh 'org.typelevel:spire_3:0.18.0'
     jmh 'org.apfloat:apfloat:1.14.0'
+    jmh 'org.jscience:jscience:4.3.1'
+    jmh 'org.libj:math:0.6.8'
+    jmh 'org.huldra.math:bigint:0.7.1'
     jmhRuntimeOnly 'org.openjdk.jmh:jmh-generator-annprocess:1.37'
     
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.1'

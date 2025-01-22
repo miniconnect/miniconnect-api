@@ -63,6 +63,12 @@ public class LargeIntegerBenchmarkSmallNumbersPow {
     
     private Apint[] apfloatApintValues;
     
+    private org.jscience.mathematics.number.LargeInteger[] jscienceLargeIntegerValues;
+    
+    private org.libj.math.BigInt[] libjBigIntValues;
+    
+    private org.huldra.math.BigInt[] huldraBigIntValues;
+    
 
     @Setup(Level.Iteration)
     public void setup() {
@@ -97,6 +103,21 @@ public class LargeIntegerBenchmarkSmallNumbersPow {
         apfloatApintValues = new Apint[longValues.length];
         for (int i = 0; i < longValues.length; i++) {
             apfloatApintValues[i] = new Apint(longValues[i]);
+        }
+
+        jscienceLargeIntegerValues = new org.jscience.mathematics.number.LargeInteger[longValues.length];
+        for (int i = 0; i < longValues.length; i++) {
+            jscienceLargeIntegerValues[i] = org.jscience.mathematics.number.LargeInteger.valueOf(longValues[i]);
+        }
+
+        libjBigIntValues = new org.libj.math.BigInt[longValues.length];
+        for (int i = 0; i < longValues.length; i++) {
+            libjBigIntValues[i] = new org.libj.math.BigInt(longValues[i]);
+        }
+
+        huldraBigIntValues = new org.huldra.math.BigInt[longValues.length];
+        for (int i = 0; i < longValues.length; i++) {
+            huldraBigIntValues[i] = new org.huldra.math.BigInt(longValues[i]);
         }
     }
     
@@ -204,6 +225,99 @@ public class LargeIntegerBenchmarkSmallNumbersPow {
                         .mod(new Apint((c.longValue() & d.longValue()) | e.longValue()))
                 ).floor()
                 .add(ApfloatMath.max(b, d.add(ApfloatMath.min(a, e.divide(a)))).floor().negate());
+        blackhole.consume(result);
+    }
+
+    @Benchmark
+    public void benchmarkJscienceLargeInteger(Blackhole blackhole) {
+        org.jscience.mathematics.number.LargeInteger a = jscienceLargeIntegerValues[0];
+        org.jscience.mathematics.number.LargeInteger b = jscienceLargeIntegerValues[1];
+        org.jscience.mathematics.number.LargeInteger c = jscienceLargeIntegerValues[2];
+        org.jscience.mathematics.number.LargeInteger d = jscienceLargeIntegerValues[3];
+        org.jscience.mathematics.number.LargeInteger e = jscienceLargeIntegerValues[4];
+        org.jscience.mathematics.number.LargeInteger andOrValue =
+                org.jscience.mathematics.number.LargeInteger.valueOf(
+                        (c.longValue() & d.longValue()) | e.longValue()); // FIXME
+        org.jscience.mathematics.number.LargeInteger minRightValue = e.divide(a);
+        org.jscience.mathematics.number.LargeInteger minValue = a.isLessThan(minRightValue) ? a : minRightValue;
+        org.jscience.mathematics.number.LargeInteger maxRightValue = d.plus(minValue);
+        org.jscience.mathematics.number.LargeInteger maxValue = b.isGreaterThan(maxRightValue) ? b : maxRightValue;
+        org.jscience.mathematics.number.LargeInteger result = a
+                .plus(b)
+                .times(a.minus(b))
+                .plus(org.jscience.mathematics.number.LargeInteger.ONE)
+                .pow(3)
+                .remainder(andOrValue).abs()
+                .plus(maxValue.opposite());
+        blackhole.consume(result);
+    }
+
+    @Benchmark
+    public void benchmarkLibjBigInt(Blackhole blackhole) {
+        org.libj.math.BigInt a = libjBigIntValues[0];
+        org.libj.math.BigInt b = libjBigIntValues[1];
+        org.libj.math.BigInt c = libjBigIntValues[2];
+        org.libj.math.BigInt d = libjBigIntValues[3];
+        org.libj.math.BigInt e = libjBigIntValues[4];
+        org.libj.math.BigInt ZERO = new org.libj.math.BigInt(0);
+        org.libj.math.BigInt result = a.clone();
+        result.add(b);
+        org.libj.math.BigInt subResult = a.clone();
+        subResult.sub(b);
+        result.mul(subResult);
+        result.add(1);
+        result.pow(3);
+        org.libj.math.BigInt andOrResult = c.clone();
+        andOrResult.and(d);
+        andOrResult.or(e);
+        result.rem(andOrResult);
+        org.libj.math.BigInt divResult = e.clone();
+        divResult.div(a);
+        org.libj.math.BigInt minResult = a.min(divResult);
+        org.libj.math.BigInt addResult = d.clone();
+        addResult.add(minResult);
+        org.libj.math.BigInt maxResult = b.max(addResult);
+        org.libj.math.BigInt maxNegateResult = ZERO.clone();
+        maxNegateResult.sub(maxResult);
+        result.add(maxNegateResult);
+        blackhole.consume(result);
+    }
+
+    @Benchmark
+    public void benchmarkHuldraBigInt(Blackhole blackhole) {
+        org.huldra.math.BigInt a = huldraBigIntValues[0];
+        org.huldra.math.BigInt b = huldraBigIntValues[1];
+        org.huldra.math.BigInt c = huldraBigIntValues[2];
+        org.huldra.math.BigInt d = huldraBigIntValues[3];
+        org.huldra.math.BigInt e = huldraBigIntValues[4];
+        org.huldra.math.BigInt ZERO = new org.huldra.math.BigInt(0);
+        org.huldra.math.BigInt result = a.copy();
+        result.add(b);
+        org.huldra.math.BigInt subResult = a.copy();
+        subResult.sub(b);
+        result.mul(subResult);
+        result.add(1);
+        org.huldra.math.BigInt powValue = result.copy();
+        result.mul(powValue);
+        result.mul(powValue);
+        org.huldra.math.BigInt andOrResult = c.copy();
+        andOrResult.and(d);
+        andOrResult.or(e);
+        result.rem(andOrResult);
+        if (result.compareTo(ZERO) < 0) {
+            org.huldra.math.BigInt absSubValue = result;
+            result = ZERO.copy();
+            result.sub(absSubValue);
+        }
+        org.huldra.math.BigInt divResult = e.copy();
+        divResult.div(a);
+        org.huldra.math.BigInt minResult = a.compareTo(divResult) < 0 ? a : divResult;
+        org.huldra.math.BigInt addResult = d.copy();
+        addResult.add(minResult);
+        org.huldra.math.BigInt maxResult = b.compareTo(addResult) < 0 ? b : addResult;
+        org.huldra.math.BigInt maxNegateResult = ZERO.copy();
+        maxNegateResult.sub(maxResult);
+        result.add(maxNegateResult);
         blackhole.consume(result);
     }
 
