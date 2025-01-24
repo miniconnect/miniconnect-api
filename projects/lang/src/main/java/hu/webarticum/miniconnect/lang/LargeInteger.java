@@ -44,7 +44,29 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     
     public static final LargeInteger TWO = of(2L);
     
+    public static final LargeInteger THREE = of(3L);
+    
+    public static final LargeInteger FOUR = of(4L);
+    
+    public static final LargeInteger FIVE = of(5L);
+    
+    public static final LargeInteger SIX = of(6L);
+    
+    public static final LargeInteger SEVEN = of(7L);
+    
+    public static final LargeInteger EIGHT = of(8L);
+    
+    public static final LargeInteger NINE = of(9L);
+    
     public static final LargeInteger TEN = of(10L);
+    
+    public static final LargeInteger ELEVEN = of(11L);
+    
+    public static final LargeInteger TWELVE = of(12L);
+    
+    public static final LargeInteger TWENTY = of(20L);
+    
+    public static final LargeInteger HUNDRED = of(100L);
 
 
     public static LargeInteger of(byte value) {

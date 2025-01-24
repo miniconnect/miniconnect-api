@@ -91,15 +91,36 @@ class LargeIntegerTest {
     }
 
     @Test
+    void testConstants() {
+        assertThat(LargeInteger.NEGATIVE_ONE.longValueExact()).isEqualTo(-1);
+        assertThat(LargeInteger.ZERO.longValueExact()).isEqualTo(0L);
+        assertThat(LargeInteger.ONE.longValueExact()).isEqualTo(1L);
+        assertThat(LargeInteger.TWO.longValueExact()).isEqualTo(2L);
+        assertThat(LargeInteger.THREE.longValueExact()).isEqualTo(3L);
+        assertThat(LargeInteger.FOUR.longValueExact()).isEqualTo(4L);
+        assertThat(LargeInteger.FIVE.longValueExact()).isEqualTo(5L);
+        assertThat(LargeInteger.SIX.longValueExact()).isEqualTo(6L);
+        assertThat(LargeInteger.SEVEN.longValueExact()).isEqualTo(7L);
+        assertThat(LargeInteger.EIGHT.longValueExact()).isEqualTo(8L);
+        assertThat(LargeInteger.NINE.longValueExact()).isEqualTo(9L);
+        assertThat(LargeInteger.TEN.longValueExact()).isEqualTo(10L);
+        assertThat(LargeInteger.ELEVEN.longValueExact()).isEqualTo(11L);
+        assertThat(LargeInteger.TWELVE.longValueExact()).isEqualTo(12L);
+        assertThat(LargeInteger.TWENTY.longValueExact()).isEqualTo(20L);
+        assertThat(LargeInteger.HUNDRED.longValueExact()).isEqualTo(100L);
+        
+    }
+
+    @Test
     void testCache() {
-        assertThat(LargeInteger.of(-1)).isSameAs(LargeInteger.NEGATIVE_ONE);
-        assertThat(LargeInteger.of(0)).isSameAs(LargeInteger.ZERO);
-        assertThat(LargeInteger.of(1)).isSameAs(LargeInteger.ONE);
-        assertThat(LargeInteger.of(2)).isSameAs(LargeInteger.TWO);
-        assertThat(LargeInteger.of(10)).isSameAs(LargeInteger.TEN);
-        assertThat(LargeInteger.of(-7)).isSameAs(LargeInteger.of(-7));
-        assertThat(LargeInteger.of(5)).isSameAs(LargeInteger.of(5));
-        assertThat(LargeInteger.of(21)).isSameAs(LargeInteger.of(21));
+        assertThat(LargeInteger.of(-1)).isSameAs(LargeInteger.of(-1)).extracting(n -> n.intValue()).isEqualTo(-1);
+        assertThat(LargeInteger.of(0)).isSameAs(LargeInteger.of(0)).extracting(n -> n.intValue()).isEqualTo(0);
+        assertThat(LargeInteger.of(1)).isSameAs(LargeInteger.of(1)).extracting(n -> n.intValue()).isEqualTo(1);
+        assertThat(LargeInteger.of(2)).isSameAs(LargeInteger.of(2)).extracting(n -> n.intValue()).isEqualTo(2);
+        assertThat(LargeInteger.of(10)).isSameAs(LargeInteger.of(10)).extracting(n -> n.intValue()).isEqualTo(10);
+        assertThat(LargeInteger.of(-7)).isSameAs(LargeInteger.of(-7)).extracting(n -> n.intValue()).isEqualTo(-7);
+        assertThat(LargeInteger.of(5)).isSameAs(LargeInteger.of(5)).extracting(n -> n.intValue()).isEqualTo(5);
+        assertThat(LargeInteger.of(21)).isSameAs(LargeInteger.of(21)).extracting(n -> n.intValue()).isEqualTo(21);
         assertThat(LargeInteger.of("266363024420535859")).isNotSameAs(LargeInteger.of("266363024420535859"));
     }
 
