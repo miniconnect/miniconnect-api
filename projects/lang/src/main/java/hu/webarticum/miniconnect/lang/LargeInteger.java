@@ -216,6 +216,8 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     
     public abstract LargeInteger pow(int exponent);
     
+    public abstract LargeInteger sqrt();
+    
     public abstract LargeInteger gcd(LargeInteger val);
     
     public abstract LargeInteger abs();
@@ -589,6 +591,55 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
                 longResult = square * square;
             }
             return new ImplSmall(longResult);
+        }
+
+        @Override
+        public LargeInteger sqrt() {
+            if (value < 0) {
+                throw new ArithmeticException("Square root of negative LargeInteger");
+            } else if (value >= 121) {
+                long candidate = (long) Math.sqrt(value);
+                if (candidate < value / candidate) {
+                    while (candidate + 1 < value / (candidate + 1)) {
+                        candidate++;
+                    }
+                } else {
+                    while (candidate > value / candidate) {
+                        candidate--;
+                    }
+                }
+                return of(candidate);
+            } else if (value == 0) {
+                return ZERO;
+            } else if (value < 4) {
+                return ONE;
+            } else if (value < 100) {
+                if (value < 36) {
+                    if (value < 16) {
+                        if (value < 9) {
+                            return TWO;
+                        } else {
+                            return THREE;
+                        }
+                    } else if (value < 25) {
+                        return FOUR;
+                    } else {
+                        return FIVE;
+                    }
+                } else if (value < 64) {
+                    if (value < 49) {
+                        return SIX;
+                    } else {
+                        return SEVEN;
+                    }
+                } else if (value < 81) {
+                    return EIGHT;
+                } else {
+                    return NINE;
+                }
+            } else {
+                return TEN;
+            }
         }
 
         @Override
@@ -1026,6 +1077,29 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         @Override
         public LargeInteger pow(int exponent) {
             return of(value.pow(exponent));
+        }
+
+        @Override
+        public LargeInteger sqrt() {
+            if (value.signum() < 0) {
+                throw new ArithmeticException("Square root of negative LargeInteger");
+            }
+
+            int bitLength = value.bitLength();
+            int shift = bitLength - 63;
+            if (shift % 2 == 1) {
+                shift++;
+            }
+            double shiftedDoubleValue = value.shiftRight(shift).doubleValue();
+            BigInteger shiftedApproximation = BigInteger.valueOf((long) Math.ceil(Math.sqrt(shiftedDoubleValue)));
+            BigInteger result = shiftedApproximation.shiftLeft(shift >> 1);
+            while (true) {
+                BigInteger refinedResult = value.divide(result).add(result).shiftRight(1);
+                if (refinedResult.compareTo(result) >= 0) {
+                    return of(result);
+                }
+                result = refinedResult;
+            }
         }
 
         @Override

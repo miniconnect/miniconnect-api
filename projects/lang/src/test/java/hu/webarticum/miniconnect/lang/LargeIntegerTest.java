@@ -322,6 +322,25 @@ class LargeIntegerTest {
         assertThatThrownBy(() -> largeValue.pow(-3)).isInstanceOf(ArithmeticException.class);
         assertThatThrownBy(() -> largeValue.pow(-32342)).isInstanceOf(ArithmeticException.class);
     }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/sqrt-cases.csv", numLinesToSkip = 1)
+    void testSqrt(LargeInteger n, LargeInteger result) {
+        assertThat(n.sqrt()).as("sqrt(%s)", n).isEqualTo(result);
+    }
+
+    @Test
+    void testSqrtThrow() {
+        assertThatThrownBy(() -> LargeInteger.NEGATIVE_ONE.sqrt()).isInstanceOf(ArithmeticException.class);
+        assertThat(LargeInteger.of(-2L)).satisfies(n ->
+                assertThatThrownBy(() -> n.sqrt()).isInstanceOf(ArithmeticException.class));
+        assertThat(LargeInteger.of(-10L)).satisfies(n ->
+                assertThatThrownBy(() -> n.sqrt()).isInstanceOf(ArithmeticException.class));
+        assertThat(LargeInteger.of(-3000000000L)).satisfies(n ->
+                assertThatThrownBy(() -> n.sqrt()).isInstanceOf(ArithmeticException.class));
+        assertThat(LargeInteger.of("-630726728761239200643702832335")).satisfies(n ->
+                assertThatThrownBy(() -> n.sqrt()).isInstanceOf(ArithmeticException.class));
+    }
     
     @ParameterizedTest
     @CsvFileSource(resources = CASE_DATA_DIR + "/multiply-cases.csv", numLinesToSkip = 1)
