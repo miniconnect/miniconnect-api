@@ -18,12 +18,23 @@ class LargeIntegerTest {
     private static final String CASE_DATA_DIR = "/hu/webarticum/miniconnect/lang/test-cases/LargeIntegerTest";
 
     @Test
-    void testCreatorsPrimitive() {
+    void testCreatorsPrimitiveIntegral() {
         assertThat(LargeInteger.of((byte) 123).bigIntegerValue()).isEqualTo(123);
         assertThat(LargeInteger.of((short) 12345).bigIntegerValue()).isEqualTo(12345);
         assertThat(LargeInteger.of(978675645).bigIntegerValue()).isEqualTo(978675645);
         assertThat(LargeInteger.of(958678475673645625L).bigIntegerValue()).isEqualTo(958678475673645625L);
         assertThat(LargeInteger.of(-237352934872934857L).bigIntegerValue()).isEqualTo(-237352934872934857L);
+    }
+
+    @Test
+    void testCreatorsDouble() {
+        assertThat(LargeInteger.of(0.0).bigIntegerValue()).isZero();
+        assertThat(LargeInteger.of(254678934.43).bigIntegerValue()).isEqualTo(254678934);
+        assertThat(LargeInteger.of(254675347398934.9).bigIntegerValue()).isEqualTo(254675347398934L);
+        assertThat(LargeInteger.of(254675347398930000000000.0).bigIntegerValue()).isEqualTo("254675347398930000000000");
+        assertThat(LargeInteger.of(-1.0).bigIntegerValue()).isEqualTo(-1);
+        assertThat(LargeInteger.of(-526374925723849.1).bigIntegerValue()).isEqualTo(-526374925723849L);
+        assertThat(LargeInteger.of(-5436784573948000000000.0).bigIntegerValue()).isEqualTo("-5436784573948000000000");
     }
 
     @Test
@@ -304,6 +315,12 @@ class LargeIntegerTest {
     void testMultiply(LargeInteger n, LargeInteger m, LargeInteger result) {
         assertThat(n.multiply(m)).as("%s * %s", n, m).isEqualTo(result);
         assertThat(m.multiply(n)).as("%s * %s", m, n).isEqualTo(result);
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/multiply-double-cases.csv", numLinesToSkip = 1)
+    void testMultiplyDouble(LargeInteger n, double m, LargeInteger result) {
+        assertThat(n.multiply(m)).as("%s * %s", n, m).isEqualTo(result);
     }
 
     @ParameterizedTest

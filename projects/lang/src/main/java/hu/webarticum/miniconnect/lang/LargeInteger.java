@@ -88,6 +88,14 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         
         return new ImplSmall(value);
     }
+
+    public static LargeInteger of(double value) {
+        if (value < Long.MAX_VALUE - 100 && value > Long.MIN_VALUE + 100) {
+            return of((long) value);
+        }
+        
+        return of(BigDecimal.valueOf(value).toBigInteger());
+    }
     
     public static LargeInteger of(BigInteger value) {
         return value.bitLength() <= 63 ? of(value.longValue()) : new ImplBig(value);
@@ -207,6 +215,8 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     public abstract LargeInteger subtract(LargeInteger val);
     
     public abstract LargeInteger multiply(LargeInteger val);
+    
+    public abstract LargeInteger multiply(double val);
     
     public abstract LargeInteger divide(LargeInteger val);
     
@@ -541,6 +551,17 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
             }
             
             return of(bigIntegerValue().multiply(val.bigIntegerValue()));
+        }
+        
+        @Override
+        public LargeInteger multiply(double val) {
+            if (
+                    (val < 1 && val > -1 && value > Long.MIN_VALUE) ||
+                    (val < MAX_SMALL_MULTIPLIER - 100 && value < MAX_SMALL_MULTIPLIER &&
+                            val > -MAX_SMALL_MULTIPLIER + 100 && value > -MAX_SMALL_MULTIPLIER + 1)) {
+                return new ImplSmall((long) (value * val));
+            }
+            return of(BigDecimal.valueOf(value).multiply(BigDecimal.valueOf(val)).toBigInteger());
         }
 
         @Override
@@ -1058,6 +1079,11 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
             return of(value.multiply(val.bigIntegerValue()));
         }
 
+        @Override
+        public LargeInteger multiply(double val) {
+            return of(new BigDecimal(value).multiply(BigDecimal.valueOf(val)).toBigInteger());
+        }
+        
         @Override
         public LargeInteger divide(LargeInteger val) {
             return of(value.divide(val.bigIntegerValue()));
