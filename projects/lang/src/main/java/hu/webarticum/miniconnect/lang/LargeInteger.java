@@ -5,6 +5,8 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class LargeInteger extends Number implements Comparable<LargeInteger> {
     
@@ -360,6 +362,8 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     public abstract LargeInteger increment();
     
     public abstract LargeInteger decrement();
+    
+    public abstract LargeInteger random(Random random);
     
 
     private static class ImplSmall extends LargeInteger {
@@ -935,6 +939,29 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
             
             return new ImplSmall(value - 1);
         }
+        
+        @Override
+        public LargeInteger random(Random random) {
+            if (value <= 0) {
+                throw new ArithmeticException("Random bound must be positive");
+            }
+            if (random instanceof ThreadLocalRandom) {
+                return new ImplSmall(((ThreadLocalRandom) random).nextLong(value));
+            }
+            long mask = value - 1;
+            long candidate = random.nextLong();
+            if ((value & mask) == 0L) {
+                candidate &= mask;
+            } else {
+                long unsigned = candidate >>> 1;
+                candidate = unsigned % value;
+                while (unsigned + mask - candidate < 0L) {
+                    unsigned = random.nextLong() >>> 1;
+                    candidate = unsigned % value;
+                }
+            }
+            return new ImplSmall(candidate);
+        }
 
     }
     
@@ -1283,6 +1310,25 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
             } else {
                 return of(value.subtract(BigInteger.ONE));
             }
+        }
+        
+        @Override
+        public LargeInteger random(Random random) {
+            if (value.signum() <= 0) {
+                throw new ArithmeticException("Random bound must be positive");
+            }
+            int bitLength = value.subtract(BigInteger.ONE).bitLength();
+            for (int i = 0; i < 100; i++) {
+                BigInteger candidate = new BigInteger(bitLength, random);
+                if (candidate.compareTo(value) < 0) {
+                    return new ImplBig(candidate);
+                }
+            }
+            LargeInteger fallbackCandidate = multiply(random.nextDouble());
+            if (fallbackCandidate.isLessThan(this)) {
+                return fallbackCandidate;
+            }
+            return this.decrement();
         }
 
     }

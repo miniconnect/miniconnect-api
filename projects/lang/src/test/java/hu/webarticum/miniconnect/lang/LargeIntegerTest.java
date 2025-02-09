@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.BitSet;
+import java.util.Random;
 
 import org.assertj.core.data.Percentage;
 import org.junit.jupiter.api.Test;
@@ -697,6 +698,24 @@ class LargeIntegerTest {
     @CsvFileSource(resources = CASE_DATA_DIR + "/shiftRight-cases.csv", numLinesToSkip = 1)
     void testShiftRight(LargeInteger n, int p, LargeInteger result) {
         assertThat(n.shiftRight(p)).as("%s >> %d", n, p).isEqualTo(result);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "0", "-1", "-13", "-42543", "-5764763287450682343455473450862" })
+    void testRandomThrow(String value) {
+        Random random = new Random(999L);
+        LargeInteger high = LargeInteger.of(value);
+        assertThatThrownBy(() -> high.random(random)).isInstanceOf(ArithmeticException.class);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "1", "19", "42673489345", "7941203427346852946087460936" })
+    void testRandom(String value) {
+        Random random = new Random(999L);
+        LargeInteger high = LargeInteger.of(value);
+        assertThat(ImmutableList.fill(1000, i -> high.random(random)))
+                .allMatch(LargeInteger::isNonNegative)
+                .allMatch(r -> r.isLessThan(high));
     }
 
     private byte[] convertHexToBytes(String bytesHex) {
