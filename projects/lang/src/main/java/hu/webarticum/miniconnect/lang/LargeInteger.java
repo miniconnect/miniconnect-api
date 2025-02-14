@@ -17,7 +17,8 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
     private static final long CACHE_HIGH = 127L;
     
-    private static final LargeInteger[] cache = new LargeInteger[(int) (CACHE_HIGH - CACHE_LOW)];
+    private static final LargeInteger.ImplSmall[] cache =
+            new LargeInteger.ImplSmall[(int) (CACHE_HIGH - CACHE_LOW)];
     static {
         for (int i = 0; i < cache.length; i++) {
             cache[i] = new ImplSmall(CACHE_LOW + i);
@@ -100,7 +101,17 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     }
     
     public static LargeInteger of(BigInteger value) {
-        return value.bitLength() <= 63 ? of(value.longValue()) : new ImplBig(value);
+        return value.bitLength() <= 63 ? of(value.longValue(), value) : new ImplBig(value);
+    }
+
+    private static LargeInteger of(long value, BigInteger bigIntegerValue) {
+        if (value < CACHE_HIGH && value >= CACHE_LOW) {
+            ImplSmall result = cache[(int) (value - CACHE_LOW)];
+            result.bigIntegerValue = bigIntegerValue;
+            return result;
+        }
+        
+        return new ImplSmall(value, bigIntegerValue);
     }
 
     public static LargeInteger of(String value) {
@@ -372,10 +383,17 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         
         
         private final long value;
+
+        private transient volatile BigInteger bigIntegerValue = null;
         
 
         private ImplSmall(long value) {
             this.value = value;
+        }
+
+        private ImplSmall(long value, BigInteger bigIntegerValue) {
+            this.value = value;
+            this.bigIntegerValue = bigIntegerValue;
         }
 
         
@@ -423,7 +441,10 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
         @Override
         public BigInteger bigIntegerValue() {
-            return BigInteger.valueOf(value);
+            if (bigIntegerValue == null) {
+                bigIntegerValue = BigInteger.valueOf(value);
+            }
+            return bigIntegerValue;
         }
 
         @Override
