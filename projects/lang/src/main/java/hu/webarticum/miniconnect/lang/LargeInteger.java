@@ -599,27 +599,78 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
         @Override
         public LargeInteger pow(int exponent) {
-            if (exponent == 0) {
-                return ONE;
+            if (exponent > 1) {
+                // most probable case, nothing to do
             } else if (exponent == 1) {
                 return this;
-            } else if (exponent < 0) {
+            } else if (exponent == 0) {
+                return ONE;
+            } else {
                 throw new ArithmeticException("Negative exponent");
-            } else if (
+            }
+            
+            if (value > 1) {
+                // most probable case, nothing to do
+            } else if (value == 0 || value == 1) {
+                return this;
+            } else if (value == -1) {
+                return ((exponent & 1) == 0) ? this.negate() : this;
+            }
+            
+            if (
                     Math.abs(value) > MAX_SMALL_POW_BASE_ABS ||
                     exponent > 4 ||
                     value == Long.MIN_VALUE) {
-                return of(bigIntegerValue().pow(exponent));
+                int maxExponent = 63 / (64 - Long.numberOfLeadingZeros(Math.abs(value)));
+                if (exponent > maxExponent) {
+                    if (maxExponent >= 3) {
+                        BigInteger bigIntegerResult = BigInteger.valueOf(value * value * value);
+                        bigIntegerResult = bigIntegerResult.pow(exponent / 3);
+                        int expRemainder = exponent % 3;
+                        if (expRemainder == 1) {
+                            bigIntegerResult = bigIntegerResult.multiply(bigIntegerValue());
+                        } else if (expRemainder == 2) {
+                            bigIntegerResult = bigIntegerResult.multiply(BigInteger.valueOf(value * value));
+                        }
+                        return of(bigIntegerResult);
+                    } else if (maxExponent == 2) {
+                        BigInteger bigIntegerResult = BigInteger.valueOf(value * value);
+                        bigIntegerResult = bigIntegerResult.pow(exponent >> 1);
+                        if ((exponent & 1) == 1) {
+                            bigIntegerResult = bigIntegerResult.multiply(bigIntegerValue());
+                        }
+                        return of(bigIntegerResult);
+                    } else {
+                        return of(bigIntegerValue().pow(exponent));
+                    }
+                }
             }
             
-            long square = value * value;
             long longResult;
-            if (exponent == 2) {
-                longResult = square;
-            } else if (exponent == 3) {
-                longResult = square * value;
-            } else {
-                longResult = square * square;
+            switch (exponent) {
+                case 2:
+                    longResult = value * value;
+                    break;
+                case 3:
+                    longResult = (value * value) * value;
+                    break;
+                case 4:
+                    long square = value * value;
+                    longResult = square * square;
+                    break;
+                default:
+                    int e = exponent;
+                    long base = value;
+                    longResult = 1L;
+                    while(e > 0) {
+                        if ((e & 1) == 1) {
+                            longResult = longResult * base;
+                        }
+                        e >>= 1;
+                        if (e > 0) {
+                            base = base * base;
+                        }
+                    }
             }
             return new ImplSmall(longResult);
         }
@@ -1226,7 +1277,19 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
         @Override
         public LargeInteger pow(int exponent) {
-            return of(value.pow(exponent));
+            switch (exponent) {
+                case 0:
+                    return ONE;
+                case 1:
+                    return this;
+                case 2:
+                    return new ImplBig(value.multiply(value));
+                case 4:
+                    BigInteger square = value.multiply(value);
+                    return new ImplBig(square.multiply(square));
+                default:
+                    return new ImplBig(value.pow(exponent));
+            }
         }
 
         @Override
