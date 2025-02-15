@@ -567,7 +567,12 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         @Override
         public LargeInteger divide(LargeInteger val) {
             if (val instanceof ImplBig) {
-                return ZERO;
+                if (value == Long.MIN_VALUE &&
+                        ((ImplBig) val).value.equals(BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE))) {
+                    return NEGATIVE_ONE;
+                } else {
+                    return ZERO;
+                }
             }
             
             return new ImplSmall(value / ((ImplSmall) val).value);
@@ -581,7 +586,12 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         @Override
         public LargeInteger remainder(LargeInteger val) {
             if (val instanceof ImplBig) {
-                return this;
+                if (value == Long.MIN_VALUE &&
+                        ((ImplBig) val).value.equals(BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE))) {
+                    return ZERO;
+                } else {
+                    return this;
+                }
             }
             
             return new ImplSmall(value % ((ImplSmall) val).value);

@@ -388,14 +388,13 @@ class LargeIntegerTest {
     @CsvFileSource(resources = CASE_DATA_DIR + "/divideAndRemainder-cases.csv", numLinesToSkip = 1)
     void testDivideAndRemainderRelated(LargeInteger n, LargeInteger m, LargeInteger result, LargeInteger remainder) {
         assertThat(n.divide(m)).as("%s / %s", n, m).isEqualTo(result);
-        assertThat(n.remainder(m)).as("%s % %s", n, m).isEqualTo(remainder);
+        assertThat(n.remainder(m)).as("%s %% %s", n, m).isEqualTo(remainder);
         LargeInteger[] quotientAndRemainder = n.divideAndRemainder(m);
         assertThat(quotientAndRemainder[0]).as("%s.divideAndRemainder(%s).result", n, m).isEqualTo(result);
         assertThat(quotientAndRemainder[1]).as("%s.divideAndRemainder(%s).remainder", n, m).isEqualTo(remainder);
-        LargeInteger mod = remainder.isNegative() ? m.add(remainder) : remainder;
-        assertThat(n.mod(m).abs()).as("%s mod %s", n, m).isEqualTo(mod);
-        assertThat(result.isDivisibleBy(n)).as("%s.isDivisibleBy(%s)", result, n).isEqualTo(remainder.isZero());
-        assertThat(result.isDivisibleBy(m)).as("%s.isDivisibleBy(%s)", result, m).isEqualTo(remainder.isZero());
+        LargeInteger mod = remainder.isNegative() ? n.add(remainder) : remainder;
+        assertThat(n.mod(m.abs())).as("%s mod %s", n, m).isEqualTo(mod);
+        assertThat(n.isDivisibleBy(m)).as("%s.isDivisibleBy(%s)", n, m).isEqualTo(remainder.isZero());
     }
 
     @ParameterizedTest
