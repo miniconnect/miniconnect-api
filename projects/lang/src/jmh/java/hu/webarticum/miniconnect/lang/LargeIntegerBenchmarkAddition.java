@@ -21,7 +21,7 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 
 /**
- * Compares addition performance of LargeInteger to Long, BigInteger, BigInt.
+ * Compares addition performance of LargeInteger to other integral types.
  */
 @State(Scope.Benchmark)
 @Fork(value = 1)
@@ -343,7 +343,7 @@ public class LargeIntegerBenchmarkAddition {
     }
 
     @Benchmark
-    public void benchmarLargeAdditionApfloatApint(Blackhole blackhole) {
+    public void benchmarkLargeAdditionApfloatApint(Blackhole blackhole) {
         Apint p = largeApfloatApintValues[0];
         Apint q = largeApfloatApintValues[1];
         Apint r = largeApfloatApintValues[2];
@@ -365,7 +365,7 @@ public class LargeIntegerBenchmarkAddition {
     }
 
     @Benchmark
-    public void benchmarLargeAdditionLibjBigInt(Blackhole blackhole) {
+    public void benchmarkLargeAdditionLibjBigInt(Blackhole blackhole) {
         org.libj.math.BigInt p = largeLibjBigIntValues[0];
         org.libj.math.BigInt q = largeLibjBigIntValues[1];
         org.libj.math.BigInt r = largeLibjBigIntValues[2];
@@ -380,7 +380,7 @@ public class LargeIntegerBenchmarkAddition {
     }
 
     @Benchmark
-    public void benchmarLargeAdditionHuldraBigInt(Blackhole blackhole) {
+    public void benchmarkLargeAdditionHuldraBigInt(Blackhole blackhole) {
         org.huldra.math.BigInt p = largeHuldraBigIntValues[0];
         org.huldra.math.BigInt q = largeHuldraBigIntValues[1];
         org.huldra.math.BigInt r = largeHuldraBigIntValues[2];

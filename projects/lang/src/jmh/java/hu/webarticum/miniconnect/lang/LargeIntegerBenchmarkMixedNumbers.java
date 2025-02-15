@@ -22,7 +22,7 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 
 /**
- * Compares performance of LargeInteger to Long, BigInteger, BigInt in a complex case.
+ * Compares performance of LargeInteger to other integral types in a complex case.
  * 
  * <p>Based on the following expression:</p>
  * 
