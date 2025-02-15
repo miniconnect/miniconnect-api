@@ -203,7 +203,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     }
 
 
-    // BigInteger' methods
+    // BigInteger's methods
     
     public abstract long longValueExact();
     
@@ -314,59 +314,33 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     
     public abstract boolean isFittingInByte();
 
-    public boolean isZero() {
-        return equals(ZERO);
-    }
+    public abstract boolean isZero();
 
-    public boolean isNonZero() {
-        return !equals(ZERO);
-    }
+    public abstract boolean isNonZero();
 
-    public boolean isPositive() {
-        return signum() > 0;
-    }
+    public abstract boolean isPositive();
 
-    public boolean isNonPositive() {
-        return signum() <= 0;
-    }
+    public abstract boolean isNonPositive();
 
-    public boolean isNegative() {
-        return signum() < 0;
-    }
+    public abstract boolean isNegative();
 
-    public boolean isNonNegative() {
-        return signum() >= 0;
-    }
+    public abstract boolean isNonNegative();
 
     public abstract boolean isEven();
 
-    public boolean isOdd() {
-        return !isEven();
-    }
+    public abstract boolean isOdd();
 
-    public boolean isDivisibleBy(LargeInteger val) {
-        return remainder(val).isZero();
-    }
+    public abstract boolean isDivisibleBy(LargeInteger val);
 
-    public boolean isEqualTo(LargeInteger val) {
-        return equals(val);
-    }
+    public abstract boolean isEqualTo(LargeInteger val);
 
-    public boolean isLessThan(LargeInteger val) {
-        return compareTo(val) < 0;
-    }
+    public abstract boolean isLessThan(LargeInteger val);
 
-    public boolean isLessThanOrEqualTo(LargeInteger val) {
-        return compareTo(val) <= 0;
-    }
+    public abstract boolean isLessThanOrEqualTo(LargeInteger val);
     
-    public boolean isGreaterThan(LargeInteger val) {
-        return compareTo(val) > 0;
-    }
+    public abstract boolean isGreaterThan(LargeInteger val);
 
-    public boolean isGreaterThanOrEqualTo(LargeInteger val) {
-        return compareTo(val) >= 0;
-    }
+    public abstract boolean isGreaterThanOrEqualTo(LargeInteger val);
     
     public abstract boolean isPowerOfTwo();
     
@@ -586,6 +560,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
                             val > -MAX_SMALL_MULTIPLIER + 100 && value > -MAX_SMALL_MULTIPLIER + 1)) {
                 return new ImplSmall((long) (value * val));
             }
+            
             return of(BigDecimal.valueOf(value).multiply(BigDecimal.valueOf(val)).toBigInteger());
         }
 
@@ -930,10 +905,100 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         }
 
         @Override
-        public boolean isEven() {
-            return (value & 1) == 0;
+        public boolean isZero() {
+            return value == 0;
         }
 
+        @Override
+        public boolean isNonZero() {
+            return value != 0;
+        }
+
+        @Override
+        public boolean isPositive() {
+            return value > 0;
+        }
+
+        @Override
+        public boolean isNonPositive() {
+            return value <= 0;
+        }
+
+        @Override
+        public boolean isNegative() {
+            return value < 0;
+        }
+
+        @Override
+        public boolean isNonNegative() {
+            return value >= 0;
+        }
+
+        @Override
+        public boolean isEven() {
+            return (value & 1L) == 0L;
+        }
+
+        @Override
+        public boolean isOdd() {
+            return (value & 1L) == 1L;
+        }
+
+        @Override
+        public boolean isDivisibleBy(LargeInteger val) {
+            if (val instanceof ImplBig) {
+                if (value == 0) {
+                    return true;
+                } else if (value == Long.MIN_VALUE) {
+                    return ((ImplBig) val).value.equals(BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE));
+                }
+                return false;
+            }
+            
+            return (value % ((ImplSmall) val).value) == 0;
+        }
+
+        @Override
+        public boolean isEqualTo(LargeInteger val) {
+            return equals(val);
+        }
+
+        @Override
+        public boolean isLessThan(LargeInteger val) {
+            if (val instanceof ImplBig) {
+                return ((ImplBig) val).isPositive();
+            }
+            
+            return value < ((ImplSmall) val).value;
+        }
+
+        @Override
+        public boolean isLessThanOrEqualTo(LargeInteger val) {
+            if (val instanceof ImplBig) {
+                return ((ImplBig) val).isPositive();
+            }
+            
+            return value <= ((ImplSmall) val).value;
+        }
+
+        @Override
+        public boolean isGreaterThan(LargeInteger val) {
+            if (val instanceof ImplBig) {
+                return ((ImplBig) val).isNegative();
+            }
+            
+            return value > ((ImplSmall) val).value;
+        }
+
+        @Override
+        public boolean isGreaterThanOrEqualTo(LargeInteger val) {
+            if (val instanceof ImplBig) {
+                return ((ImplBig) val).isNegative();
+            }
+            
+            return value >= ((ImplSmall) val).value;
+        }
+        
         @Override
         public boolean isPowerOfTwo() {
             if (value <= 0L) {
@@ -969,6 +1034,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
             if (random instanceof ThreadLocalRandom) {
                 return new ImplSmall(((ThreadLocalRandom) random).nextLong(value));
             }
+            
             long mask = value - 1;
             long candidate = random.nextLong();
             if ((value & mask) == 0L) {
@@ -1302,10 +1368,75 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         }
 
         @Override
+        public boolean isZero() {
+            return false;
+        }
+
+        @Override
+        public boolean isNonZero() {
+            return true;
+        }
+
+        @Override
+        public boolean isPositive() {
+            return signum() > 0;
+        }
+
+        @Override
+        public boolean isNonPositive() {
+            return signum() <= 0;
+        }
+
+        @Override
+        public boolean isNegative() {
+            return signum() < 0;
+        }
+
+        @Override
+        public boolean isNonNegative() {
+            return signum() >= 0;
+        }
+
+        @Override
         public boolean isEven() {
             return !value.testBit(0);
         }
 
+        @Override
+        public boolean isOdd() {
+            return value.testBit(0);
+        }
+
+        @Override
+        public boolean isDivisibleBy(LargeInteger val) {
+            return remainder(val).isZero();
+        }
+
+        @Override
+        public boolean isEqualTo(LargeInteger val) {
+            return equals(val);
+        }
+
+        @Override
+        public boolean isLessThan(LargeInteger val) {
+            return compareTo(val) < 0;
+        }
+
+        @Override
+        public boolean isLessThanOrEqualTo(LargeInteger val) {
+            return compareTo(val) <= 0;
+        }
+
+        @Override
+        public boolean isGreaterThan(LargeInteger val) {
+            return compareTo(val) > 0;
+        }
+
+        @Override
+        public boolean isGreaterThanOrEqualTo(LargeInteger val) {
+            return compareTo(val) >= 0;
+        }
+        
         @Override
         public boolean isPowerOfTwo() {
             if (isNonPositive()) {
@@ -1338,6 +1469,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
             if (value.signum() <= 0) {
                 throw new ArithmeticException("Random bound must be positive");
             }
+            
             int bitLength = value.subtract(BigInteger.ONE).bitLength();
             for (int i = 0; i < 100; i++) {
                 BigInteger candidate = new BigInteger(bitLength, random);
