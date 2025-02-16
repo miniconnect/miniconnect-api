@@ -45,6 +45,8 @@ public class LargeIntegerBenchmarkAddition {
     
     private org.jscience.mathematics.number.LargeInteger[] smallJscienceLargeIntegerValues;
     
+    private clojure.lang.BigInt[] smallClosureBigIntValues;
+    
     private org.libj.math.BigInt[] smallLibjBigIntValues;
     
     private org.huldra.math.BigInt[] smallHuldraBigIntValues;
@@ -61,6 +63,8 @@ public class LargeIntegerBenchmarkAddition {
     private Apint[] largeApfloatApintValues;
     
     private org.jscience.mathematics.number.LargeInteger[] largeJscienceLargeIntegerValues;
+    
+    private clojure.lang.BigInt[] largeClosureBigIntValues;
     
     private org.libj.math.BigInt[] largeLibjBigIntValues;
     
@@ -109,6 +113,11 @@ public class LargeIntegerBenchmarkAddition {
             smallJscienceLargeIntegerValues[i] =
                     org.jscience.mathematics.number.LargeInteger.valueOf(smallLongValues[i]);
         }
+        
+        smallClosureBigIntValues = new clojure.lang.BigInt[smallLongValues.length];
+        for (int i = 0; i < smallLongValues.length; i++) {
+            smallClosureBigIntValues[i] = clojure.lang.BigInt.valueOf(i);
+        }
 
         smallLibjBigIntValues = new org.libj.math.BigInt[smallLongValues.length];
         for (int i = 0; i < smallLongValues.length; i++) {
@@ -153,6 +162,11 @@ public class LargeIntegerBenchmarkAddition {
         for (int i = 0; i < largeBigIntegerValues.length; i++) {
             largeJscienceLargeIntegerValues[i] =
                     org.jscience.mathematics.number.LargeInteger.valueOf(largeBigIntegerValues[i]);
+        }
+        
+        largeClosureBigIntValues = new clojure.lang.BigInt[largeBigIntegerValues.length];
+        for (int i = 0; i < largeBigIntegerValues.length; i++) {
+            largeClosureBigIntValues[i] = clojure.lang.BigInt.fromBigInteger(largeBigIntegerValues[i]);
         }
 
         largeLibjBigIntValues = new org.libj.math.BigInt[largeBigIntegerValues.length];
@@ -259,6 +273,19 @@ public class LargeIntegerBenchmarkAddition {
     }
 
     @Benchmark
+    public void benchmarkSmallAdditionClosureBigInt(Blackhole blackhole) {
+        clojure.lang.BigInt a = smallClosureBigIntValues[0];
+        clojure.lang.BigInt b = smallClosureBigIntValues[1];
+        clojure.lang.BigInt c = smallClosureBigIntValues[2];
+        clojure.lang.BigInt d = smallClosureBigIntValues[3];
+        clojure.lang.BigInt e = smallClosureBigIntValues[4];
+        clojure.lang.BigInt f = smallClosureBigIntValues[5];
+        clojure.lang.BigInt g = smallClosureBigIntValues[6];
+        clojure.lang.BigInt result = a.add(b).add(c).add(d).add(e).add(f).add(g);
+        blackhole.consume(result);
+    }
+
+    @Benchmark
     public void benchmarkSmallAdditionLibjBigInt(Blackhole blackhole) {
         org.libj.math.BigInt a = smallLibjBigIntValues[0];
         org.libj.math.BigInt b = smallLibjBigIntValues[1];
@@ -361,6 +388,17 @@ public class LargeIntegerBenchmarkAddition {
         org.jscience.mathematics.number.LargeInteger s = largeJscienceLargeIntegerValues[3];
         org.jscience.mathematics.number.LargeInteger t = largeJscienceLargeIntegerValues[4];
         org.jscience.mathematics.number.LargeInteger result = p.plus(q).plus(r).plus(s).plus(t);
+        blackhole.consume(result);
+    }
+
+    @Benchmark
+    public void benchmarkLargeAdditionClosureBigInt(Blackhole blackhole) {
+        clojure.lang.BigInt p = largeClosureBigIntValues[0];
+        clojure.lang.BigInt q = largeClosureBigIntValues[1];
+        clojure.lang.BigInt r = largeClosureBigIntValues[2];
+        clojure.lang.BigInt s = largeClosureBigIntValues[3];
+        clojure.lang.BigInt t = largeClosureBigIntValues[4];
+        clojure.lang.BigInt result = p.add(q).add(r).add(s).add(t);
         blackhole.consume(result);
     }
 
@@ -542,6 +580,30 @@ public class LargeIntegerBenchmarkAddition {
     }
 
     @Benchmark
+    public void benchmarkMixedAdditionClosureBigInt(Blackhole blackhole) {
+        clojure.lang.BigInt a = smallClosureBigIntValues[0];
+        clojure.lang.BigInt b = smallClosureBigIntValues[1];
+        clojure.lang.BigInt c = smallClosureBigIntValues[2];
+        clojure.lang.BigInt d = smallClosureBigIntValues[3];
+        clojure.lang.BigInt e = smallClosureBigIntValues[4];
+        clojure.lang.BigInt f = smallClosureBigIntValues[5];
+        clojure.lang.BigInt g = smallClosureBigIntValues[6];
+        clojure.lang.BigInt p = largeClosureBigIntValues[0];
+        clojure.lang.BigInt q = largeClosureBigIntValues[1];
+        clojure.lang.BigInt r = largeClosureBigIntValues[2];
+        clojure.lang.BigInt s = largeClosureBigIntValues[3];
+        clojure.lang.BigInt t = largeClosureBigIntValues[4];
+        clojure.lang.BigInt sub1 = a.add(p);
+        clojure.lang.BigInt sub2 = b.add(q);
+        clojure.lang.BigInt sub3 = g.add(f);
+        clojure.lang.BigInt sub4 = f.add(f).add(f).add(f);
+        clojure.lang.BigInt sub5 = d.add(t);
+        clojure.lang.BigInt sub6 = c.add(r).add(e).add(s);
+        clojure.lang.BigInt result = sub1.add(sub2).add(sub3).add(sub4).add(sub5).add(sub6);
+        blackhole.consume(result);
+    }
+
+    @Benchmark
     public void benchmarkMixedAdditionLibjBigint(Blackhole blackhole) {
         org.libj.math.BigInt a = smallLibjBigIntValues[0];
         org.libj.math.BigInt b = smallLibjBigIntValues[1];
@@ -666,6 +728,14 @@ public class LargeIntegerBenchmarkAddition {
         org.jscience.mathematics.number.LargeInteger f = smallJscienceLargeIntegerValues[5];
         org.jscience.mathematics.number.LargeInteger p = largeJscienceLargeIntegerValues[0];
         org.jscience.mathematics.number.LargeInteger result = p.plus(f);
+        blackhole.consume(result);
+    }
+
+    @Benchmark
+    public void benchmarkMixedBottleneckAdditionClosureBigInt(Blackhole blackhole) {
+        clojure.lang.BigInt f = smallClosureBigIntValues[5];
+        clojure.lang.BigInt p = largeClosureBigIntValues[0];
+        clojure.lang.BigInt result = p.add(f);
         blackhole.consume(result);
     }
 

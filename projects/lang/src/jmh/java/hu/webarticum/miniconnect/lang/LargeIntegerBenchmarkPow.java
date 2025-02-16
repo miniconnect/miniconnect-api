@@ -49,6 +49,8 @@ public class LargeIntegerBenchmarkPow {
     
     private org.jscience.mathematics.number.LargeInteger jscienceLargeIntegerBase;
     
+    private clojure.lang.BigInt clojureBigIntBase;
+    
 
     @Setup(Level.Iteration)
     public void setup() {
@@ -58,6 +60,7 @@ public class LargeIntegerBenchmarkPow {
         scalaBigIntBase = BigInt.apply(baseStr);
         spireSafeLongBase = SafeLong.apply(baseStr);
         jscienceLargeIntegerBase = org.jscience.mathematics.number.LargeInteger.valueOf(baseStr);
+        clojureBigIntBase = clojure.lang.BigInt.fromBigInteger(bigIntegerBase);
     }
 
 
@@ -89,6 +92,11 @@ public class LargeIntegerBenchmarkPow {
     @Benchmark
     public void benchmarkJscienceLargeInteger(Blackhole blackhole) {
         blackhole.consume(jscienceLargeIntegerBase.pow(exponent));
+    }
+
+    @Benchmark
+    public void benchmarkClojureBigInt(Blackhole blackhole) {
+        blackhole.consume(ClojureArithmetic.pow(clojureBigIntBase, exponent));
     }
 
 }

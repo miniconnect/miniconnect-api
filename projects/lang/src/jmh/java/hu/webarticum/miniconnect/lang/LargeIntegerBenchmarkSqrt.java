@@ -20,6 +20,8 @@ import org.openjdk.jmh.infra.Blackhole;
 
 import com.google.common.math.BigIntegerMath;
 
+import clojure.lang.BigInt;
+
 /**
  * Measures the performance of the sqrt method.
  */
@@ -38,19 +40,23 @@ public class LargeIntegerBenchmarkSqrt {
             "6407283476183409783461873347673306188236174",
             "21416545397522634523928076988623985594776896183857352521",
     })
-    public String value;
+    private String value;
     
-    public LargeInteger largeInteger;
+    private LargeInteger largeInteger;
     
-    public BigInteger bigInteger;
+    private BigInteger bigInteger;
     
-    public org.jscience.mathematics.number.LargeInteger jscienceLargeInteger;
+    private org.jscience.mathematics.number.LargeInteger jscienceLargeInteger;
+    
+    private BigInt clojureBigInt;
+    
 
     @Setup(Level.Trial)
     public void setup() {
         largeInteger = LargeInteger.of(value);
         bigInteger = new BigInteger(value);
         jscienceLargeInteger = org.jscience.mathematics.number.LargeInteger.valueOf(value);
+        clojureBigInt = BigInt.fromBigInteger(bigInteger);
     }
 
     @Benchmark
@@ -66,6 +72,11 @@ public class LargeIntegerBenchmarkSqrt {
     @Benchmark
     public void benchmarkJscienceLargeIntegerSqrt(Blackhole blackhole) {
         blackhole.consume(jscienceLargeInteger.sqrt());
+    }
+
+    @Benchmark
+    public void benchmarkClojureBigIntSqrt(Blackhole blackhole) {
+        blackhole.consume(ClojureArithmetic.sqrt(clojureBigInt));
     }
     
 }

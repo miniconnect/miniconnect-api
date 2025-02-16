@@ -55,6 +55,8 @@ public class LargeIntegerBenchmarkSmallNumbersSimple {
     
     private org.jscience.mathematics.number.LargeInteger[] jscienceLargeIntegerValues;
     
+    private clojure.lang.BigInt[] clojureBigIntValues;
+    
     private org.libj.math.BigInt[] libjBigIntValues;
     
     private org.huldra.math.BigInt[] huldraBigIntValues;
@@ -97,6 +99,11 @@ public class LargeIntegerBenchmarkSmallNumbersSimple {
         jscienceLargeIntegerValues = new org.jscience.mathematics.number.LargeInteger[longValues.length];
         for (int i = 0; i < longValues.length; i++) {
             jscienceLargeIntegerValues[i] = org.jscience.mathematics.number.LargeInteger.valueOf(longValues[i]);
+        }
+        
+        clojureBigIntValues = new clojure.lang.BigInt[longValues.length];
+        for (int i = 0; i < longValues.length; i++) {
+            clojureBigIntValues[i] = clojure.lang.BigInt.fromLong(longValues[i]);
         }
 
         libjBigIntValues = new org.libj.math.BigInt[longValues.length];
@@ -169,6 +176,16 @@ public class LargeIntegerBenchmarkSmallNumbersSimple {
                         .times(jscienceLargeIntegerValues[1])
                         .plus(jscienceLargeIntegerValues[2])
                         .divide(jscienceLargeIntegerValues[3]));
+    }
+
+    @Benchmark
+    public void benchmarkClojureBigInt(Blackhole blackhole) {
+        blackhole.consume(
+                ClojureArithmetic.divide(
+                        clojureBigIntValues[0]
+                                .multiply(clojureBigIntValues[1])
+                                .add(clojureBigIntValues[2]),
+                        clojureBigIntValues[3]));
     }
 
     @Benchmark

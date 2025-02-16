@@ -66,6 +66,8 @@ public class LargeIntegerBenchmarkSmallNumbersNormal {
     
     private org.jscience.mathematics.number.LargeInteger[] jscienceLargeIntegerValues;
     
+    private clojure.lang.BigInt[] clojureBigIntValues;
+    
     private org.libj.math.BigInt[] libjBigIntValues;
     
     private org.huldra.math.BigInt[] huldraBigIntValues;
@@ -109,6 +111,11 @@ public class LargeIntegerBenchmarkSmallNumbersNormal {
         jscienceLargeIntegerValues = new org.jscience.mathematics.number.LargeInteger[longValues.length];
         for (int i = 0; i < longValues.length; i++) {
             jscienceLargeIntegerValues[i] = org.jscience.mathematics.number.LargeInteger.valueOf(longValues[i]);
+        }
+        
+        clojureBigIntValues = new clojure.lang.BigInt[longValues.length];
+        for (int i = 0; i < longValues.length; i++) {
+            clojureBigIntValues[i] = clojure.lang.BigInt.fromLong(longValues[i]);
         }
 
         libjBigIntValues = new org.libj.math.BigInt[longValues.length];
@@ -243,6 +250,46 @@ public class LargeIntegerBenchmarkSmallNumbersNormal {
                 .plus(org.jscience.mathematics.number.LargeInteger.ONE)
                 .remainder(andOrValue).abs()
                 .plus(maxValue.opposite());
+        blackhole.consume(result);
+    }
+
+    @Benchmark
+    public void benchmarkClojureBigInt(Blackhole blackhole) {
+        clojure.lang.BigInt a = clojureBigIntValues[0];
+        clojure.lang.BigInt b = clojureBigIntValues[1];
+        clojure.lang.BigInt c = clojureBigIntValues[2];
+        clojure.lang.BigInt d = clojureBigIntValues[3];
+        clojure.lang.BigInt e = clojureBigIntValues[4];
+        Object result =
+            ClojureArithmetic.add(
+                ClojureArithmetic.remainder(
+                    ClojureArithmetic.increment(
+                        ClojureArithmetic.multiply(
+                            a.add(b),
+                            ClojureArithmetic.subtract(a, b)
+                        )
+                    ),
+                    ClojureArithmetic.abs(
+                        ClojureArithmetic.or(
+                            ClojureArithmetic.and(c, d),
+                            e
+                        )
+                    )
+                ),
+                ClojureArithmetic.negate(
+                    ClojureArithmetic.max(
+                        b,
+                        ClojureArithmetic.add(
+                            d,
+                            ClojureArithmetic.min(
+                                a,
+                                ClojureArithmetic.divide(e, a)
+                            )
+                        )
+                    )
+                )
+            )
+        ;
         blackhole.consume(result);
     }
 
