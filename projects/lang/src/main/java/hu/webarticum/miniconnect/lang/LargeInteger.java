@@ -13,15 +13,10 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     private static final long serialVersionUID = 1L;
     
     
-    private static final long CACHE_LOW = -128L;
-
-    private static final long CACHE_HIGH = 127L;
-    
-    private static final LargeInteger.ImplSmall[] cache =
-            new LargeInteger.ImplSmall[(int) (CACHE_HIGH - CACHE_LOW)];
+    private static final ImplSmall[] cache = new ImplSmall[256];
     static {
-        for (int i = 0; i < cache.length; i++) {
-            cache[i] = new ImplSmall(CACHE_LOW + i);
+        for (long i = -128L; i < 128L; i++) {
+            cache[Byte.toUnsignedInt((byte) i)] = new ImplSmall(i);
         }
     }
     
@@ -73,20 +68,31 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
 
     public static LargeInteger of(byte value) {
-        return of((long) value);
+        return cache[Byte.toUnsignedInt(value)];
     }
 
     public static LargeInteger of(short value) {
-        return of((long) value);
+        byte byteValue = (byte) value;
+        if (byteValue == value) {
+            return cache[Byte.toUnsignedInt(byteValue)];
+        }
+        
+        return new ImplSmall(value);
     }
 
     public static LargeInteger of(int value) {
-        return of((long) value);
+        byte byteValue = (byte) value;
+        if (byteValue == value) {
+            return cache[Byte.toUnsignedInt(byteValue)];
+        }
+        
+        return new ImplSmall(value);
     }
 
     public static LargeInteger of(long value) {
-        if (value < CACHE_HIGH && value >= CACHE_LOW) {
-            return cache[(int) (value - CACHE_LOW)];
+        byte byteValue = (byte) value;
+        if (byteValue == value) {
+            return cache[Byte.toUnsignedInt(byteValue)];
         }
         
         return new ImplSmall(value);
@@ -105,8 +111,9 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     }
 
     private static LargeInteger of(long value, BigInteger bigIntegerValue) {
-        if (value < CACHE_HIGH && value >= CACHE_LOW) {
-            ImplSmall result = cache[(int) (value - CACHE_LOW)];
+        byte byteValue = (byte) value;
+        if (byteValue == value) {
+            ImplSmall result = cache[Byte.toUnsignedInt(byteValue)];
             result.bigIntegerValue = bigIntegerValue;
             return result;
         }
@@ -373,8 +380,9 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         
         @Override
         public LargeInteger cached() {
-            if (value < CACHE_HIGH && value >= CACHE_LOW) {
-                return cache[(int) (value - CACHE_LOW)];
+            byte byteValue = (byte) value;
+            if (byteValue == value) {
+                return cache[Byte.toUnsignedInt(byteValue)];
             }
             
             return this;
