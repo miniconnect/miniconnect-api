@@ -960,17 +960,17 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
         @Override
         public boolean isFittingInInt() {
-            return value <= Integer.MAX_VALUE && value >= Integer.MIN_VALUE; 
+            return (int) value == value;
         }
 
         @Override
         public boolean isFittingInShort() {
-            return value <= Short.MAX_VALUE && value >= Short.MIN_VALUE;
+            return (short) value == value;
         }
 
         @Override
         public boolean isFittingInByte() {
-            return value <= Byte.MAX_VALUE && value >= Byte.MIN_VALUE;
+            return (byte) value == value;
         }
 
         @Override
