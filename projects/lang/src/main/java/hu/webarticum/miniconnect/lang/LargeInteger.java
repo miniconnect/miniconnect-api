@@ -915,7 +915,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
                 throw negativeBitAddress();
             }
             
-            return (value & (1 << n)) != 0;
+            return (value & (1L << n)) != 0;
         }
 
         @Override
