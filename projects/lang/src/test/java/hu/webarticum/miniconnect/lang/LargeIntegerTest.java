@@ -319,7 +319,7 @@ class LargeIntegerTest {
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = CASE_DATA_DIR + "/multiply-double-cases.csv", numLinesToSkip = 1)
+    @CsvFileSource(resources = CASE_DATA_DIR + "/multiplyDouble-cases.csv", numLinesToSkip = 1)
     void testMultiplyDouble(LargeInteger n, double m, LargeInteger result) {
         assertThat(n.multiply(m)).as("%s * %s", n, m).isEqualTo(result);
     }
