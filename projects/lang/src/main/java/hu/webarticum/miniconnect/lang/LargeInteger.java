@@ -295,18 +295,8 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     
     public abstract LargeInteger cached();
     
-    public BitSet toBitSet() {
-        byte[] bytes = toByteArray();
-        int halfLength = bytes.length / 2;
-        for (int i = 0; i < halfLength; i++) {
-            byte v = bytes[i];
-            int flipIndex = bytes.length - i - 1;
-            bytes[i] = bytes[flipIndex];
-            bytes[flipIndex] = v;
-        }
-        return BitSet.valueOf(bytes);
-    }
-
+    public abstract BitSet toBitSet();
+    
     public abstract String toString(int radix);
     
     public abstract BigInteger bigIntegerValue();
@@ -387,7 +377,25 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
             
             return this;
         }
-        
+
+        @Override
+        public BitSet toBitSet() {
+            int skipByteCount;
+            if (value < 0) {
+                skipByteCount = (Long.numberOfLeadingZeros(~value) - 1) / 8;
+            } else {
+                skipByteCount = (Long.numberOfLeadingZeros(value) - 1) / 8;
+            }
+            int bytesLength = 8 - skipByteCount;
+            byte[] bytes = new byte[bytesLength];
+            int bitOffset = 0;
+            for (int i = 0; i < bytesLength; i++) {
+                bytes[i] = (byte) (value >>> bitOffset);
+                bitOffset += 8;
+            }
+            return BitSet.valueOf(bytes);
+        }
+
         @Override
         public String toString() {
             return Long.toString(value);
@@ -488,9 +496,22 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
         @Override
         public byte[] toByteArray() {
-            return bigIntegerValue().toByteArray();
+            int skipByteCount;
+            if (value < 0) {
+                skipByteCount = (Long.numberOfLeadingZeros(~value) - 1) / 8;
+            } else {
+                skipByteCount = (Long.numberOfLeadingZeros(value) - 1) / 8;
+            }
+            int resultLength = 8 - skipByteCount;
+            byte[] result = new byte[resultLength];
+            int bitOffset = (resultLength - 1) * 8;
+            for (int i = 0; i < resultLength; i++) {
+                result[i] = (byte) (value >>> bitOffset);
+                bitOffset -= 8;
+            }
+            return result;
         }
-
+        
         @Override
         public boolean isProbablePrime(int certainty) {
             return bigIntegerValue().isProbablePrime(certainty);
@@ -1137,6 +1158,19 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         @Override
         public LargeInteger cached() {
             return this;
+        }
+
+        @Override
+        public BitSet toBitSet() {
+            byte[] bytes = value.toByteArray();
+            int halfLength = bytes.length / 2;
+            for (int i = 0; i < halfLength; i++) {
+                byte v = bytes[i];
+                int flipIndex = bytes.length - i - 1;
+                bytes[i] = bytes[flipIndex];
+                bytes[flipIndex] = v;
+            }
+            return BitSet.valueOf(bytes);
         }
         
         @Override
