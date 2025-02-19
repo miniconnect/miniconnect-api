@@ -1599,7 +1599,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
             for (int i = 0; i < 100; i++) {
                 BigInteger candidate = new BigInteger(bitLength, random);
                 if (candidate.compareTo(value) < 0) {
-                    return new ImplBig(candidate);
+                    return of(candidate);
                 }
             }
             LargeInteger fallbackCandidate = multiply(random.nextDouble());
