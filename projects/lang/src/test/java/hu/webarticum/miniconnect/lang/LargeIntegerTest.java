@@ -28,6 +28,33 @@ class LargeIntegerTest {
     }
 
     @Test
+    void testCreatorsPrimitiveIntegralUnsigned() {
+        assertThat(LargeInteger.ofUnsignedByte((byte) 0).bigIntegerValue()).isZero();
+        assertThat(LargeInteger.ofUnsignedByte((byte) 48).bigIntegerValue()).isEqualTo(48);
+        assertThat(LargeInteger.ofUnsignedByte((byte) -1).bigIntegerValue()).isEqualTo(255);
+        assertThat(LargeInteger.ofUnsignedByte((byte) -107).bigIntegerValue()).isEqualTo(149);
+        assertThat(LargeInteger.ofUnsignedShort((short) 0).bigIntegerValue()).isZero();
+        assertThat(LargeInteger.ofUnsignedShort((short) 48233).bigIntegerValue()).isEqualTo(48233);
+        assertThat(LargeInteger.ofUnsignedShort((short) -1).bigIntegerValue()).isEqualTo(65535);
+        assertThat(LargeInteger.ofUnsignedShort((short) -14573).bigIntegerValue()).isEqualTo(50963);
+        assertThat(LargeInteger.ofUnsignedShort((byte) -107).bigIntegerValue()).isEqualTo(65429);
+        assertThat(LargeInteger.ofUnsignedInt(0).bigIntegerValue()).isZero();
+        assertThat(LargeInteger.ofUnsignedInt(43289359).bigIntegerValue()).isEqualTo(43289359);
+        assertThat(LargeInteger.ofUnsignedInt(-1).bigIntegerValue()).isEqualTo(4294967295L);
+        assertThat(LargeInteger.ofUnsignedInt(-32783954).bigIntegerValue()).isEqualTo(4262183342L);
+        assertThat(LargeInteger.ofUnsignedInt((byte) -107).bigIntegerValue()).isEqualTo(4294967189L);
+        assertThat(LargeInteger.ofUnsignedInt((short) -14573).bigIntegerValue()).isEqualTo(4294952723L);
+        assertThat(LargeInteger.ofUnsignedLong(0L).bigIntegerValue()).isZero();
+        assertThat(LargeInteger.ofUnsignedLong(54783925).bigIntegerValue()).isEqualTo(54783925);
+        assertThat(LargeInteger.ofUnsignedLong(70828395234752L).bigIntegerValue()).isEqualTo(70828395234752L);
+        assertThat(LargeInteger.ofUnsignedLong(-1).bigIntegerValue()).isEqualTo("18446744073709551615");
+        assertThat(LargeInteger.ofUnsignedLong(-5278345912984374L).bigIntegerValue()).isEqualTo("18441465727796567242");
+        assertThat(LargeInteger.ofUnsignedLong((byte) -107).bigIntegerValue()).isEqualTo("18446744073709551509");
+        assertThat(LargeInteger.ofUnsignedLong((short) -14573).bigIntegerValue()).isEqualTo("18446744073709537043");
+        assertThat(LargeInteger.ofUnsignedLong((int) -32783954).bigIntegerValue()).isEqualTo("18446744073676767662");
+    }
+
+    @Test
     void testCreatorsDouble() {
         assertThat(LargeInteger.of(0.0).bigIntegerValue()).isZero();
         assertThat(LargeInteger.of(254678934.43).bigIntegerValue()).isEqualTo(254678934);
@@ -66,16 +93,29 @@ class LargeIntegerTest {
         assertThat(LargeInteger.of(new byte[0]).bigIntegerValue()).isZero();
         assertThat(LargeInteger.of(new byte[] { 0 }).bigIntegerValue()).isZero();
         assertThat(LargeInteger.of(new byte[] { 0, 0, 0, 0, 0 }).bigIntegerValue()).isZero();
-        assertThat(LargeInteger.of(new byte[] { 13, -42, 1, -56, -122, 7, 1, 123 }).bigIntegerValue())
-                .isEqualTo(996986328262836603L);
         assertThat(LargeInteger.of(new byte[] { 13, -42, 1, -56, -122, 7, 1 }).bigIntegerValue())
                 .isEqualTo(3894477844776705L);
         assertThat(LargeInteger.of(new byte[] { -13, -42, 1, -56, -122, 7, 1 }).bigIntegerValue())
                 .isEqualTo(-3423871549700351L);
+        assertThat(LargeInteger.of(new byte[] { 13, -42, 1, -56, -122, 7, 1, 123 }).bigIntegerValue())
+                .isEqualTo(996986328262836603L);
         assertThat(LargeInteger.of(new byte[] { 13, -42, 1, -56, -122, 7, 1, 123, 99, -77 }).bigIntegerValue())
                 .isEqualTo("65338496009033259639731");
+    }
+
+    @Test
+    void testCreatorsBytesUnsigned() {
+        assertThat(LargeInteger.ofUnsigned(new byte[0]).bigIntegerValue()).isZero();
+        assertThat(LargeInteger.ofUnsigned(new byte[] { 0 }).bigIntegerValue()).isZero();
+        assertThat(LargeInteger.ofUnsigned(new byte[] { -1 }).bigIntegerValue()).isEqualTo(255);
         assertThat(LargeInteger.ofUnsigned(new byte[] { -13, -42, 1, -56, -122, 7, 1 }).bigIntegerValue())
                 .isEqualTo(68633722488227585L);
+        assertThat(LargeInteger.ofUnsigned(new byte[] { 13, -42, 1, -56, -122, 7, 1, 4 }).bigIntegerValue())
+                .isEqualTo(996986328262836484L);
+        assertThat(LargeInteger.ofUnsigned(new byte[] { -13, -42, 1, -56, -122, 7, 1, 4 }).bigIntegerValue())
+                .isEqualTo("17570232956986261764");
+        assertThat(LargeInteger.ofUnsigned(new byte[] { 13, -42, 1, -56, -122, 7, 1, 123, 99, -77 }).bigIntegerValue())
+                .isEqualTo("65338496009033259639731");
     }
 
     @Test

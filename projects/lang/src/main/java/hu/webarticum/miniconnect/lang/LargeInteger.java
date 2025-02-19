@@ -161,8 +161,45 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         return of(toBytes(bitSet));
     }
 
+    public static LargeInteger ofUnsignedByte(byte value) {
+        return of(Byte.toUnsignedLong(value));
+    }
+
+    public static LargeInteger ofUnsignedShort(short value) {
+        return of(Short.toUnsignedLong(value));
+    }
+
+    public static LargeInteger ofUnsignedInt(int value) {
+        return of(Integer.toUnsignedLong(value));
+    }
+
+    public static LargeInteger ofUnsignedLong(long value) {
+        if (value >= 0) {
+            return of(value);
+        } else {
+            ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+            buffer.putLong(value);
+            return of(new BigInteger(1, buffer.array()));
+        }
+    }
+
     public static LargeInteger ofUnsigned(byte[] bytes) {
-        return of(new BigInteger(1, bytes));
+        if (bytes.length > Long.BYTES ) {
+            return of(new BigInteger(1, bytes));
+        } else if (bytes.length == 0) {
+            return ZERO;
+        } else if (bytes.length < Long.BYTES) {
+            ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+            buffer.position(Long.BYTES - bytes.length);
+            buffer.put(bytes);
+            buffer.position(0);
+            long value = buffer.getLong();
+            return of(value);
+        } else if (bytes[0] < 0) {
+            return of(new BigInteger(1, bytes));
+        } else {
+            return of(ByteBuffer.wrap(bytes).getLong());
+        }
     }
 
     public static LargeInteger ofUnsigned(BitSet bitSet) {
