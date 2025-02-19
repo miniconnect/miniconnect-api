@@ -220,9 +220,9 @@ class LargeIntegerTest {
         assertThat(LargeInteger.of(10).byteValueExact()).isEqualTo((byte) 10);
         assertThat(LargeInteger.of(-10).byteValueExact()).isEqualTo((byte) -10);
         assertThat(LargeInteger.of(-200)).satisfies(n ->
-                assertThatThrownBy(() -> n.byteValueExact()).isInstanceOf(ArithmeticException.class));
+                assertThatThrownBy(n::byteValueExact).isInstanceOf(ArithmeticException.class));
         assertThat(LargeInteger.of(200)).satisfies(n ->
-                assertThatThrownBy(() -> n.byteValueExact()).isInstanceOf(ArithmeticException.class));
+                assertThatThrownBy(n::byteValueExact).isInstanceOf(ArithmeticException.class));
     }
 
     @Test
@@ -233,9 +233,9 @@ class LargeIntegerTest {
         assertThat(LargeInteger.of(-200).shortValueExact()).isEqualTo((short) -200);
         assertThat(LargeInteger.of(200).shortValueExact()).isEqualTo((short) 200);
         assertThat(LargeInteger.of(-40000)).satisfies(n ->
-                assertThatThrownBy(() -> n.shortValueExact()).isInstanceOf(ArithmeticException.class));
+                assertThatThrownBy(n::shortValueExact).isInstanceOf(ArithmeticException.class));
         assertThat(LargeInteger.of(40000)).satisfies(n ->
-                assertThatThrownBy(() -> n.shortValueExact()).isInstanceOf(ArithmeticException.class));
+                assertThatThrownBy(n::shortValueExact).isInstanceOf(ArithmeticException.class));
     }
 
     @Test
@@ -248,9 +248,9 @@ class LargeIntegerTest {
         assertThat(LargeInteger.of(-40000).intValueExact()).isEqualTo(-40000);
         assertThat(LargeInteger.of(40000).intValueExact()).isEqualTo(40000);
         assertThat(LargeInteger.of(-3000000000L)).satisfies(n ->
-                assertThatThrownBy(() -> n.intValueExact()).isInstanceOf(ArithmeticException.class));
+                assertThatThrownBy(n::intValueExact).isInstanceOf(ArithmeticException.class));
         assertThat(LargeInteger.of(3000000000L)).satisfies(n ->
-                assertThatThrownBy(() -> n.intValueExact()).isInstanceOf(ArithmeticException.class));
+                assertThatThrownBy(n::intValueExact).isInstanceOf(ArithmeticException.class));
     }
 
     @Test
@@ -265,9 +265,9 @@ class LargeIntegerTest {
         assertThat(LargeInteger.of(-3000000000L).longValueExact()).isEqualTo(-3000000000L);
         assertThat(LargeInteger.of(3000000000L).longValueExact()).isEqualTo(3000000000L);
         assertThat(LargeInteger.of("-10000000000000000000")).satisfies(n ->
-                assertThatThrownBy(() -> n.longValueExact()).isInstanceOf(ArithmeticException.class));
+                assertThatThrownBy(n::longValueExact).isInstanceOf(ArithmeticException.class));
         assertThat(LargeInteger.of("10000000000000000000")).satisfies(n ->
-                assertThatThrownBy(() -> n.longValueExact()).isInstanceOf(ArithmeticException.class));
+                assertThatThrownBy(n::longValueExact).isInstanceOf(ArithmeticException.class));
     }
 
     @ParameterizedTest
@@ -312,15 +312,14 @@ class LargeIntegerTest {
 
     @Test
     void testNextProbablePrimeThrow() {
-        assertThat(LargeInteger.of(-1)).satisfies(n -> assertThatThrownBy(() -> n.nextProbablePrime())
+        assertThat(LargeInteger.of(-1)).satisfies(n -> assertThatThrownBy(n::nextProbablePrime)
                 .isInstanceOf(ArithmeticException.class));
-        assertThat(LargeInteger.of(-4637)).satisfies(n -> assertThatThrownBy(() -> n.nextProbablePrime())
+        assertThat(LargeInteger.of(-4637)).satisfies(n -> assertThatThrownBy(n::nextProbablePrime)
                 .isInstanceOf(ArithmeticException.class));
-        assertThat(LargeInteger.of(Long.MIN_VALUE)).satisfies(n -> assertThatThrownBy(() -> n.nextProbablePrime())
+        assertThat(LargeInteger.of(Long.MIN_VALUE)).satisfies(n -> assertThatThrownBy(n::nextProbablePrime)
                 .isInstanceOf(ArithmeticException.class));
         assertThat(LargeInteger.of("-7516823740682704672346173480673234"))
-                .satisfies(n -> assertThatThrownBy(() -> n.nextProbablePrime())
-                .isInstanceOf(ArithmeticException.class));
+                .satisfies(n -> assertThatThrownBy(n::nextProbablePrime).isInstanceOf(ArithmeticException.class));
     }
 
     @ParameterizedTest
@@ -389,15 +388,15 @@ class LargeIntegerTest {
 
     @Test
     void testSqrtThrow() {
-        assertThatThrownBy(() -> LargeInteger.NEGATIVE_ONE.sqrt()).isInstanceOf(ArithmeticException.class);
+        assertThatThrownBy(LargeInteger.NEGATIVE_ONE::sqrt).isInstanceOf(ArithmeticException.class);
         assertThat(LargeInteger.of(-2L)).satisfies(n ->
-                assertThatThrownBy(() -> n.sqrt()).isInstanceOf(ArithmeticException.class));
+                assertThatThrownBy(n::sqrt).isInstanceOf(ArithmeticException.class));
         assertThat(LargeInteger.of(-10L)).satisfies(n ->
-                assertThatThrownBy(() -> n.sqrt()).isInstanceOf(ArithmeticException.class));
+                assertThatThrownBy(n::sqrt).isInstanceOf(ArithmeticException.class));
         assertThat(LargeInteger.of(-3000000000L)).satisfies(n ->
-                assertThatThrownBy(() -> n.sqrt()).isInstanceOf(ArithmeticException.class));
+                assertThatThrownBy(n::sqrt).isInstanceOf(ArithmeticException.class));
         assertThat(LargeInteger.of("-630726728761239200643702832335")).satisfies(n ->
-                assertThatThrownBy(() -> n.sqrt()).isInstanceOf(ArithmeticException.class));
+                assertThatThrownBy(n::sqrt).isInstanceOf(ArithmeticException.class));
     }
     
     @ParameterizedTest
