@@ -609,7 +609,17 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
         @Override
         public LargeInteger[] divideAndRemainder(LargeInteger val) {
-            return new LargeInteger[] { divide(val), remainder(val) };
+            if (val instanceof ImplBig) {
+                if (value == Long.MIN_VALUE &&
+                        ((ImplBig) val).value.equals(BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE))) {
+                    return new LargeInteger[] { NEGATIVE_ONE, ZERO };
+                } else {
+                    return new LargeInteger[] { ZERO, this };
+                }
+            }
+            
+            long otherValue = ((ImplSmall) val).value;
+            return new LargeInteger[] { new ImplSmall(value / otherValue), new ImplSmall(value % otherValue) };
         }
 
         @Override
