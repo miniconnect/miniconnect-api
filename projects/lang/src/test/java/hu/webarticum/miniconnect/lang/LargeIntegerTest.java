@@ -74,7 +74,7 @@ class LargeIntegerTest {
                 .isEqualTo(-3423871549700351L);
         assertThat(LargeInteger.of(new byte[] { 13, -42, 1, -56, -122, 7, 1, 123, 99, -77 }).bigIntegerValue())
                 .isEqualTo("65338496009033259639731");
-        assertThat(LargeInteger.nonNegativeOf(new byte[] { -13, -42, 1, -56, -122, 7, 1 }).bigIntegerValue())
+        assertThat(LargeInteger.ofUnsigned(new byte[] { -13, -42, 1, -56, -122, 7, 1 }).bigIntegerValue())
                 .isEqualTo(68633722488227585L);
     }
 
@@ -84,7 +84,7 @@ class LargeIntegerTest {
                 .isEqualTo("73658273647235762749234572072073628073");
         assertThat(LargeInteger.of(BitSet.valueOf(new byte[] { 42, 0, -3, 42, 12 })).bigIntegerValue())
                 .isEqualTo(52260831274L);
-        assertThat(LargeInteger.nonNegativeOf(BitSet.valueOf(new byte[] { 42, 0, -3, 42, -12 })).bigIntegerValue())
+        assertThat(LargeInteger.ofUnsigned(BitSet.valueOf(new byte[] { 42, 0, -3, 42, -12 })).bigIntegerValue())
                 .isEqualTo(1048693243946L);
     }
     

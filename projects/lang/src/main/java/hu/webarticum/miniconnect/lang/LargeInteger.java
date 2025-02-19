@@ -161,12 +161,12 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         return of(toBytes(bitSet));
     }
 
-    public static LargeInteger nonNegativeOf(byte[] bytes) {
+    public static LargeInteger ofUnsigned(byte[] bytes) {
         return of(new BigInteger(1, bytes));
     }
 
-    public static LargeInteger nonNegativeOf(BitSet bitSet) {
-        return nonNegativeOf(toBytes(bitSet));
+    public static LargeInteger ofUnsigned(BitSet bitSet) {
+        return ofUnsigned(toBytes(bitSet));
     }
 
     private static byte[] toBytes(BitSet bitSet) {
