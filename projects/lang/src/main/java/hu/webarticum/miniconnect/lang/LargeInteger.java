@@ -366,6 +366,8 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
     public abstract boolean isDivisibleBy(LargeInteger val);
 
+    public abstract boolean isDivisorOf(LargeInteger val);
+
     public abstract boolean isEqualTo(LargeInteger val);
 
     public abstract boolean isLessThan(LargeInteger val);
@@ -1096,6 +1098,15 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         }
 
         @Override
+        public boolean isDivisorOf(LargeInteger val) {
+            if (val instanceof ImplBig) {
+                return ((ImplBig) val).value.remainder(bigIntegerValue()).signum() == 0;
+            }
+            
+            return (((ImplSmall) val).value % value) == 0;
+        }
+
+        @Override
         public boolean isEqualTo(LargeInteger val) {
             return equals(val);
         }
@@ -1572,6 +1583,11 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         @Override
         public boolean isDivisibleBy(LargeInteger val) {
             return remainder(val).isZero();
+        }
+
+        @Override
+        public boolean isDivisorOf(LargeInteger val) {
+            return val.bigIntegerValue().remainder(value).signum() == 0;
         }
 
         @Override

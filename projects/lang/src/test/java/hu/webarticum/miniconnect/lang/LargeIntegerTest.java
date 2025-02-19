@@ -415,6 +415,7 @@ class LargeIntegerTest {
         assertThat(toBeDivided.remainder(dividing)).as("%s % %s", toBeDivided, dividing).isEqualTo(LargeInteger.ZERO);
         assertThat(toBeDivided.mod(dividing.abs())).as("%s mod %s", toBeDivided, dividing).isEqualTo(LargeInteger.ZERO);
         assertThat(toBeDivided.isDivisibleBy(dividing)).as("%s.isDivisibleBy(%s)", toBeDivided, dividing).isTrue();
+        assertThat(dividing.isDivisorOf(toBeDivided)).as("%s.isDivisorOf(%s)", dividing, toBeDivided).isTrue();
 
         LargeInteger[] quotientAndRemainder = toBeDivided.divideAndRemainder(dividing);
         assertThat(quotientAndRemainder[0]).as("%s.divideAndRemainder(%s).result", toBeDivided, dividing)
@@ -435,6 +436,7 @@ class LargeIntegerTest {
         LargeInteger mod = remainder.isNegative() ? n.add(remainder) : remainder;
         assertThat(n.mod(m.abs())).as("%s mod %s", n, m).isEqualTo(mod);
         assertThat(n.isDivisibleBy(m)).as("%s.isDivisibleBy(%s)", n, m).isEqualTo(remainder.isZero());
+        assertThat(m.isDivisorOf(n)).as("%s.isDivisorOf(%s)", m, n).isEqualTo(remainder.isZero());
     }
 
     @ParameterizedTest
@@ -533,6 +535,7 @@ class LargeIntegerTest {
         assertThatThrownBy(() -> n.mod(LargeInteger.ZERO)).isInstanceOf(ArithmeticException.class);
         assertThatThrownBy(() -> n.modPow(e, LargeInteger.ZERO)).isInstanceOf(ArithmeticException.class);
         assertThatThrownBy(() -> n.isDivisibleBy(LargeInteger.ZERO)).isInstanceOf(ArithmeticException.class);
+        assertThatThrownBy(() -> LargeInteger.ZERO.isDivisorOf(n)).isInstanceOf(ArithmeticException.class);
     }
 
     @ParameterizedTest
