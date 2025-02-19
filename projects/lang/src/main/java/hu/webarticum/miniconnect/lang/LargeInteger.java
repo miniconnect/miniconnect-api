@@ -1444,7 +1444,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
         @Override
         public LargeInteger setBit(int n) {
-            return of(value.setBit(n));
+            return new ImplBig(value.setBit(n));
         }
 
         @Override
