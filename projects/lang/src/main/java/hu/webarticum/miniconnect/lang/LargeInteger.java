@@ -33,6 +33,8 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     
     private static final long MAX_SMALL_POW_BASE_ABS = 55108L;
     
+    private static final long MAX_POWER_OF_TWO = 1L << (Long.SIZE - 2);
+    
     
     public static final LargeInteger NEGATIVE_ONE = of(-1L);
     
@@ -389,6 +391,10 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     public abstract LargeInteger half();
 
     public abstract LargeInteger log2();
+    
+    public abstract LargeInteger floorPowerOfTwo();
+    
+    public abstract LargeInteger ceilingPowerOfTwo();
 
     public abstract LargeInteger random(Random random);
     
@@ -1209,6 +1215,27 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         }
 
         @Override
+        public LargeInteger floorPowerOfTwo() {
+            if (value < 1L) {
+                throw new ArithmeticException("Value is not positive");
+            }
+
+            return of(1L << ((Long.SIZE - 1) - Long.numberOfLeadingZeros(value)));
+        }
+
+        @Override
+        public LargeInteger ceilingPowerOfTwo() {
+            if (value > MAX_POWER_OF_TWO) {
+                int bitPosition = Long.SIZE - Long.numberOfLeadingZeros(value - 1);
+                return new ImplBig(BigInteger.ZERO.setBit(bitPosition));
+            } else if (value < 1L) {
+                throw new ArithmeticException("Value is not positive");
+            }
+            
+            return of(1L << -Long.numberOfLeadingZeros(value - 1));
+        }
+
+        @Override
         public LargeInteger random(Random random) {
             if (value <= 0) {
                 throw new ArithmeticException("Random bound must be positive");
@@ -1655,7 +1682,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
                 return false;
             }
             
-            return value.and(value.subtract(BigInteger.ONE)).equals(BigInteger.ZERO);
+            return value.getLowestSetBit() == value.bitLength() - 1;
         }
 
         @Override
@@ -1688,11 +1715,34 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
         @Override
         public LargeInteger log2() {
-            if (value.signum() <= 0) {
+            if (isNonPositive()) {
                 throw new ArithmeticException("Value is not positive");
             }
             
             return of(value.bitLength() - 1);
+        }
+
+        @Override
+        public LargeInteger floorPowerOfTwo() {
+            if (isNonPositive()) {
+                throw new ArithmeticException("Value is not positive");
+            }
+
+            int bitPosition = value.bitLength() - 1;
+            return of(BigInteger.ZERO.setBit(bitPosition));
+        }
+
+        @Override
+        public LargeInteger ceilingPowerOfTwo() {
+            if (isNonPositive()) {
+                throw new ArithmeticException("Value is not positive");
+            }
+            
+            int bitPosition = value.bitLength() - 1;
+            if (!isPowerOfTwo()) {
+                bitPosition++;
+            }
+            return of(BigInteger.ZERO.setBit(bitPosition));
         }
 
         @Override

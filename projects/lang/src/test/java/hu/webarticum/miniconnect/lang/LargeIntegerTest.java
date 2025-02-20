@@ -619,6 +619,25 @@ class LargeIntegerTest {
     }
 
     @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/nearbyPowerOfTwo-cases.csv", numLinesToSkip = 1)
+    void testNearbyPowerOfTwo(LargeInteger n, LargeInteger floorPowerOfTwo, LargeInteger ceilingPowerOfTwo) {
+        assertThat(n.floorPowerOfTwo()).as("%s.floorPowerOfTwo()", n).isEqualTo(floorPowerOfTwo);
+        assertThat(n.ceilingPowerOfTwo()).as("%s.ceilingPowerOfTwo()", n).isEqualTo(ceilingPowerOfTwo);
+    }
+
+    @Test
+    void testNearbyPowerOfTwoThrow() {
+        ThrowingConsumer<LargeInteger> checkingLambda = n -> {
+            assertThatThrownBy(n::floorPowerOfTwo).isInstanceOf(ArithmeticException.class);
+            assertThatThrownBy(n::ceilingPowerOfTwo).isInstanceOf(ArithmeticException.class);
+        };
+        assertThat(LargeInteger.of(0)).satisfies(checkingLambda);
+        assertThat(LargeInteger.of(-1L)).satisfies(checkingLambda);
+        assertThat(LargeInteger.of(-4315647823475L)).satisfies(checkingLambda);
+        assertThat(LargeInteger.of("-76541787648740637480810874674580873")).satisfies(checkingLambda);
+    }
+
+    @ParameterizedTest
     @ValueSource(longs = { -237682734235L, -32L, 0L, 54L, 132L, 3458793857L, 3458603928750237205L })
     void testHashCodeSmall(long value) {
         assertThat(LargeInteger.of(value)).hasSameHashCodeAs(value);
