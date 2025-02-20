@@ -600,6 +600,12 @@ class LargeIntegerTest {
     }
 
     @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/log2-cases.csv", numLinesToSkip = 1)
+    void testLog2(LargeInteger n, LargeInteger result) {
+        assertThat(n.log2()).as("%s.log2()", n).isEqualTo(result);
+    }
+
+    @ParameterizedTest
     @ValueSource(longs = { -237682734235L, -32L, 0L, 54L, 132L, 3458793857L, 3458603928750237205L })
     void testHashCodeSmall(long value) {
         assertThat(LargeInteger.of(value)).hasSameHashCodeAs(value);

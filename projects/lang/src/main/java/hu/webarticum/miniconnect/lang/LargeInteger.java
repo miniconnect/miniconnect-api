@@ -388,6 +388,8 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
     public abstract LargeInteger half();
 
+    public abstract LargeInteger log2();
+
     public abstract LargeInteger random(Random random);
     
 
@@ -1198,6 +1200,15 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         }
 
         @Override
+        public LargeInteger log2() {
+            if (value < 1L) {
+                throw new ArithmeticException("Value is not positive");
+            }
+            
+            return of((Long.SIZE - 1) - Long.numberOfLeadingZeros(value));
+        }
+
+        @Override
         public LargeInteger random(Random random) {
             if (value <= 0) {
                 throw new ArithmeticException("Random bound must be positive");
@@ -1673,6 +1684,15 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         @Override
         public LargeInteger half() {
             return of(value.divide(BigInteger.TWO));
+        }
+
+        @Override
+        public LargeInteger log2() {
+            if (value.signum() <= 0) {
+                throw new ArithmeticException("Value is not positive");
+            }
+            
+            return of(value.bitLength() - 1);
         }
 
         @Override
