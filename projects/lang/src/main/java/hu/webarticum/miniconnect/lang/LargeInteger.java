@@ -752,14 +752,15 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
                     int e = exponent;
                     long base = value;
                     longResult = 1L;
-                    while(e > 0) {
+                    while (true) {
                         if ((e & 1) == 1) {
                             longResult = longResult * base;
                         }
                         e >>= 1;
-                        if (e > 0) {
-                            base = base * base;
+                        if (e == 0) {
+                            break;
                         }
+                        base = base * base;
                     }
             }
             return new ImplSmall(longResult);
@@ -1455,7 +1456,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
         @Override
         public LargeInteger sqrt() {
-            if (value.signum() < 0) {
+            if (isNegative()) {
                 throw new ArithmeticException("Square root of negative LargeInteger");
             }
 
@@ -1747,7 +1748,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
         @Override
         public LargeInteger random(Random random) {
-            if (value.signum() <= 0) {
+            if (isNonPositive()) {
                 throw new ArithmeticException("Random bound must be positive");
             }
             
