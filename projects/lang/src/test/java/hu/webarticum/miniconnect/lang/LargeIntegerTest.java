@@ -8,6 +8,7 @@ import java.math.BigInteger;
 import java.util.BitSet;
 import java.util.Random;
 
+import org.assertj.core.api.ThrowingConsumer;
 import org.assertj.core.data.Percentage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -607,13 +608,16 @@ class LargeIntegerTest {
 
     @Test
     void testLog2Throw() {
-        assertThat(LargeInteger.of(0)).satisfies(n -> assertThatThrownBy(n::log2));
-        assertThat(LargeInteger.of(-1L)).satisfies(n -> assertThatThrownBy(n::log2));
-        assertThat(LargeInteger.of(-4367028L)).satisfies(n -> assertThatThrownBy(n::log2));
-        assertThat(LargeInteger.of(-437163746087634818L)).satisfies(n -> assertThatThrownBy(n::log2));
-        assertThat(LargeInteger.of("-36174608374723416708174647381234091")).satisfies(n -> assertThatThrownBy(n::log2));
+        ThrowingConsumer<LargeInteger> checkingLambda = n -> {
+            assertThatThrownBy(n::log2).isInstanceOf(ArithmeticException.class);
+        };
+        assertThat(LargeInteger.of(0)).satisfies(checkingLambda);
+        assertThat(LargeInteger.of(-1L)).satisfies(checkingLambda);
+        assertThat(LargeInteger.of(-4367028L)).satisfies(checkingLambda);
+        assertThat(LargeInteger.of(-437163746087634818L)).satisfies(checkingLambda);
+        assertThat(LargeInteger.of("-36174608374723416708174647381234091")).satisfies(checkingLambda);
     }
-    
+
     @ParameterizedTest
     @ValueSource(longs = { -237682734235L, -32L, 0L, 54L, 132L, 3458793857L, 3458603928750237205L })
     void testHashCodeSmall(long value) {
