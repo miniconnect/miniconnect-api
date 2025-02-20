@@ -363,7 +363,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     public abstract boolean isEven();
 
     public abstract boolean isOdd();
-
+    
     public abstract boolean isDivisibleBy(LargeInteger val);
 
     public abstract boolean isDivisorOf(LargeInteger val);
@@ -383,7 +383,11 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     public abstract LargeInteger increment();
     
     public abstract LargeInteger decrement();
-    
+
+    public abstract LargeInteger twice();
+
+    public abstract LargeInteger half();
+
     public abstract LargeInteger random(Random random);
     
 
@@ -1173,7 +1177,26 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
             
             return new ImplSmall(value - 1);
         }
-        
+
+        @Override
+        public LargeInteger twice() {
+            if (value == 0L) {
+                return ZERO;
+            }
+            
+            long candidate = value * 2L;
+            if (candidate / value == 2L) {
+                return new ImplSmall(candidate);
+            }
+            
+            return new ImplBig(bigIntegerValue.multiply(BigInteger.TWO));
+        }
+
+        @Override
+        public LargeInteger half() {
+            return of(value / 2);
+        }
+
         @Override
         public LargeInteger random(Random random) {
             if (value <= 0) {
@@ -1641,7 +1664,17 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
                 return of(value.subtract(BigInteger.ONE));
             }
         }
-        
+
+        @Override
+        public LargeInteger twice() {
+            return new ImplBig(value.multiply(BigInteger.TWO));
+        }
+
+        @Override
+        public LargeInteger half() {
+            return of(value.divide(BigInteger.TWO));
+        }
+
         @Override
         public LargeInteger random(Random random) {
             if (value.signum() <= 0) {
