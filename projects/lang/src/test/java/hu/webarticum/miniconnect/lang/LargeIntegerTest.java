@@ -440,6 +440,25 @@ class LargeIntegerTest {
     }
 
     @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/isRelativelyPrimeTo-cases.csv", numLinesToSkip = 1)
+    void testIsRelativelyPrimeTo(LargeInteger n, LargeInteger m, boolean areRelativelyPrimes) {
+        assertThat(n.isRelativelyPrimeTo(m)).as("%s.isRelativelyPrimeTo(%s)", n, m).isEqualTo(areRelativelyPrimes);
+        assertThat(n.negate().isRelativelyPrimeTo(m)).as("%s.isRelativelyPrimeTo(%s)", n, m)
+                .isEqualTo(areRelativelyPrimes);
+        assertThat(n.isRelativelyPrimeTo(m.negate())).as("%s.isRelativelyPrimeTo(%s)", n, m)
+                .isEqualTo(areRelativelyPrimes);
+        assertThat(n.negate().isRelativelyPrimeTo(m.negate())).as("%s.isRelativelyPrimeTo(%s)", n, m)
+                .isEqualTo(areRelativelyPrimes);
+        assertThat(m.isRelativelyPrimeTo(n)).as("%s.isRelativelyPrimeTo(%s)", m, n).isEqualTo(areRelativelyPrimes);
+        assertThat(m.negate().isRelativelyPrimeTo(n)).as("%s.isRelativelyPrimeTo(%s)", m, n)
+                .isEqualTo(areRelativelyPrimes);
+        assertThat(m.isRelativelyPrimeTo(n.negate())).as("%s.isRelativelyPrimeTo(%s)", m, n)
+                .isEqualTo(areRelativelyPrimes);
+        assertThat(m.negate().isRelativelyPrimeTo(n.negate())).as("%s.isRelativelyPrimeTo(%s)", m, n)
+                .isEqualTo(areRelativelyPrimes);
+    }
+
+    @ParameterizedTest
     @CsvFileSource(resources = CASE_DATA_DIR + "/modPow-cases.csv", numLinesToSkip = 1)
     void testModPow(LargeInteger n, LargeInteger pow, LargeInteger m, LargeInteger result) {
         assertThat(n.modPow(pow, m)).as("%s^%s mod %s", n, pow, m).isEqualTo(result);
