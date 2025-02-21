@@ -1212,7 +1212,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
                 return new ImplSmall(candidate);
             }
             
-            return new ImplBig(bigIntegerValue.multiply(BigInteger.TWO));
+            return new ImplBig(bigIntegerValue.multiply(BigInteger.valueOf(2L)));
         }
 
         @Override
@@ -1732,12 +1732,12 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
         @Override
         public LargeInteger twice() {
-            return new ImplBig(value.multiply(BigInteger.TWO));
+            return new ImplBig(value.multiply(BigInteger.valueOf(2L)));
         }
 
         @Override
         public LargeInteger half() {
-            return of(value.divide(BigInteger.TWO));
+            return of(value.divide(BigInteger.valueOf(2L)));
         }
 
         @Override
