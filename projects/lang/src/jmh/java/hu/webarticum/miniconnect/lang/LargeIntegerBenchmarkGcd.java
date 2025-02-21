@@ -31,10 +31,10 @@ import org.openjdk.jmh.infra.Blackhole;
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 public class LargeIntegerBenchmarkGcd {
 
-    @Param({"-17", "-1", "0", "1", "2", "3", "4", "5", "6", "100", "5472845709"})
+    @Param({"-17", "0", "1", "5", "6", "100", "5472845709"})
     private String aStr;
 
-    @Param({"-17", "-1", "0", "1", "2", "3", "4", "5", "6", "100", "5472845709"})
+    @Param({"-17", "0", "1", "5", "6", "100", "5472845709"})
     private String bStr;
     
     private BigInteger bigIntegerA;

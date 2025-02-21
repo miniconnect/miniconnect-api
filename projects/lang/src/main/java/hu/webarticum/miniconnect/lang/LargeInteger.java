@@ -288,7 +288,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     public abstract LargeInteger sqrt();
     
     public abstract LargeInteger gcd(LargeInteger val);
-    
+
     public abstract LargeInteger abs();
     
     public abstract LargeInteger negate();
@@ -819,44 +819,38 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
         @Override
         public LargeInteger gcd(LargeInteger val) {
-            if (val instanceof ImplSmall && value > Long.MIN_VALUE) {
-                long otherValue = ((ImplSmall) val).value;
-                if (otherValue > Long.MIN_VALUE) {
-                    return new ImplSmall(binaryGcd(Math.abs(value), Math.abs(otherValue)));
-                }
+            if (value == 0L) {
+                return val.abs();
+            } else if (value == 1L) {
+                return ONE;
+            } else if (val instanceof ImplBig || value == Long.MIN_VALUE || ((ImplSmall) val).value == Long.MIN_VALUE) {
+                return of(bigIntegerValue().gcd(val.bigIntegerValue()));
             }
-            
-            return of(bigIntegerValue().gcd(val.bigIntegerValue()));
-        }
-        
-        private long binaryGcd(long a, long b) {
-            if (a == 0) {
-                return b;
-            } else if (b == 0) {
-                return a;
+
+            long otherValue = ((ImplSmall) val).value;
+            if (otherValue == 0L) {
+                return abs();
+            } else if (otherValue == 1L) {
+                return ONE;
             }
-            
-            int commonFactorsOfTwo = 0;
-            while (((a | b) & 1) == 0) {
-                a >>= 1;
-                b >>= 1;
-                commonFactorsOfTwo++;
-            }
-            while ((a & 1) == 0) {
-                a >>= 1;
-            }
-            while (b != 0) {
-                while ((b & 1) == 0) {
-                    b >>= 1;
-                }
+
+            int xShift = Long.numberOfTrailingZeros(value);
+            int yShift = Long.numberOfTrailingZeros(otherValue);
+
+            long a = Math.abs(value >> xShift);
+            long b = Math.abs(otherValue >> yShift);
+            while (a != b) {
                 if (a > b) {
-                    long tmp = a;
-                    a = b;
-                    b = tmp;
+                    a -= b;
+                    a >>= Long.numberOfTrailingZeros(a);
+                } else {
+                    b -= a;
+                    b >>= Long.numberOfTrailingZeros(b);
                 }
-                b -= a;
             }
-            return a << commonFactorsOfTwo;
+
+            int minShift = xShift < yShift ? xShift : yShift;
+            return new ImplSmall(a << minShift);
         }
         
         @Override
