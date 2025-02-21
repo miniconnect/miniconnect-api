@@ -22,7 +22,7 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 
 /**
- * Measures the performance of the pow method.
+ * Measures the performance of the multiply method.
  */
 @State(Scope.Benchmark)
 @Fork(value = 1)
