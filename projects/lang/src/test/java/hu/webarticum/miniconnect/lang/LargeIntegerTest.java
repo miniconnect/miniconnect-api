@@ -870,6 +870,54 @@ class LargeIntegerTest {
     }
 
     @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/addLong-cases.csv", numLinesToSkip = 1)
+    void testAddLong(LargeInteger n, long m, LargeInteger result) {
+        assertThat(n.add(m)).as("%s + long(%s)", n, m).isEqualTo(result);
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/subtractLong-cases.csv", numLinesToSkip = 1)
+    void testSubtractLong(LargeInteger n, long m, LargeInteger result) {
+        assertThat(n.subtract(m)).as("%s - long(%s)", n, m).isEqualTo(result);
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/multiplyLong-cases.csv", numLinesToSkip = 1)
+    void testMultiplyLong(LargeInteger n, long m, LargeInteger result) {
+        assertThat(n.multiply(m)).as("%s - long(%s)", n, m).isEqualTo(result);
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/divideAndRemainderLong-cases.csv", numLinesToSkip = 1)
+    void testDivideAndRemainderLong(LargeInteger n, long m, LargeInteger result, LargeInteger remainder) {
+        assertThat(n.divide(m)).as("%s / long(%s)", n, m).isEqualTo(result);
+        assertThat(n.remainder(m)).as("%s %% long(%s)", n, m).isEqualTo(remainder);
+        assertThat(n.isDivisibleBy(m)).as("%s.isDivisibleBy(long(%s))", n, m).isEqualTo(remainder.isZero());
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/modLong-cases.csv", numLinesToSkip = 1)
+    void testModLong(LargeInteger n, long m, LargeInteger result) {
+        assertThat(n.mod(m)).as("%s mod long(%s)", n, m).isEqualTo(result);
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = {Long.MIN_VALUE, -1235422341, -23, -1, 0, 1, 2, 12, 234123, 341234123, Long.MAX_VALUE })
+    void testIsEqualToLong(long value) {
+        assertThat(LargeInteger.of(value)).matches(n -> n.isEqualTo(value));
+    }
+
+    @Test
+    void testIsNotEqualToLong() {
+        assertThat(LargeInteger.of(0)).matches(n -> !n.isEqualTo(1));
+        assertThat(LargeInteger.of(0)).matches(n -> !n.isEqualTo(-1));
+        assertThat(LargeInteger.of(0)).matches(n -> !n.isEqualTo(42));
+        assertThat(LargeInteger.of(0)).matches(n -> !n.isEqualTo(-42));
+        assertThat(LargeInteger.of(4325)).matches(n -> !n.isEqualTo(234324));
+        assertThat(LargeInteger.of("412347834958273485237454293")).matches(n -> !n.isEqualTo(4373248295734435L));
+    }
+
+    @ParameterizedTest
     @ValueSource(strings = { "1", "19", "42673489345", "7941203427346852946087460936" })
     void testRandom(String value) {
         Random random = new Random(999L);

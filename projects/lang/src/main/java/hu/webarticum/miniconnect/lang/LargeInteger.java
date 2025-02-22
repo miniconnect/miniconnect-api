@@ -423,6 +423,22 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     
     public abstract LargeInteger ceilingPowerOfTwo();
 
+    public abstract LargeInteger add(long val);
+
+    public abstract LargeInteger subtract(long val);
+
+    public abstract LargeInteger multiply(long val);
+
+    public abstract LargeInteger divide(long val);
+
+    public abstract LargeInteger remainder(long val);
+
+    public abstract LargeInteger mod(long m);
+    
+    public abstract boolean isDivisibleBy(long val);
+
+    public abstract boolean isEqualTo(long val);
+    
     public abstract LargeInteger random(Random random);
     
 
@@ -1327,6 +1343,74 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         }
 
         @Override
+        public LargeInteger add(long val) {
+            long candidate = value + val;
+            if (((value ^ candidate) & (val ^ candidate)) >= 0) {
+                return new ImplSmall(candidate);
+            }
+            
+            return of(bigIntegerValue().add(BigInteger.valueOf(val)));
+        }
+
+        @Override
+        public LargeInteger subtract(long val) {
+            long candidate = value - val;
+            if (((value ^ val) & (value ^ candidate)) >= 0) {
+                return new ImplSmall(candidate);
+            }
+            
+            return of(bigIntegerValue().subtract(BigInteger.valueOf(val)));
+        }
+
+        @Override
+        public LargeInteger multiply(long val) {
+            if (value == 0) {
+                return ZERO;
+            }
+            
+            long candidate = value * val;
+            if (val == candidate / value) {
+                return new ImplSmall(candidate);
+            }
+            
+            return of(bigIntegerValue().multiply(BigInteger.valueOf(val)));
+        }
+
+        @Override
+        public LargeInteger divide(long val) {
+            return new ImplSmall(value / val);
+        }
+
+        @Override
+        public LargeInteger remainder(long val) {
+            return new ImplSmall(value % val);
+        }
+
+        @Override
+        public LargeInteger mod(long m) {
+            if (m <= 0) {
+                throw new ArithmeticException("Modulus not positive");
+            }
+            
+            long remainder = value % m;
+            if (remainder >= 0) {
+                return new ImplSmall(remainder);
+            } else {
+                return new ImplSmall(m + remainder);
+            }
+        }
+
+        @Override
+        public boolean isDivisibleBy(long val) {
+            return (value % val) == 0;
+        }
+        
+        @Override
+        public boolean isEqualTo(long val) {
+            return value == val;
+        }
+        
+        @Override
         public LargeInteger random(Random random) {
             if (value <= 0) {
                 throw new ArithmeticException("Random bound must be positive");
@@ -1878,6 +1962,46 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
             return of(BigInteger.ZERO.setBit(bitPosition));
         }
 
+        @Override
+        public LargeInteger add(long val) {
+            return of(value.add(BigInteger.valueOf(val)));
+        }
+
+        @Override
+        public LargeInteger subtract(long val) {
+            return of(value.subtract(BigInteger.valueOf(val)));
+        }
+
+        @Override
+        public LargeInteger multiply(long val) {
+            return of(value.multiply(BigInteger.valueOf(val)));
+        }
+
+        @Override
+        public LargeInteger divide(long val) {
+            return of(value.divide(BigInteger.valueOf(val)));
+        }
+
+        @Override
+        public LargeInteger remainder(long val) {
+            return of(value.remainder(BigInteger.valueOf(val)));
+        }
+
+        @Override
+        public LargeInteger mod(long m) {
+            return of(value.mod(BigInteger.valueOf(m)));
+        }
+        
+        @Override
+        public boolean isDivisibleBy(long val) {
+            return value.remainder(BigInteger.valueOf(val)).signum() == 0;
+        }
+        
+        @Override
+        public boolean isEqualTo(long val) {
+            return false;
+        }
+        
         @Override
         public LargeInteger random(Random random) {
             if (isNonPositive()) {
