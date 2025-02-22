@@ -21,6 +21,11 @@ class LargeIntegerTest {
 
     @Test
     void testCreatorsPrimitiveIntegral() {
+        assertThat(LargeInteger.of(false).bigIntegerValue()).isZero();
+        assertThat(LargeInteger.of(true).bigIntegerValue()).isOne();
+        assertThat(LargeInteger.of('3').bigIntegerValue()).isEqualTo(51);
+        assertThat(LargeInteger.of('s').bigIntegerValue()).isEqualTo(115);
+        assertThat(LargeInteger.of('\u2323').bigIntegerValue()).isEqualTo(8995);
         assertThat(LargeInteger.of((byte) 123).bigIntegerValue()).isEqualTo(123);
         assertThat(LargeInteger.of((short) 12345).bigIntegerValue()).isEqualTo(12345);
         assertThat(LargeInteger.of(978675645).bigIntegerValue()).isEqualTo(978675645);
@@ -201,18 +206,52 @@ class LargeIntegerTest {
     @CsvFileSource(resources = CASE_DATA_DIR + "/primitiveValue-cases.csv", numLinesToSkip = 1)
     void testPrimitiveValue(
             LargeInteger n,
+            boolean booleanValue,
+            int charValueCodePoint,
             byte byteValue,
             short shortValue,
             int intValue,
             long longValue,
             float floatValue,
             double doubleValue) {
+        assertThat(n.booleanValue()).as("%s.booleanValue()", n).isEqualTo(booleanValue);
+        assertThat(n.charValue()).as("%s.charValue()", n).isEqualTo((char) charValueCodePoint);
         assertThat(n.byteValue()).as("%s.byteValue()", n).isEqualTo(byteValue);
         assertThat(n.shortValue()).as("%s.shortValue()", n).isEqualTo(shortValue);
         assertThat(n.intValue()).as("%s.intValue()", n).isEqualTo(intValue);
         assertThat(n.longValue()).as("%s.longValue()", n).isEqualTo(longValue);
         assertThat(n.floatValue()).isCloseTo(floatValue, Percentage.withPercentage(1e-5));
         assertThat(n.doubleValue()).isCloseTo(doubleValue, Percentage.withPercentage(1e-10));
+    }
+
+    @Test
+    void testBooleanValueExact() {
+        assertThat(LargeInteger.ZERO.booleanValueExact()).isFalse();
+        assertThat(LargeInteger.ONE.booleanValueExact()).isTrue();
+        assertThat(LargeInteger.of(-432)).satisfies(n ->
+                assertThatThrownBy(n::booleanValueExact).isInstanceOf(ArithmeticException.class));
+        assertThat(LargeInteger.of(-1)).satisfies(n ->
+                assertThatThrownBy(n::booleanValueExact).isInstanceOf(ArithmeticException.class));
+        assertThat(LargeInteger.of(2)).satisfies(n ->
+                assertThatThrownBy(n::booleanValueExact).isInstanceOf(ArithmeticException.class));
+        assertThat(LargeInteger.of("3478097348347583838009384738492")).satisfies(n ->
+                assertThatThrownBy(n::booleanValueExact).isInstanceOf(ArithmeticException.class));
+    }
+
+    @Test
+    void testCharValueExact() {
+        assertThat(LargeInteger.ZERO.charValueExact()).isEqualTo('\u0000');
+        assertThat(LargeInteger.ONE.charValueExact()).isEqualTo('\u0001');
+        assertThat(LargeInteger.TWELVE.charValueExact()).isEqualTo('\u000C');
+        assertThat(LargeInteger.of(10229).charValueExact()).isEqualTo('\u27F5');
+        assertThat(LargeInteger.of(-632)).satisfies(n ->
+                assertThatThrownBy(n::charValueExact).isInstanceOf(ArithmeticException.class));
+        assertThat(LargeInteger.of(-1)).satisfies(n ->
+                assertThatThrownBy(n::charValueExact).isInstanceOf(ArithmeticException.class));
+        assertThat(LargeInteger.of(4306374823743083L)).satisfies(n ->
+                assertThatThrownBy(n::charValueExact).isInstanceOf(ArithmeticException.class));
+        assertThat(LargeInteger.of("453064728347063487273813746049201")).satisfies(n ->
+                assertThatThrownBy(n::charValueExact).isInstanceOf(ArithmeticException.class));
     }
 
     @Test
@@ -237,6 +276,8 @@ class LargeIntegerTest {
                 assertThatThrownBy(n::shortValueExact).isInstanceOf(ArithmeticException.class));
         assertThat(LargeInteger.of(40000)).satisfies(n ->
                 assertThatThrownBy(n::shortValueExact).isInstanceOf(ArithmeticException.class));
+        assertThat(LargeInteger.of("3478097348347583838009384738492")).satisfies(n ->
+                assertThatThrownBy(n::shortValueExact).isInstanceOf(ArithmeticException.class));
     }
 
     @Test
@@ -251,6 +292,8 @@ class LargeIntegerTest {
         assertThat(LargeInteger.of(-3000000000L)).satisfies(n ->
                 assertThatThrownBy(n::intValueExact).isInstanceOf(ArithmeticException.class));
         assertThat(LargeInteger.of(3000000000L)).satisfies(n ->
+                assertThatThrownBy(n::intValueExact).isInstanceOf(ArithmeticException.class));
+        assertThat(LargeInteger.of("3478097348347583838009384738492")).satisfies(n ->
                 assertThatThrownBy(n::intValueExact).isInstanceOf(ArithmeticException.class));
     }
 
@@ -739,11 +782,15 @@ class LargeIntegerTest {
             boolean fittingInLong,
             boolean fittingInInt,
             boolean fittingInShort,
-            boolean fittingInByte) {
+            boolean fittingInByte,
+            boolean fittingInChar,
+            boolean fittingInBoolean) {
         assertThat(n.isFittingInLong()).as("%s.isFittingInLong()", n).isEqualTo(fittingInLong);
         assertThat(n.isFittingInInt()).as("%s.isFittingInInt()", n).isEqualTo(fittingInInt);
         assertThat(n.isFittingInShort()).as("%s.isFittingInShort()", n).isEqualTo(fittingInShort);
         assertThat(n.isFittingInByte()).as("%s.isFittingInByte()", n).isEqualTo(fittingInByte);
+        assertThat(n.isFittingInChar()).as("%s.isFittingInChar()", n).isEqualTo(fittingInChar);
+        assertThat(n.isFittingInBoolean()).as("%s.isFittingInBoolean()", n).isEqualTo(fittingInBoolean);
     }
 
     @ParameterizedTest

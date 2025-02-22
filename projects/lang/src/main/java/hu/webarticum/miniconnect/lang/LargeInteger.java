@@ -69,6 +69,19 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     public static final LargeInteger HUNDRED = of(100L);
 
 
+    public static LargeInteger of(boolean value) {
+        return value ? ONE : ZERO;
+    }
+
+    public static LargeInteger of(char value) {
+        byte byteValue = (byte) value;
+        if (byteValue == value) {
+            return cache[value];
+        }
+        
+        return new ImplSmall(value);
+    }
+    
     public static LargeInteger of(byte value) {
         return cache[Byte.toUnsignedInt(value)];
     }
@@ -258,7 +271,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     public abstract short shortValueExact();
     
     public abstract byte byteValueExact();
-    
+
     public abstract byte[] toByteArray();
     
     public abstract boolean isProbablePrime(int certainty);
@@ -333,15 +346,23 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     // additional methods
     
     public abstract LargeInteger cached();
+
+    public abstract char charValue();
+    
+    public abstract char charValueExact();
+
+    public abstract boolean booleanValue();
+    
+    public abstract boolean booleanValueExact();
     
     public abstract BitSet toBitSet();
     
     public abstract String toString(int radix);
-    
+
     public abstract BigInteger bigIntegerValue();
 
     public abstract BigDecimal bigDecimalValue();
-    
+
     public abstract boolean isFittingInLong();
     
     public abstract boolean isFittingInInt();
@@ -350,6 +371,10 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     
     public abstract boolean isFittingInByte();
 
+    public abstract boolean isFittingInChar();
+    
+    public abstract boolean isFittingInBoolean();
+    
     public abstract boolean isZero();
 
     public abstract boolean isNonZero();
@@ -505,6 +530,14 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
             return (int) value;
         }
 
+        public char charValue() {
+            return (char) value;
+        }
+        
+        public boolean booleanValue() {
+            return value != 0L;
+        }
+
         @Override
         public float floatValue() {
             return value;
@@ -522,29 +555,49 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
         @Override
         public int intValueExact() {
-            if (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE) {
+            int intValue = (int) value;
+            if (intValue != value) {
                 throw new ArithmeticException("LargeInteger out of int range");
             }
             
-            return intValue();
+            return intValue;
         }
 
         @Override
         public short shortValueExact() {
-            if (value > Short.MAX_VALUE || value < Short.MIN_VALUE) {
+            short shortValue = (short) value;
+            if (shortValue != value) {
                 throw new ArithmeticException("LargeInteger out of short range");
             }
             
-            return shortValue();
+            return shortValue;
         }
 
         @Override
         public byte byteValueExact() {
-            if (value > Byte.MAX_VALUE || value < Byte.MIN_VALUE) {
+            byte byteValue = (byte) value;
+            if (byteValue != value) {
                 throw new ArithmeticException("LargeInteger out of byte range");
             }
             
-            return byteValue();
+            return byteValue;
+        }
+
+        public char charValueExact() {
+            char charValue = (char) value;
+            if (charValue != value) {
+                throw new ArithmeticException("LargeInteger out of char range");
+            }
+            
+            return charValue;
+        }
+
+        public boolean booleanValueExact() {
+            if ((value | 1L) != 1L) {
+                throw new ArithmeticException("LargeInteger out of boolean range");
+            }
+            
+            return value != 0L;
         }
 
         @Override
@@ -1052,6 +1105,14 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
             return (byte) value == value;
         }
 
+        public boolean isFittingInChar() {
+            return (char) value == value;
+        }
+        
+        public boolean isFittingInBoolean() {
+            return (value | 1L) == 1L;
+        }
+        
         @Override
         public boolean isZero() {
             return value == 0;
@@ -1354,6 +1415,14 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
             return value.intValue();
         }
 
+        public char charValue() {
+            return (char) value.shortValue();
+        }
+
+        public boolean booleanValue() {
+            return true;
+        }
+        
         @Override
         public float floatValue() {
             return value.floatValue();
@@ -1366,22 +1435,30 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
         @Override
         public long longValueExact() {
-            return value.longValueExact();
+            throw new ArithmeticException("LargeInteger out of long range");
         }
 
         @Override
         public int intValueExact() {
-            return value.intValueExact();
+            throw new ArithmeticException("LargeInteger out of int range");
         }
 
         @Override
         public short shortValueExact() {
-            return value.shortValueExact();
+            throw new ArithmeticException("LargeInteger out of short range");
         }
 
         @Override
         public byte byteValueExact() {
-            return value.byteValueExact();
+            throw new ArithmeticException("LargeInteger out of byte range");
+        }
+
+        public char charValueExact() {
+            throw new ArithmeticException("LargeInteger out of char range");
+        }
+
+        public boolean booleanValueExact() {
+            throw new ArithmeticException("LargeInteger out of boolean range");
         }
 
         @Override
@@ -1610,6 +1687,14 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
             return false;
         }
 
+        public boolean isFittingInChar() {
+            return false;
+        }
+        
+        public boolean isFittingInBoolean() {
+            return false;
+        }
+        
         @Override
         public boolean isZero() {
             return false;
