@@ -707,14 +707,19 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         public LargeInteger divide(LargeInteger val) {
             if (val instanceof ImplBig) {
                 if (value == Long.MIN_VALUE &&
-                        ((ImplBig) val).value.equals(BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE))) {
+                        ((ImplBig) val).value.negate().equals(BigInteger.valueOf(Long.MIN_VALUE))) {
                     return NEGATIVE_ONE;
                 } else {
                     return ZERO;
                 }
             }
+
+            long otherValue = ((ImplSmall) val).value;
+            if (value == Long.MIN_VALUE && otherValue == -1L) {
+                return new ImplBig(BigInteger.valueOf(Long.MIN_VALUE).negate());
+            }
             
-            return new ImplSmall(value / ((ImplSmall) val).value);
+            return new ImplSmall(value / otherValue);
         }
 
         @Override
@@ -729,7 +734,14 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
             }
             
             long otherValue = ((ImplSmall) val).value;
-            return new LargeInteger[] { new ImplSmall(value / otherValue), new ImplSmall(value % otherValue) };
+            LargeInteger divResult;
+            if (value == Long.MIN_VALUE && otherValue == -1L) {
+                divResult = new ImplBig(BigInteger.valueOf(Long.MIN_VALUE).negate());
+            } else {
+                divResult = new ImplSmall(value / otherValue);
+            }
+            
+            return new LargeInteger[] { divResult, new ImplSmall(value % otherValue) };
         }
 
         @Override
@@ -937,11 +949,14 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
         @Override
         public LargeInteger mod(LargeInteger m) {
+            if (m.isNonPositive()) {
+                throw new ArithmeticException("Modulus not positive");
+            }
             ImplSmall remainder = (ImplSmall) remainder(m);
             if (remainder.value >= 0) {
                 return remainder;
             } else {
-                return m.abs().add(remainder);
+                return m.add(remainder);
             }
         }
 
