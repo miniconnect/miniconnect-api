@@ -450,7 +450,7 @@ class LargeIntegerTest {
         }
     }
     
-    void testDivideRelatedNoRemainderOneWay(LargeInteger toBeDivided, LargeInteger dividing, LargeInteger quotient) {
+    private void testDivideRelatedNoRemainderOneWay(LargeInteger toBeDivided, LargeInteger dividing, LargeInteger quotient) {
         assertThat(toBeDivided.divide(dividing)).as("%s / %s", toBeDivided, dividing).isEqualTo(quotient);
         assertThat(toBeDivided.remainder(dividing)).as("%s % %s", toBeDivided, dividing).isEqualTo(LargeInteger.ZERO);
         assertThat(toBeDivided.mod(dividing.abs())).as("%s mod %s", toBeDivided, dividing).isEqualTo(LargeInteger.ZERO);
