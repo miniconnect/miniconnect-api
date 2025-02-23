@@ -56,17 +56,3 @@ jmhReport {
     jmhResultPath = project.file('build/results/jmh/results.json')
     jmhReportOutput = project.file(jmhReportHtmlDir)
 }
-
-import java.lang.reflect.Modifier
-task listPublicMethods {
-    doLast {
-        def className = findProperty("listClassName")
-        def urls = sourceSets.jmh.runtimeClasspath.collect { it.toURI().toURL() } as URL[]
-        def classLoader = new URLClassLoader(urls, getClass().classLoader)
-        def clazz = classLoader.loadClass(className)
-        // List only public methods declared in the class (excluding inherited ones):
-        clazz.declaredMethods.findAll { Modifier.isPublic(it.modifiers) }.each { println it }
-        // Alternatively, to list all public methods (including inherited ones), use:
-        // clazz.methods.each { println it }
-    }
-}
