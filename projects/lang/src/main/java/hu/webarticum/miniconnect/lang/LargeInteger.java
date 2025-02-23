@@ -426,6 +426,8 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     public abstract LargeInteger floorPowerOfTwo();
     
     public abstract LargeInteger ceilingPowerOfTwo();
+    
+    public abstract LargeInteger lcm(LargeInteger val);
 
     public abstract LargeInteger add(long val);
 
@@ -1369,6 +1371,25 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         }
 
         @Override
+        public LargeInteger lcm(LargeInteger val) {
+            if (value == 0) {
+                return ZERO;
+            } else if (val instanceof ImplBig) {
+                return divide(gcd(val)).multiply(val);
+            }
+            
+            long otherValue = ((ImplSmall) val).value;
+            long gcd = ((ImplSmall) gcd(val)).value;
+            long valueExclusive = value / gcd;
+            long candidate = valueExclusive * otherValue;
+            if (candidate / otherValue == valueExclusive) {
+                return new ImplSmall((value / gcd) * otherValue);
+            }
+            
+            return divide(gcd(val)).multiply(val);
+        }
+
+        @Override
         public LargeInteger add(long val) {
             long candidate = value + val;
             if (((value ^ candidate) & (val ^ candidate)) >= 0) {
@@ -1998,6 +2019,15 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
                 bitPosition++;
             }
             return of(BigInteger.ZERO.setBit(bitPosition));
+        }
+        
+        @Override
+        public LargeInteger lcm(LargeInteger val) {
+            if (val.isZero()) {
+                return ZERO;
+            }
+            
+            return divide(gcd(val)).multiply(val);
         }
 
         @Override
