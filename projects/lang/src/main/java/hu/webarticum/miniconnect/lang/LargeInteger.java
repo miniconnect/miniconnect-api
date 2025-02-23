@@ -299,6 +299,8 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     public abstract LargeInteger pow(int exponent);
     
     public abstract LargeInteger sqrt();
+
+    public abstract LargeInteger[] sqrtAndRemainder();
     
     public abstract LargeInteger gcd(LargeInteger val);
 
@@ -416,6 +418,8 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     public abstract LargeInteger twice();
 
     public abstract LargeInteger half();
+
+    public abstract LargeInteger square();
 
     public abstract LargeInteger log2();
     
@@ -903,6 +907,13 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         }
 
         @Override
+        public LargeInteger[] sqrtAndRemainder() {
+            ImplSmall sqrt = (ImplSmall) sqrt();
+            LargeInteger remainder = new ImplSmall(value - (sqrt.value * sqrt.value));
+            return new LargeInteger[] { sqrt, remainder };
+        }
+        
+        @Override
         public LargeInteger gcd(LargeInteger val) {
             if (value == 0L) {
                 return val.abs();
@@ -1313,6 +1324,21 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         }
 
         @Override
+        public LargeInteger square() {
+            if (value == 0) {
+                return ZERO;
+            }
+            
+            long candidate = value * value;
+            if (candidate / value == value) {
+                return new ImplSmall(candidate);
+            }
+            
+            BigInteger bigValue = bigIntegerValue();
+            return new ImplBig(bigValue.multiply(bigValue));
+        }
+
+        @Override
         public LargeInteger log2() {
             if (value < 1L) {
                 throw new ArithmeticException("Value is not positive");
@@ -1672,6 +1698,13 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         }
 
         @Override
+        public LargeInteger[] sqrtAndRemainder() {
+            LargeInteger sqrt = sqrt();
+            LargeInteger remainder = subtract(sqrt.square());
+            return new LargeInteger[] { sqrt, remainder };
+        }
+        
+        @Override
         public LargeInteger gcd(LargeInteger val) {
             return of(value.gcd(val.bigIntegerValue()));
         }
@@ -1928,6 +1961,11 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         @Override
         public LargeInteger half() {
             return of(value.divide(BigInteger.valueOf(2L)));
+        }
+
+        @Override
+        public LargeInteger square() {
+            return new ImplBig(value.multiply(value));
         }
 
         @Override

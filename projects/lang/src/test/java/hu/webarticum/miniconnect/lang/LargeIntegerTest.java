@@ -426,21 +426,18 @@ class LargeIntegerTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = CASE_DATA_DIR + "/sqrt-cases.csv", numLinesToSkip = 1)
-    void testSqrt(LargeInteger n, LargeInteger result) {
+    void testSqrtAndRemainder(LargeInteger n, LargeInteger result, LargeInteger remainder) {
         assertThat(n.sqrt()).as("sqrt(%s)", n).isEqualTo(result);
+        LargeInteger[] sqrtAndRemainder = n.sqrtAndRemainder();
+        assertThat(sqrtAndRemainder[0]).as("%s.sqrtAndRemainder().result", n).isEqualTo(result);
+        assertThat(sqrtAndRemainder[1]).as("%s.sqrtAndRemainder().remainder", n).isEqualTo(remainder);
     }
 
-    @Test
-    void testSqrtThrow() {
-        assertThatThrownBy(LargeInteger.NEGATIVE_ONE::sqrt).isInstanceOf(ArithmeticException.class);
-        assertThat(LargeInteger.of(-2L)).satisfies(n ->
-                assertThatThrownBy(n::sqrt).isInstanceOf(ArithmeticException.class));
-        assertThat(LargeInteger.of(-10L)).satisfies(n ->
-                assertThatThrownBy(n::sqrt).isInstanceOf(ArithmeticException.class));
-        assertThat(LargeInteger.of(-3000000000L)).satisfies(n ->
-                assertThatThrownBy(n::sqrt).isInstanceOf(ArithmeticException.class));
-        assertThat(LargeInteger.of("-630726728761239200643702832335")).satisfies(n ->
-                assertThatThrownBy(n::sqrt).isInstanceOf(ArithmeticException.class));
+    @ParameterizedTest
+    @ValueSource(strings = { "-2", "-10", "-54", "-3000000000", "-630726728761239200643702832335" })
+    void testSqrtAndRemainderThrow(LargeInteger n) {
+        assertThatThrownBy(n::sqrt).isInstanceOf(ArithmeticException.class);
+        assertThatThrownBy(n::sqrtAndRemainder).isInstanceOf(ArithmeticException.class);
     }
     
     @ParameterizedTest
@@ -664,6 +661,12 @@ class LargeIntegerTest {
     @CsvFileSource(resources = CASE_DATA_DIR + "/half-cases.csv", numLinesToSkip = 1)
     void testHalf(LargeInteger n, LargeInteger result) {
         assertThat(n.half()).as("%s.half()", n).isEqualTo(result);
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/square-cases.csv", numLinesToSkip = 1)
+    void testSquare(LargeInteger n, LargeInteger result) {
+        assertThat(n.square()).as("%s.square()", n).isEqualTo(result);
     }
 
     @ParameterizedTest
