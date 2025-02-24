@@ -553,6 +553,16 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         }
 
         @Override
+        public short shortValue() {
+            return (short) value;
+        }
+
+        @Override
+        public byte byteValue() {
+            return (byte) value;
+        }
+
+        @Override
         public char charValue() {
             return (char) value;
         }
@@ -1565,6 +1575,16 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         @Override
         public int intValue() {
             return value.intValue();
+        }
+
+        @Override
+        public short shortValue() {
+            return value.shortValue();
+        }
+
+        @Override
+        public byte byteValue() {
+            return value.byteValue();
         }
 
         @Override
