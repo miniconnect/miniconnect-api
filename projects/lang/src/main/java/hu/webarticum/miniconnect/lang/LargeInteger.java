@@ -33,7 +33,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     
     private static final long MAX_SMALL_POW_BASE_ABS = 55108L;
     
-    private static final long MAX_POWER_OF_TWO = 1L << (Long.SIZE - 2);
+    private static final long MAX_LONG_POWER_OF_TWO = 1L << (Long.SIZE - 2);
     
     
     public static final LargeInteger NEGATIVE_ONE = of(-1L);
@@ -840,7 +840,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
         @Override
         public LargeInteger ceilingPowerOfTwo() {
-            if (value > MAX_POWER_OF_TWO) {
+            if (value > MAX_LONG_POWER_OF_TWO) {
                 int bitPosition = Long.SIZE - Long.numberOfLeadingZeros(value - 1);
                 return new ImplBig(BigInteger.ZERO.setBit(bitPosition));
             } else if (value < 1L) {
