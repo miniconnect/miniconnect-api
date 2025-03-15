@@ -1,0 +1,10 @@
+plugins {
+    id 'java-library'
+}
+
+description "AssertJ integration for miniconnect-api:lang types"
+
+dependencies {
+    api project(':lang')
+    api 'org.assertj:assertj-core:3.24.2'
+}

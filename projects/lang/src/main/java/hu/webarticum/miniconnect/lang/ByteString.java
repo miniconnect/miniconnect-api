@@ -12,13 +12,15 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 /**
  * Simple immutable wrapper for byte arrays
  */
-public final class ByteString implements Serializable {
+public final class ByteString implements Iterable<Byte>, Serializable {
 
     private static final long serialVersionUID = 2392643209772967829L;
     
@@ -56,6 +58,10 @@ public final class ByteString implements Serializable {
         return wrap(string.getBytes(charset));
     }
 
+    public static ByteString ofByte(int b) {
+        return ofByte((byte) b);
+    }
+
     public static ByteString ofByte(byte b) {
         return wrap(new byte[] { b });
     }
@@ -88,8 +94,8 @@ public final class ByteString implements Serializable {
         return fromInputStream(inputStream, 1024);
     }
     
-    public static ByteString fromInputStream(InputStream inputStream, int size) {
-        ByteArrayOutputStream resultBuilder = new ByteArrayOutputStream();
+    public static ByteString fromInputStream(InputStream inputStream, int sizeHint) {
+        ByteArrayOutputStream resultBuilder = new ByteArrayOutputStream(sizeHint);
 
         int readLength;
         byte[] buffer = new byte[1024];
@@ -125,6 +131,11 @@ public final class ByteString implements Serializable {
 
     public byte byteAt(int position) {
         return bytes[position];
+    }
+    
+    @Override
+    public Iterator<Byte> iterator() {
+        return new ByteStringIterator();
     }
     
     public ByteString substring(int beginIndex) {
@@ -166,7 +177,7 @@ public final class ByteString implements Serializable {
 
     private void checkBounds(int beginIndex, int length) {
         if (beginIndex < 0 || length < 0 || (beginIndex + length) > bytes.length) {
-            throw new IllegalArgumentException(String.format(
+            throw new IndexOutOfBoundsException(String.format(
                     "Invalid substring, beginIndex: %d, length: %d, content length: %d",
                     beginIndex, length, bytes.length));
         }
@@ -201,8 +212,6 @@ public final class ByteString implements Serializable {
     public boolean equals(Object other) {
         if (this == other) {
             return true;
-        } else if (other == null) {
-            return false;
         } else if (!(other instanceof ByteString)) {
             return false;
         }
@@ -232,7 +241,7 @@ public final class ByteString implements Serializable {
     }
     
     private String toHexadecimalString(byte b) {
-        String stringValue = Integer.toString(Byte.toUnsignedInt(b), 16);
+        String stringValue = Integer.toString(Byte.toUnsignedInt(b), 16).toUpperCase();
         return stringValue.length() < 2 ? "0" + stringValue : stringValue;
     }
 
@@ -248,6 +257,28 @@ public final class ByteString implements Serializable {
         return new Reader();
     }
 
+    
+    public class ByteStringIterator implements Iterator<Byte> {
+        
+        private int position = 0;
+        
+
+        @Override
+        public boolean hasNext() {
+            return position < bytes.length;
+        }
+
+        @Override
+        public Byte next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            
+            return bytes[position++];
+        }
+        
+    }
+    
 
     public static class Builder {
 

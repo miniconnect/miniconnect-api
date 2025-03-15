@@ -234,7 +234,7 @@ public final class ImmutableMap<K, V> implements Serializable {
         return data.size();
     }
 
-    public boolean containsKey(K key) {
+    public boolean containsKey(Object key) {
         return data.containsKey(key);
     }
     
@@ -250,11 +250,11 @@ public final class ImmutableMap<K, V> implements Serializable {
         return ImmutableList.fromCollection(data.values());
     }
 
-    public V get(K key) {
+    public V get(Object key) {
         return data.get(key);
     }
 
-    public V getOrDefault(K key, V defaultValue) {
+    public V getOrDefault(Object key, V defaultValue) {
         return data.getOrDefault(key, defaultValue);
     }
 
@@ -263,7 +263,7 @@ public final class ImmutableMap<K, V> implements Serializable {
     }
 
     public <K2, V2> ImmutableMap<K2, V2> map(
-            Function<K, K2> keyMapper, Function<V, V2> valueMapper) {
+            Function<? super K, K2> keyMapper, Function<? super V, V2> valueMapper) {
         Map<K2, V2> mappedData = new HashMap<>();
         for (Map.Entry<K, V> entry : data.entrySet()) {
             K2 newKey = keyMapper.apply(entry.getKey());
@@ -274,7 +274,7 @@ public final class ImmutableMap<K, V> implements Serializable {
     }
 
     public <K2, V2> ImmutableMap<K2, V2> map(
-            BiFunction<K, V, K2> keyMapper, BiFunction<K, V, V2> valueMapper) {
+            BiFunction<? super K, ? super V, K2> keyMapper, BiFunction<? super K, ? super V, V2> valueMapper) {
         Map<K2, V2> mappedData = new HashMap<>();
         for (Map.Entry<K, V> entry : data.entrySet()) {
             K key = entry.getKey();
@@ -286,7 +286,7 @@ public final class ImmutableMap<K, V> implements Serializable {
         return new ImmutableMap<>(mappedData);
     }
 
-    public <V2> ImmutableMap<K, V2> mapValues(BiFunction<K, V, V2> valueMapper) {
+    public <V2> ImmutableMap<K, V2> mapValues(BiFunction<? super K, ? super V, V2> valueMapper) {
         Map<K, V2> mappedData = new HashMap<>(data.size());
         for (Map.Entry<K, V> entry : data.entrySet()) {
             K key = entry.getKey();
@@ -297,23 +297,15 @@ public final class ImmutableMap<K, V> implements Serializable {
         return new ImmutableMap<>(mappedData);
     }
     
-    public Map<K, V> asMap() {
-        return Collections.unmodifiableMap(data);
-    }
-
-    public HashMap<K, V> toHashMap() { // NOSONAR
-        return new HashMap<>(data);
-    }
-    
     public void forEach(BiConsumer<K, V> action) {
         asMap().forEach(action);
     }
 
-    public ImmutableMap<K, V> filter(Predicate<K> filter) {
+    public ImmutableMap<K, V> filter(Predicate<? super K> filter) {
         return filter((k, v) -> filter.test(k));
     }
 
-    public ImmutableMap<K, V> filter(BiPredicate<K, V> filter) {
+    public ImmutableMap<K, V> filter(BiPredicate<? super K, ? super V> filter) {
         Map<K, V> filteredData = new HashMap<>();
         for (Map.Entry<K, V> entry : data.entrySet()) {
             K key = entry.getKey();
@@ -325,10 +317,18 @@ public final class ImmutableMap<K, V> implements Serializable {
         return new ImmutableMap<>(filteredData);
     }
 
-    public ImmutableMap<K, V> merge(ImmutableMap<K, V> otherMap) {
+    public ImmutableMap<K, V> merge(ImmutableMap<? extends K, ? extends V> otherMap) {
         Map<K, V> mergedData = new HashMap<>(data);
         mergedData.putAll(otherMap.data);
         return new ImmutableMap<>(mergedData);
+    }
+
+    public Map<K, V> asMap() {
+        return Collections.unmodifiableMap(data);
+    }
+
+    public HashMap<K, V> toHashMap() { // NOSONAR
+        return new HashMap<>(data);
     }
     
     @Override

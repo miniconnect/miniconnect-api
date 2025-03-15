@@ -1,0 +1,63 @@
+n,even,odd,powerOfTwo
+
+### zero: ###
+0,true,false,false
+
+### small positive values: ###
+1,false,true,true
+2,true,false,true
+3,false,true,false
+4,true,false,true
+5,false,true,false
+6,true,false,false
+13,false,true,false
+32,true,false,true
+742347,false,true,false
+742348,true,false,false
+5500743,false,true,false
+10432144,true,false,false
+10432145,false,true,false
+67108864,true,false,true
+4100647843327467,false,true,false
+18014398509481984,true,false,true
+9223372036854775807,false,true,false
+
+### small negative values: ###
+-1,false,true,false
+-2,true,false,false
+-3,false,true,false
+-4,true,false,false
+-5,false,true,false
+-6,true,false,false
+-13,false,true,false
+-32,true,false,false
+-742347,false,true,false
+-742348,true,false,false
+-5500743,false,true,false
+-10432144,true,false,false
+-10432145,false,true,false
+-67108864,true,false,false
+-4100647843327467,false,true,false
+-18014398509481984,true,false,false
+-9223372036854775807,false,true,false
+-9223372036854775808,true,false,false
+
+### large positive values: ###
+9223372036854775808,true,false,true
+9223372036854775809,false,true,false
+804382470934742348094,true,false,false
+4234704829347284039085,false,true,false
+75557863725914323419136,true,false,true
+40726513458712937346523745918343745739453,false,true,false
+54780674358374582374628374683745832745744318,true,false,false
+89202980794122492566142873090593446023921664,true,false,true
+
+### large negative values: ###
+-9223372036854775808,true,false,false
+-9223372036854775809,false,true,false
+-804382470934742348094,true,false,false
+-4234704829347284039085,false,true,false
+-75557863725914323419136,true,false,false
+-40726513458712937346523745918343745739453,false,true,false
+-54780674358374582374628374683745832745744318,true,false,false
+-89202980794122492566142873090593446023921664,true,false,false
