@@ -1,6 +1,6 @@
 #!/bin/sh
 
-selfDir="$( dirname -- "$( realpath "$0" )" )"
+selfDir="$( dirname -- "$( realpath -- "$0" )" )"
 
 htmlDir="${selfDir}/projects/lang/build/reports/jmh/html"
 
