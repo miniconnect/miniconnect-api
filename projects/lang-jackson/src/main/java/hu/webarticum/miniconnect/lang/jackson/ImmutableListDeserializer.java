@@ -69,12 +69,6 @@ public class ImmutableListDeserializer extends StdDeserializer<ImmutableList<?>>
             return ImmutableList.of(parser.readValueAs(arrayTypeReference));
         }
         
-        @Override
-        public LogicalType logicalType() {
-            // TODO Auto-generated method stub
-            return super.logicalType();
-        }
-
     }
     
 }
