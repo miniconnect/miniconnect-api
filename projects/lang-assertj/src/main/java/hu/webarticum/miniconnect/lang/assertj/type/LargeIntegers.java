@@ -1,4 +1,4 @@
-package hu.webarticum.miniconnect.lang.assertj;
+package hu.webarticum.miniconnect.lang.assertj.type;
 
 import org.assertj.core.internal.ComparisonStrategy;
 import org.assertj.core.internal.Numbers;

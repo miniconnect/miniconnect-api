@@ -1,4 +1,4 @@
-package hu.webarticum.miniconnect.lang.assertj;
+package hu.webarticum.miniconnect.lang.assertj.type;
 
 import java.util.Comparator;
 import java.util.List;
@@ -9,7 +9,6 @@ import org.assertj.core.api.AssertFactory;
 import org.assertj.core.api.Condition;
 import org.assertj.core.api.IndexedObjectEnumerableAssert;
 import org.assertj.core.api.ObjectAssert;
-import org.assertj.core.api.ObjectAssertFactory;
 import org.assertj.core.data.Index;
 import org.assertj.core.internal.ComparatorBasedComparisonStrategy;
 import org.assertj.core.internal.ComparisonStrategy;
@@ -30,7 +29,7 @@ public class ImmutableListAssert<T> // NOSONAR equals
 
 
     public ImmutableListAssert(ImmutableList<? extends T> actual) {
-        this(actual, new ObjectAssertFactory<>());
+        this(actual, org.assertj.core.api.Assertions::assertThat);
     }
 
     public ImmutableListAssert(ImmutableList<? extends T> actual, AssertFactory<T, ObjectAssert<T>> assertFactory) {

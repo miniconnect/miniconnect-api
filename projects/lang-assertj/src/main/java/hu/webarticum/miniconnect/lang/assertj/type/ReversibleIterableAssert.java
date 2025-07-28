@@ -1,4 +1,4 @@
-package hu.webarticum.miniconnect.lang.assertj;
+package hu.webarticum.miniconnect.lang.assertj.type;
 
 import org.assertj.core.api.AbstractIterableAssert;
 import org.assertj.core.api.AssertFactory;
