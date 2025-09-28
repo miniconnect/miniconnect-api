@@ -1,6 +1,19 @@
 # Changelog
 
 
+## Version 0.4.0
+
+Released on *2025-09-28*
+
+### Improved:
+
+- Improved JSON serialization for ImmutableList
+
+## Development:
+
+- Improved project tools
+
+
 ## Version 0.3.0
 
 Released on *2025-03-15*
