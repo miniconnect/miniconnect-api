@@ -3,13 +3,13 @@
 
 ## Version 0.4.0
 
-Released on *2025-09-28*
+Released on *2025-09-29*
 
 ### Improved:
 
 - Improved JSON serialization for ImmutableList
 
-## Development:
+### Development:
 
 - Improved project tools
 
@@ -37,7 +37,7 @@ Released on *2025-03-15*
 - Improved performance of `LargeInteger`
 - Extended LargeInteger with more features
 
-## Development:
+### Development:
 
 - Upgrade to gradle 8
 - Improve and extend unit tests and benchmarks
