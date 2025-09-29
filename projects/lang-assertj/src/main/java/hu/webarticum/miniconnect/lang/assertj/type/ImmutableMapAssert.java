@@ -1,4 +1,4 @@
-package hu.webarticum.miniconnect.lang.assertj;
+package hu.webarticum.miniconnect.lang.assertj.type;
 
 import static org.assertj.core.extractor.Extractors.extractedDescriptionOf;
 
@@ -148,31 +148,32 @@ public class ImmutableMapAssert<K, V> // NOSONAR equals
         return myself;
     }
     
-    public ImmutableMapAssert<K, V> contains(@SuppressWarnings("unchecked") Map.Entry<? extends K, ? extends V>... entries) {
+    @SafeVarargs
+    public final ImmutableMapAssert<K, V> contains(Map.Entry<? extends K, ? extends V>... entries) {
         maps.assertContains(info, actualAsMap(), entries);
         return myself;
     }
 
-    public ImmutableMapAssert<K, V> containsAnyOf(
-            @SuppressWarnings("unchecked") Map.Entry<? extends K, ? extends V>... entries) {
+    @SafeVarargs
+    public final ImmutableMapAssert<K, V> containsAnyOf(Map.Entry<? extends K, ? extends V>... entries) {
         maps.assertContainsAnyOf(info, actualAsMap(), entries);
         return myself;
     }
 
-    public ImmutableMapAssert<K, V> containsExactly(
-            @SuppressWarnings("unchecked") Map.Entry<? extends K, ? extends V>... entries) {
+    @SafeVarargs
+    public final ImmutableMapAssert<K, V> containsExactly(Map.Entry<? extends K, ? extends V>... entries) {
         maps.assertContainsExactly(info, actualAsMap(), entries);
         return myself;
     }
 
-    public ImmutableMapAssert<K, V> containsOnly(
-            @SuppressWarnings("unchecked") Map.Entry<? extends K, ? extends V>... entries) {
+    @SafeVarargs
+    public final ImmutableMapAssert<K, V> containsOnly(Map.Entry<? extends K, ? extends V>... entries) {
         maps.assertContainsOnly(info, actualAsMap(), entries);
         return myself;
     }
 
-    public ImmutableMapAssert<K, V> doesNotContain(
-            @SuppressWarnings("unchecked") Map.Entry<? extends K, ? extends V>... entries) {
+    @SafeVarargs
+    public final ImmutableMapAssert<K, V> doesNotContain(Map.Entry<? extends K, ? extends V>... entries) {
         maps.assertDoesNotContain(info, actualAsMap(), entries);
         return myself;
     }
@@ -216,8 +217,9 @@ public class ImmutableMapAssert<K, V> // NOSONAR equals
         maps.assertContainsKey(info, actualAsMap(), key);
         return myself;
     }
-    
-    public ImmutableMapAssert<K, V> containsKeys(@SuppressWarnings("unchecked") K... keys) {
+
+    @SafeVarargs
+    public final ImmutableMapAssert<K, V> containsKeys(K... keys) {
         maps.assertContainsKeys(info, actualAsMap(), keys);
         return myself;
     }
@@ -232,7 +234,8 @@ public class ImmutableMapAssert<K, V> // NOSONAR equals
         return myself;
     }
 
-    public ImmutableMapAssert<K, V> containsOnlyKeys(@SuppressWarnings("unchecked") K... keys) {
+    @SafeVarargs
+    public final ImmutableMapAssert<K, V> containsOnlyKeys(K... keys) {
         maps.assertContainsOnlyKeys(info, actualAsMap(), keys);
         return myself;
     }
@@ -241,8 +244,9 @@ public class ImmutableMapAssert<K, V> // NOSONAR equals
         maps.assertContainsOnlyKeys(info, actualAsMap(), keys);
         return myself;
     }
-    
-    public ImmutableMapAssert<K, V> doesNotContainKeys(@SuppressWarnings("unchecked") K... keys) {
+
+    @SafeVarargs
+    public final ImmutableMapAssert<K, V> doesNotContainKeys(K... keys) {
         maps.assertDoesNotContainKeys(info, actualAsMap(), keys);
         return myself;
     }
@@ -252,7 +256,8 @@ public class ImmutableMapAssert<K, V> // NOSONAR equals
         return myself;
     }
     
-    public ImmutableMapAssert<K, V> containsValues(@SuppressWarnings("unchecked") V... values) {
+    @SafeVarargs
+    public final ImmutableMapAssert<K, V> containsValues(V... values) {
         maps.assertContainsValues(info, actualAsMap(), values);
         return myself;
     }
@@ -271,7 +276,8 @@ public class ImmutableMapAssert<K, V> // NOSONAR equals
         return new IntegerAssert(actual.size());
     }
 
-    public ImmutableListAssert<V> extractingByKeys(@SuppressWarnings("unchecked") K... keys) {
+    @SafeVarargs
+    public final ImmutableListAssert<V> extractingByKeys(K... keys) {
         isNotNull();
         ImmutableList<V> extractedValues = Stream.of(keys).map(actual::get).collect(ImmutableList.createCollector());
         String description = getDescription(() -> extractedDescriptionOf((Object[]) keys));
@@ -299,8 +305,8 @@ public class ImmutableMapAssert<K, V> // NOSONAR equals
         return new ImmutableListAssert<>(extractedValues);
     }
 
-    public ImmutableListAssert<Tuple> extractingFromEntries(
-            @SuppressWarnings("unchecked") Function<? super Map.Entry<K, V>, ?>... extractors) {
+    @SafeVarargs
+    public final ImmutableListAssert<Tuple> extractingFromEntries(Function<? super Map.Entry<K, V>, ?>... extractors) {
         Function<Map.Entry<K, V>, Tuple> tupleExtractor = v -> new Tuple(Stream.of(extractors)
                 .map(extractor -> extractor.apply(v))
                 .toArray());
@@ -327,16 +333,16 @@ public class ImmutableMapAssert<K, V> // NOSONAR equals
             target.add(value);
         }
     }
-    
+
     @Override
     @Deprecated
-    public ImmutableMapAssert<K, V> usingElementComparator(Comparator<? super Map.Entry<K, V>> customComparator) {
+    public ImmutableMapAssert<K, V> usingElementComparator(Comparator<? super Map.Entry<K, V>> customComparator) { // NOSONAR deprecated
         throw new UnsupportedOperationException("custom element Comparator is not supported for MapEntry comparison");
     }
 
     @Override
     @Deprecated
-    public ImmutableMapAssert<K, V> usingDefaultElementComparator() {
+    public ImmutableMapAssert<K, V> usingDefaultElementComparator() { // NOSONAR deprecated
         throw new UnsupportedOperationException("custom element Comparator is not supported for MapEntry comparison");
     }
 
@@ -354,7 +360,7 @@ public class ImmutableMapAssert<K, V> // NOSONAR equals
         return values;
     }
 
-    private static <K, V> MapEntry<K, V> entryOf(K key, V value) {
+    public static <K, V> MapEntry<K, V> entryOf(K key, V value) {
         return MapEntry.entry(key, value);
     }
     

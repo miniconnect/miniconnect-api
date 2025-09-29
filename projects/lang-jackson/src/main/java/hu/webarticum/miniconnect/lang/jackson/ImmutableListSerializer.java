@@ -10,8 +10,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper;
-import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
-import com.fasterxml.jackson.databind.ser.std.ObjectArraySerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 import hu.webarticum.miniconnect.lang.ImmutableList;
@@ -42,13 +40,19 @@ public class ImmutableListSerializer extends StdSerializer<ImmutableList<?>> {
     
     @Override
     public void acceptJsonFormatVisitor(JsonFormatVisitorWrapper visitor, JavaType typeHint) throws JsonMappingException {
-        JavaType itemType = typeHint.containedType(0);
-        visitor.expectArrayFormat(itemType);
-        JsonSerializer<Object> itemSerializer = visitor.getProvider().findValueSerializer(itemType);
-        TypeSerializer itemTypeSerializer = visitor.getProvider().findTypeSerializer(itemType);
-        ObjectArraySerializer arraySerializer = new ObjectArraySerializer(
-                itemType, true, itemTypeSerializer, itemSerializer);
-        arraySerializer.acceptJsonFormatVisitor(visitor, itemType);
+        SerializerProvider provider = visitor.getProvider();
+        JavaType itemType = extractItemType(provider, typeHint);
+        JavaType arrayType = provider.getTypeFactory().constructArrayType(itemType);
+        JsonSerializer<Object> itemSerializer = provider.findValueSerializer(itemType);
+        visitor.expectArrayFormat(arrayType).itemsFormat(itemSerializer, itemType);
+    }
+    
+    private JavaType extractItemType(SerializerProvider provider, JavaType typeHint) {
+        if (typeHint == null || typeHint.containedTypeCount() == 0) {
+            return provider.constructType(Object.class);
+        }
+        
+        return typeHint.containedType(0);
     }
     
 }
