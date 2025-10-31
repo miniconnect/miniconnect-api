@@ -408,6 +408,8 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
 
     public abstract LargeInteger log2();
 
+    public abstract LargeInteger ceilingLog2();
+
     public abstract LargeInteger gcd(LargeInteger val);
 
     public abstract LargeInteger lcm(LargeInteger val);
@@ -1274,6 +1276,15 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
         }
 
         @Override
+        public LargeInteger ceilingLog2() {
+            if (value < 1L) {
+                throw new ArithmeticException("Value is not positive");
+            }
+            
+            return of(64 - Long.numberOfLeadingZeros(value - 1));
+        }
+
+        @Override
         public LargeInteger gcd(LargeInteger val) {
             if (value == 0L) {
                 return val.abs();
@@ -1999,6 +2010,19 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
             }
             
             return of(value.bitLength() - 1);
+        }
+
+        @Override
+        public LargeInteger ceilingLog2() {
+            if (isNonPositive()) {
+                throw new ArithmeticException("Value is not positive");
+            }
+            
+            int intResult = value.bitLength() - 1;
+            if (!isPowerOfTwo()) {
+                intResult++;
+            }
+            return of(intResult);
         }
 
         @Override

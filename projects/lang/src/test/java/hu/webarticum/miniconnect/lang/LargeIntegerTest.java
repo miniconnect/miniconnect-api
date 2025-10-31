@@ -675,6 +675,12 @@ class LargeIntegerTest {
         assertThat(n.log2()).as("%s.log2()", n).isEqualTo(result);
     }
 
+    @ParameterizedTest
+    @CsvFileSource(resources = CASE_DATA_DIR + "/ceilingLog2-cases.csv", numLinesToSkip = 1)
+    void testCeilingLog2(LargeInteger n, LargeInteger result) {
+        assertThat(n.ceilingLog2()).as("%s.ceilingLog2()", n).isEqualTo(result);
+    }
+
     @Test
     void testLog2Throw() {
         ThrowingConsumer<LargeInteger> checkingLambda = n -> {
