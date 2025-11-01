@@ -199,21 +199,19 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
     }
 
     public static LargeInteger ofUnsigned(byte[] bytes) {
-        if (bytes.length > Long.BYTES ) {
+        int length = bytes.length;
+        if (length > Long.BYTES) {
             return of(new BigInteger(1, bytes));
-        } else if (bytes.length == 0) {
+        } else if (length == 0) {
             return ZERO;
-        } else if (bytes.length < Long.BYTES) {
-            ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
-            buffer.position(Long.BYTES - bytes.length);
-            buffer.put(bytes);
-            buffer.position(0);
-            long value = buffer.getLong();
-            return of(value);
-        } else if (bytes[0] < 0) {
+        } else if (length == Long.BYTES && bytes[0] < 0) {
             return of(new BigInteger(1, bytes));
         } else {
-            return of(ByteBuffer.wrap(bytes).getLong());
+            long longValue = bytes[0] & 0xFFL;
+            for (int i = 1; i < length; i++) {
+                longValue = (longValue << 8) | (bytes[i] & 0xFFL);
+            }
+            return of(longValue);
         }
     }
 
