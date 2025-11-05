@@ -13,7 +13,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.type.ArrayType;
-import com.fasterxml.jackson.databind.type.LogicalType;
 
 import hu.webarticum.miniconnect.lang.ImmutableList;
 
