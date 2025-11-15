@@ -20,7 +20,7 @@ import java.util.Objects;
 /**
  * Simple immutable wrapper for byte arrays
  */
-public final class ByteString implements Iterable<Byte>, Serializable {
+public final class ByteString implements Comparable<ByteString>, Iterable<Byte>, Serializable {
 
     private static final long serialVersionUID = 2392643209772967829L;
     
@@ -131,6 +131,24 @@ public final class ByteString implements Iterable<Byte>, Serializable {
 
     public byte byteAt(int position) {
         return bytes[position];
+    }
+    
+    @Override
+    public int compareTo(ByteString other) {
+        if (bytes == other.bytes) {
+            return 0;
+        }
+
+        int commonLength = Math.min(bytes.length, other.bytes.length);
+        for (int i = 0; i < commonLength; i++) {
+            if (bytes[i] != other.bytes[i]) {
+                int unsignedCode = bytes[i] & 0xFF;
+                int otherUnsignedCode = other.bytes[i] & 0xFF;
+                return unsignedCode > otherUnsignedCode ? 1 : -1;
+            }
+        }
+        
+        return Integer.compare(bytes.length, other.bytes.length);
     }
     
     @Override

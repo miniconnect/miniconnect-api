@@ -54,14 +54,14 @@ class ByteStringTest {
     void testBuilderEmpty() {
         ByteString.Builder builder = ByteString.builder();
         assertThat(builder.length()).isZero();
-        assertThat(builder.build()).isEmpty();
+        assertThat((Iterable<Byte>) builder.build()).isEmpty();
     }
 
     @Test
     void testBuilderSingle() {
         ByteString.Builder builder = ByteString.builder().append(ByteString.of("abc"));
         assertThat(builder.length()).isEqualTo(3);
-        assertThat(builder.build()).map(b -> (int) b).containsExactly(97, 98, 99);
+        assertThat((Iterable<Byte>) builder.build()).map(b -> (int) b).containsExactly(97, 98, 99);
     }
     
     @Test
@@ -79,7 +79,7 @@ class ByteStringTest {
                 .appendFloat(0.25f)
                 .appendDouble(0.75);
         assertThat(builder.length()).isEqualTo(42);
-        assertThat(builder.build()).map(b -> (int) b).containsExactly(
+        assertThat((Iterable<Byte>) builder.build()).map(b -> (int) b).containsExactly(
                 108, 111, 114, 101, 109, 111, 114, 45, 101, 3, 7, 0, 7, -12, 0, 114, 0, 123, 0, 0, 0, -22,
                 0, 0, 0, 0, 0, 0, 1, -56, 62, -128, 0, 0, 63, -24, 0, 0, 0, 0, 0, 0);
     }
@@ -109,6 +109,18 @@ class ByteStringTest {
     }
 
     @Test
+    void testComparse() {
+        assertThat(ByteString.empty().compareTo(ByteString.empty())).isZero();
+        assertThat(ByteString.of("lorem").compareTo(ByteString.of("lorem"))).isZero();
+        assertThat(ByteString.of("loren").compareTo(ByteString.of("lorem"))).isPositive();
+        assertThat(ByteString.of("lorem").compareTo(ByteString.of("loren"))).isNegative();
+        assertThat(ByteString.of("lorem").compareTo(ByteString.of("ipsum"))).isPositive();
+        assertThat(ByteString.of("ipsum").compareTo(ByteString.of("lorem"))).isNegative();
+        assertThat(ByteString.of("loremx").compareTo(ByteString.of("lorem"))).isPositive();
+        assertThat(ByteString.of("lorem").compareTo(ByteString.of("loremx"))).isNegative();
+    }
+
+    @Test
     void testIterator() {
         assertThat(ByteString.empty().iterator()).isExhausted();
         assertThat(ByteString.empty().iterator())
@@ -122,24 +134,24 @@ class ByteStringTest {
     void testSubstring() {
         ByteString byteString = ByteString.of("lorem");
         assertThatThrownBy(() -> byteString.substring(9)).isInstanceOf(IndexOutOfBoundsException.class);
-        assertThat(byteString.substring(3)).isEqualTo(ByteString.of("em"));
+        assertThat((Iterable<Byte>) byteString.substring(3)).isEqualTo(ByteString.of("em"));
     }
 
     @Test
     void testSubstringUntil() {
         ByteString byteString = ByteString.of("lorem");
         assertThatThrownBy(() -> byteString.substring(2, 10)).isInstanceOf(IndexOutOfBoundsException.class);
-        assertThat(byteString.substring(1, 1)).isEqualTo(ByteString.empty());
-        assertThat(byteString.substring(1, 3)).isEqualTo(ByteString.of("or"));
+        assertThat((Iterable<Byte>) byteString.substring(1, 1)).isEqualTo(ByteString.empty());
+        assertThat((Iterable<Byte>) byteString.substring(1, 3)).isEqualTo(ByteString.of("or"));
     }
 
     @Test
     void testSubstringLength() {
         ByteString byteString = ByteString.of("lorem");
         assertThatThrownBy(() -> byteString.substringLength(3, 5)).isInstanceOf(IndexOutOfBoundsException.class);
-        assertThat(byteString.substringLength(1, 0)).isEqualTo(ByteString.empty());
-        assertThat(byteString.substringLength(2, 3)).isEqualTo(ByteString.of("rem"));
-        assertThat(byteString.substringLength(0, 5)).isSameAs(byteString);
+        assertThat((Iterable<Byte>) byteString.substringLength(1, 0)).isEqualTo(ByteString.empty());
+        assertThat((Iterable<Byte>) byteString.substringLength(2, 3)).isEqualTo(ByteString.of("rem"));
+        assertThat((Iterable<Byte>) byteString.substringLength(0, 5)).isSameAs(byteString);
     }
 
     @Test
@@ -164,7 +176,7 @@ class ByteStringTest {
     @Test
     void testExtractUntil() {
         assertThat(ByteString.empty().extract(0, 0)).isEmpty();
-        assertThat(ByteString.empty()).satisfies(bs -> assertThatThrownBy(() ->
+        assertThat((Iterable<Byte>) ByteString.empty()).satisfies(bs -> assertThatThrownBy(() ->
                 ((ByteString) bs).extract(10, 20)).isInstanceOf(IndexOutOfBoundsException.class));
         assertThat(ByteString.of(new byte[] { 0, 0, 1, -3, 100 }).extract(1, 4)).containsExactly(0, 1, -3);
         assertThat(ByteString.of("lorem ipsum").extract(1, 1)).isEmpty();
@@ -284,10 +296,10 @@ class ByteStringTest {
     
     @Test
     void testToString() throws IOException {
-        assertThat(ByteString.empty()).hasToString("");
-        assertThat(ByteString.ofByte(114)).hasToString("r");
-        assertThat(ByteString.of("lorem")).hasToString("lorem");
-        assertThat(ByteString.of("\u0000lorem \u1FFCipsum")).hasToString("[00]lorem [E1][BF][BC]ipsum");
+        assertThat((Iterable<Byte>) ByteString.empty()).hasToString("");
+        assertThat((Iterable<Byte>) ByteString.ofByte(114)).hasToString("r");
+        assertThat((Iterable<Byte>) ByteString.of("lorem")).hasToString("lorem");
+        assertThat((Iterable<Byte>) ByteString.of("\u0000lorem \u1FFCipsum")).hasToString("[00]lorem [E1][BF][BC]ipsum");
     }
 
     @Test
