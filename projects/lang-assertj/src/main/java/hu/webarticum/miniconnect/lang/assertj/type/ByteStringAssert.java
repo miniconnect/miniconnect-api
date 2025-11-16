@@ -20,8 +20,8 @@ public class ByteStringAssert // NOSONAR equals
     
     
     public ByteStringAssert(ByteString actual) {
-        super(actual, Byte.class);
-        byteArrayAssert = new ByteArrayAssert(actual.extract());
+        super(actual, ByteStringAssert.class);
+        byteArrayAssert = new ByteArrayAssert(actual != null ? actual.extract() : null);
     }
 
     

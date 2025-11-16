@@ -1,29 +1,27 @@
 package hu.webarticum.miniconnect.lang.assertj.type;
 
+import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.internal.Failures;
 
 import hu.webarticum.miniconnect.lang.CheckableCloseable;
 
-public class CheckableCloseableAssert {
+public class CheckableCloseableAssert extends AbstractAssert<CheckableCloseableAssert, CheckableCloseable> {
     
-    private final CheckableCloseable actual;
-    
-
     public CheckableCloseableAssert(CheckableCloseable actual) {
-        this.actual = actual;
+        super(actual, CheckableCloseableAssert.class);
     }
     
 
     public CheckableCloseableAssert isOpen() {
         if (actual.isClosed()) {
-            Failures.instance().failure("Unexpected closed status");
+            throw Failures.instance().failure("Unexpected closed status");
         }
         return this;
     }
     
     public CheckableCloseableAssert isClosed() {
         if (!actual.isClosed()) {
-            Failures.instance().failure("Unexpected open status");
+            throw Failures.instance().failure("Unexpected open status");
         }
         return this;
     }

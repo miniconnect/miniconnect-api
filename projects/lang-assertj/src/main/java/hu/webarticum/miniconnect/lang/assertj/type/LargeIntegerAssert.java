@@ -20,7 +20,7 @@ public class LargeIntegerAssert // NOSONAR equals
     
     
     public LargeIntegerAssert(LargeInteger actual) {
-        super(actual, LargeInteger.class);
+        super(actual, LargeIntegerAssert.class);
     }
     
 
