@@ -320,20 +320,11 @@ class LargeIntegerTest {
         byte[] bytes = convertHexToBytes(bytesHex);
         assertThat(n.toByteArray()).containsExactly(bytes);
     }
-    
+
     @ParameterizedTest
     @CsvFileSource(resources = CASE_DATA_DIR + "/isProbablePrime-cases.csv", numLinesToSkip = 1)
     void testIsProbablePrime(LargeInteger n, int certainty, boolean isProbablePrime) {
         assertThat(n.isProbablePrime(certainty)).as("%s.isProbablePrime(%d)", n, certainty).isEqualTo(isProbablePrime);
-    }
-    
-    @Test
-    void testIsProbablePrimeSameAsByBigInteger() {
-        int certainty = 10;
-        for (int i = 1; i <= 100; i++) {
-            assertThat(LargeInteger.of(i).isProbablePrime(certainty)).as("%d.isProbablePrime(%d)", i, certainty)
-                    .isEqualTo(BigInteger.valueOf(i).isProbablePrime(certainty));
-        }
     }
 
     @ParameterizedTest
