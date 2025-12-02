@@ -801,6 +801,38 @@ class DateTimeDeltaTest {
     }
 
     @Test
+    void testAddToWidening() {
+        assertThat(DateTimeDelta.of(0, 0, 0, 10, 0).addToWidening(LocalTime.of(1, 5, 0, 0))).isEqualTo(LocalTime.of(1, 5, 10, 0));
+        assertThat(DateTimeDelta.of(0, 2, 0, 0, 0).addToWidening(LocalDate.of(2025, 4, 3))).isEqualTo(LocalDate.of(2025, 6, 3));
+        assertThat(DateTimeDelta.of(0, 2, 0, 10, 0).addToWidening(LocalDateTime.of(2025, 4, 3, 1, 5, 0, 0)))
+                .isEqualTo(LocalDateTime.of(2025, 6, 3, 1, 5, 10, 0));
+        assertThat(DateTimeDelta.of(0, 0, 0, 10, 0).addToWidening(LocalDate.of(2025, 4, 3))).isEqualTo(LocalDateTime.of(2025, 4, 3, 0, 0, 10, 0));
+        assertThat(DateTimeDelta.of(0, 2, 0, 10, 0).addToWidening(LocalDate.of(2025, 4, 3))).isEqualTo(LocalDateTime.of(2025, 6, 3, 0, 0, 10, 0));
+        assertThat(DateTimeDelta.of(0, 2, 0, 0, 0).addToWidening(LocalTime.of(1, 5, 0, 0))).isEqualTo(LocalDateTime.of(1970, 3, 1, 1, 5, 0, 0));
+        assertThat(DateTimeDelta.of(0, 2, 0, 10, 0).addToWidening(LocalTime.of(1, 5, 0, 0))).isEqualTo(LocalDateTime.of(1970, 3, 1, 1, 5, 10, 0));
+        assertThat(DateTimeDelta.of(0, 2, 0, 0, 0).addToWidening(OffsetTime.of(1, 5, 0, 0, ZoneOffset.ofHours(2))))
+                .isEqualTo(OffsetDateTime.of(1970, 3, 1, 1, 5, 0, 0, ZoneOffset.ofHours(2)));
+        assertThat(DateTimeDelta.of(0, 2, 0, 10, 0).addToWidening(OffsetTime.of(1, 5, 0, 0, ZoneOffset.ofHours(2))))
+                .isEqualTo(OffsetDateTime.of(1970, 3, 1, 1, 5, 10, 0, ZoneOffset.ofHours(2)));
+    }
+
+    @Test
+    void testSubtractFromWidening() {
+        assertThat(DateTimeDelta.of(0, 0, 0, 10, 0).subtractFromWidening(LocalTime.of(1, 5, 0, 0))).isEqualTo(LocalTime.of(1, 4, 50, 0));
+        assertThat(DateTimeDelta.of(0, 2, 0, 0, 0).subtractFromWidening(LocalDate.of(2025, 4, 3))).isEqualTo(LocalDate.of(2025, 2, 3));
+        assertThat(DateTimeDelta.of(0, 2, 0, 10, 0).subtractFromWidening(LocalDateTime.of(2025, 4, 3, 1, 5, 0, 0)))
+                .isEqualTo(LocalDateTime.of(2025, 2, 3, 1, 4, 50, 0));
+        assertThat(DateTimeDelta.of(0, 0, 0, 10, 0).subtractFromWidening(LocalDate.of(2025, 4, 3))).isEqualTo(LocalDateTime.of(2025, 4, 2, 23, 59, 50, 0));
+        assertThat(DateTimeDelta.of(0, 2, 0, 10, 0).subtractFromWidening(LocalDate.of(2025, 4, 3))).isEqualTo(LocalDateTime.of(2025, 2, 2, 23, 59, 50, 0));
+        assertThat(DateTimeDelta.of(0, 2, 0, 0, 0).subtractFromWidening(LocalTime.of(1, 5, 0, 0))).isEqualTo(LocalDateTime.of(1969, 11, 1, 1, 5, 0, 0));
+        assertThat(DateTimeDelta.of(0, 2, 0, 10, 0).subtractFromWidening(LocalTime.of(1, 5, 0, 0))).isEqualTo(LocalDateTime.of(1969, 11, 1, 1, 4, 50, 0));
+        assertThat(DateTimeDelta.of(0, 2, 0, 0, 0).subtractFromWidening(OffsetTime.of(1, 5, 0, 0, ZoneOffset.ofHours(2))))
+                .isEqualTo(OffsetDateTime.of(1969, 11, 1, 1, 5, 0, 0, ZoneOffset.ofHours(2)));
+        assertThat(DateTimeDelta.of(0, 2, 0, 10, 0).subtractFromWidening(OffsetTime.of(1, 5, 0, 0, ZoneOffset.ofHours(2))))
+                .isEqualTo(OffsetDateTime.of(1969, 11, 1, 1, 4, 50, 0, ZoneOffset.ofHours(2)));
+    }
+
+    @Test
     void testNormalized() {
         assertThat(DateTimeDelta.ZERO.normalized()).isEqualTo(DateTimeDelta.ZERO);
         assertThat(DateTimeDelta.of(0, 0, 0, 412, 735_031_233).normalized()).isEqualTo(DateTimeDelta.of(0, 0, 0, 412, 735_031_233));

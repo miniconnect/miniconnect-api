@@ -637,6 +637,31 @@ public final class DateTimeDelta implements Comparable<DateTimeDelta>, TemporalA
         }
     }
 
+    public Temporal addToWidening(Temporal temporal) {
+        return addTo(widenForAddition(temporal));
+    }
+
+    public Temporal subtractFromWidening(Temporal temporal) {
+        return subtractFrom(widenForAddition(temporal));
+    }
+
+    private Temporal widenForAddition(Temporal temporal) {
+        if (temporal instanceof LocalDate) {
+            if (!duration.isZero()) {
+                return ((LocalDate) temporal).atStartOfDay();
+            }
+        } else if (temporal instanceof LocalTime) {
+            if (!period.isZero()) {
+                return ((LocalTime) temporal).atDate(LocalDate.ofEpochDay(0));
+            }
+        } else if (temporal instanceof OffsetTime) {
+            if (!period.isZero()) {
+                return ((OffsetTime) temporal).atDate(LocalDate.ofEpochDay(0));
+            }
+        }
+        return temporal;
+    }
+
     public DateTimeDelta normalized() {
         Duration normalizedDuration = Duration.ofSeconds(duration.getSeconds() % SECONDS_PER_DAY, duration.getNano());
         Period normalizedPeriod = period.plusDays(duration.toDays()).normalized();
