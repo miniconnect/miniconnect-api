@@ -710,9 +710,16 @@ public final class DateTimeDelta implements Comparable<DateTimeDelta>, TemporalA
         return of(collapsedPeriod, collapsedDuration);
     }
 
+    public Duration toCollapsedDuration() {
+        return duration
+                .plusSeconds(period.getDays() * (long) SECONDS_PER_DAY)
+                .plusSeconds(period.getMonths() * (long) ESTIMATED_DAYS_PER_MONTH * SECONDS_PER_DAY)
+                .plusSeconds(period.getYears() * (long) MONTHS_PER_YEAR * ESTIMATED_DAYS_PER_MONTH * SECONDS_PER_DAY);
+    }
+
     public Duration toDuration() {
         return duration
-                .plusSeconds(period.getDays() * SECONDS_PER_DAY)
+                .plusSeconds(period.getDays() * (long) SECONDS_PER_DAY)
                 .plusSeconds(period.getMonths() * ChronoUnit.MONTHS.getDuration().getSeconds())
                 .plusSeconds(period.getYears() * ChronoUnit.YEARS.getDuration().getSeconds());
     }

@@ -830,6 +830,22 @@ class DateTimeDeltaTest {
     }
 
     @Test
+    void testToCollapsedDuration() {
+        assertThat(DateTimeDelta.ZERO.toCollapsedDuration()).isEqualTo(Duration.ZERO);
+        assertThat(DateTimeDelta.of(0, 0, 0, 412, 735_031_233).toCollapsedDuration()).isEqualTo(Duration.ofSeconds(412, 735_031_233));
+        assertThat(DateTimeDelta.of(0, 0, 0, -504, -123_456_789).toCollapsedDuration()).isEqualTo(Duration.ofSeconds(-504, -123_456_789));
+        assertThat(DateTimeDelta.of(0, 0, 1, 0, 0).toCollapsedDuration()).isEqualTo(Duration.ofSeconds(86400, 0));
+        assertThat(DateTimeDelta.of(0, 3, 0, 0).toCollapsedDuration()).isEqualTo(Duration.ofSeconds(7776000, 0));
+        assertThat(DateTimeDelta.of(-2, 0, 0, 0).toCollapsedDuration()).isEqualTo(Duration.ofSeconds(-62208000, 0));
+        assertThat(DateTimeDelta.of(1, 2, 3, 0, 0).toCollapsedDuration()).isEqualTo(Duration.ofSeconds(36547200, 0));
+        assertThat(DateTimeDelta.of(1, -2, -3, 0, 0).toCollapsedDuration()).isEqualTo(Duration.ofSeconds(25660800, 0));
+        assertThat(DateTimeDelta.of(0, 2, 0, 0, 10).toCollapsedDuration()).isEqualTo(Duration.ofSeconds(5184000, 10));
+        assertThat(DateTimeDelta.of(0, 0, 2, -3600, -12).toCollapsedDuration()).isEqualTo(Duration.ofSeconds(169199, 999_999_988));
+        assertThat(DateTimeDelta.of(2, 4, 17, 14672, 421_301_037).toCollapsedDuration()).isEqualTo(Duration.ofSeconds(74059472, 421_301_037));
+        assertThat(DateTimeDelta.of(2, -4, 17, -14672, -421_301_037).toCollapsedDuration()).isEqualTo(Duration.ofSeconds(53294127, 578698963));
+    }
+
+    @Test
     void testToDuration() {
         assertThat(DateTimeDelta.ZERO.toDuration()).isEqualTo(Duration.ZERO);
         assertThat(DateTimeDelta.of(0, 0, 0, 412, 735_031_233).toDuration()).isEqualTo(Duration.ofSeconds(412, 735_031_233));
