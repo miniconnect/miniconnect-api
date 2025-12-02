@@ -539,6 +539,10 @@ public final class DateTimeDelta implements Comparable<DateTimeDelta>, TemporalA
         return of(period.negated(), duration.negated());
     }
 
+    public DateTimeDelta multipliedBy(int scalar) {
+        return of(period.multipliedBy(scalar), duration.multipliedBy(scalar));
+    }
+
     public DateTimeDelta plus(TemporalAmount amountToAdd) {
         if (amountToAdd instanceof DateTimeDelta) {
             DateTimeDelta otherDelta = (DateTimeDelta) amountToAdd;

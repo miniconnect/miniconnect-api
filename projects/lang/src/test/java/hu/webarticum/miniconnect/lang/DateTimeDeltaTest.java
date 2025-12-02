@@ -673,6 +673,16 @@ class DateTimeDeltaTest {
     }
 
     @Test
+    void testMultipliedBy() {
+        assertThat(DateTimeDelta.ZERO.multipliedBy(0)).isEqualTo(DateTimeDelta.ZERO);
+        assertThat(DateTimeDelta.ZERO.multipliedBy(3)).isEqualTo(DateTimeDelta.ZERO);
+        assertThat(DateTimeDelta.of(1, 2, 3, 4, 5).multipliedBy(0)).isEqualTo(DateTimeDelta.ZERO);
+        assertThat(DateTimeDelta.of(1, 2, 3, 4, 5).multipliedBy(3)).isEqualTo(DateTimeDelta.of(3, 6, 9, 12, 15));
+        assertThat(DateTimeDelta.of(0, 10, 0, 0, 0).multipliedBy(2)).isEqualTo(DateTimeDelta.of(0, 20, 0, 0, 0));
+        assertThat(DateTimeDelta.of(0, 0, 0, 0, 700_000_000).multipliedBy(2)).isEqualTo(DateTimeDelta.of(0, 0, 0, 1, 400_000_000));
+    }
+
+    @Test
     void testPlus() {
         DateTimeDelta delta = DateTimeDelta.of(12, 4, 1, 1000, 111_111_111);
         assertThat(delta.plus(DateTimeDelta.ZERO)).isEqualTo(delta);
