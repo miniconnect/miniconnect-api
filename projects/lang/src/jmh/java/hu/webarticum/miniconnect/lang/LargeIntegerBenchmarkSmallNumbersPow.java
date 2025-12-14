@@ -44,33 +44,33 @@ import org.openjdk.jmh.infra.Blackhole;
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 public class LargeIntegerBenchmarkSmallNumbersPow {
-    
+
     private static final BigInt SCALA_BIGINT_ONE = BigInt.apply(1);
-    
-    
+
+
     private Random random = new Random();
-    
+
 
     private long[] longValues;
 
     private BigInteger[] bigIntegerValues;
 
     private LargeInteger[] largeIntegerValues;
-    
+
     private BigInt[] scalaBigIntValues;
-    
+
     private SafeLong[] spireSafeLongValues;
-    
+
     private Apint[] apfloatApintValues;
-    
+
     private org.jscience.mathematics.number.LargeInteger[] jscienceLargeIntegerValues;
-    
+
     private clojure.lang.BigInt[] clojureBigIntValues;
-    
+
     private org.libj.math.BigInt[] libjBigIntValues;
-    
+
     private org.huldra.math.BigInt[] huldraBigIntValues;
-    
+
 
     @Setup(Level.Iteration)
     public void setup() {
@@ -86,22 +86,22 @@ public class LargeIntegerBenchmarkSmallNumbersPow {
         for (int i = 0; i < longValues.length; i++) {
             bigIntegerValues[i] = BigInteger.valueOf(longValues[i]);
         }
-        
+
         largeIntegerValues = new LargeInteger[longValues.length];
         for (int i = 0; i < longValues.length; i++) {
             largeIntegerValues[i] = LargeInteger.of(longValues[i]);
         }
-        
+
         scalaBigIntValues = new BigInt[longValues.length];
         for (int i = 0; i < longValues.length; i++) {
             scalaBigIntValues[i] = BigInt.apply(longValues[i]);
         }
-        
+
         spireSafeLongValues = new SafeLong[longValues.length];
         for (int i = 0; i < longValues.length; i++) {
             spireSafeLongValues[i] = SafeLong.apply(longValues[i]);
         }
-        
+
         apfloatApintValues = new Apint[longValues.length];
         for (int i = 0; i < longValues.length; i++) {
             apfloatApintValues[i] = new Apint(longValues[i]);
@@ -111,7 +111,7 @@ public class LargeIntegerBenchmarkSmallNumbersPow {
         for (int i = 0; i < longValues.length; i++) {
             jscienceLargeIntegerValues[i] = org.jscience.mathematics.number.LargeInteger.valueOf(longValues[i]);
         }
-        
+
         clojureBigIntValues = new clojure.lang.BigInt[longValues.length];
         for (int i = 0; i < longValues.length; i++) {
             clojureBigIntValues[i] = clojure.lang.BigInt.fromLong(longValues[i]);
@@ -127,7 +127,7 @@ public class LargeIntegerBenchmarkSmallNumbersPow {
             huldraBigIntValues[i] = new org.huldra.math.BigInt(longValues[i]);
         }
     }
-    
+
 
     @Benchmark
     public void benchmarkLong(Blackhole blackhole) {

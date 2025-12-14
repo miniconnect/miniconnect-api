@@ -28,7 +28,7 @@ public class ClojureArithmetic {
     public static Object add(Object a, Object b) {
         return ADD.invoke(a, b);
     }
-    
+
     public static Object subtract(Object a, Object b) {
         return SUBTRACT.invoke(a, b);
     }
@@ -40,7 +40,7 @@ public class ClojureArithmetic {
     public static Object increment(Object a) {
         return INCREMENT.invoke(a);
     }
-    
+
     public static Object multiply(Object a, Object b) {
         return MULTIPLY.invoke(a, b);
     }

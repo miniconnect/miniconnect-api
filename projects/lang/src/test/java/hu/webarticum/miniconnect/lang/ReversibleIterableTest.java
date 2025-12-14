@@ -7,7 +7,7 @@ import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 
 class ReversibleIterableTest {
-    
+
     @Test
     void testEmpty() {
         ReversibleIterable<Integer> reversibleIterable = ReversibleIterable.empty();

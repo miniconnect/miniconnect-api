@@ -73,7 +73,7 @@ class DateTimeDeltaTest {
         assertThat(delta.getPeriod()).isEqualTo(Period.of(7, 25, 67));
         assertThat(delta.getDuration()).isEqualTo(Duration.ofSeconds(256_000));
     }
-    
+
     @Test
     void testCreationPeriodYearsToNanos() {
         DateTimeDelta delta = DateTimeDelta.of(10, 32, 42, 178_091, 123_456);

@@ -57,7 +57,7 @@ public final class DateTimeDelta implements Comparable<DateTimeDelta>, TemporalA
         private IntervalUnit(TemporalUnit temporalUnit) {
             this(temporalUnit, null);
         }
-    
+
         private IntervalUnit(TemporalUnit temporalUnit, String alternativePluralName) {
             this.temporalUnit = temporalUnit;
             this.alternativePluralName = alternativePluralName;
@@ -415,7 +415,7 @@ public final class DateTimeDelta implements Comparable<DateTimeDelta>, TemporalA
                 }
             }
         }
-        
+
         if (!endReached) {
             throw new DateTimeParseException("Unexpected input", deltaString, 0);
         }
@@ -462,7 +462,7 @@ public final class DateTimeDelta implements Comparable<DateTimeDelta>, TemporalA
             OffsetDateTime changedDateTime = (OffsetDateTime) duration.addTo(period.addTo(dateTime));
             return changedDateTime.toInstant();
         }
-        
+
         return duration.addTo(period.addTo(temporal));
     }
 
@@ -473,7 +473,7 @@ public final class DateTimeDelta implements Comparable<DateTimeDelta>, TemporalA
             OffsetDateTime changedDateTime = (OffsetDateTime) duration.subtractFrom(period.subtractFrom(dateTime));
             return changedDateTime.toInstant();
         }
-        
+
         return duration.subtractFrom(period.subtractFrom(temporal));
     }
 
@@ -675,7 +675,7 @@ public final class DateTimeDelta implements Comparable<DateTimeDelta>, TemporalA
         int months = (int) (rawMonths % MONTHS_PER_YEAR);
         int years = period.getYears() + (int) (rawMonths / MONTHS_PER_YEAR);
         int signum = Integer.signum(years);
-        
+
         if (signum > 0 && months < 0) {
             months += MONTHS_PER_YEAR;
             years -= 1;

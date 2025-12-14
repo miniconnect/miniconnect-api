@@ -19,13 +19,13 @@ import hu.webarticum.miniconnect.lang.ImmutableList;
 public class ImmutableListDeserializer extends StdDeserializer<ImmutableList<?>> implements ContextualDeserializer {
 
     private static final long serialVersionUID = 1L;
-    
-    
+
+
     protected ImmutableListDeserializer() {
         super(ImmutableList.class);
     }
-    
-    
+
+
     @Override
     public ImmutableList<?> deserialize(JsonParser parser, DeserializationContext context) throws IOException {
         return ImmutableList.of(parser.readValueAs(Object[].class));
@@ -38,16 +38,16 @@ public class ImmutableListDeserializer extends StdDeserializer<ImmutableList<?>>
         JavaType itemType = listType.containedType(0);
         return new ImmutableListContextualDeserializer(itemType);
     }
-    
-    
+
+
     private static class ImmutableListContextualDeserializer extends StdDeserializer<ImmutableList<?>> {
-        
+
         private static final long serialVersionUID = 1L;
-        
-        
+
+
         private final JavaType itemType;
 
-        
+
         protected ImmutableListContextualDeserializer(JavaType itemType) {
             super(ImmutableList.class);
             this.itemType = itemType;
@@ -58,16 +58,16 @@ public class ImmutableListDeserializer extends StdDeserializer<ImmutableList<?>>
         public ImmutableList<?> deserialize(JsonParser parser, DeserializationContext context) throws IOException {
             ArrayType arrayType = context.getTypeFactory().constructArrayType(itemType);
             TypeReference<?> arrayTypeReference = new TypeReference<Object>() {
-                
+
                 @Override
                 public Type getType() {
                     return arrayType;
                 }
-                
+
             };
             return ImmutableList.of(parser.readValueAs(arrayTypeReference));
         }
-        
+
     }
-    
+
 }

@@ -80,7 +80,7 @@ public class ImmutableListAssert<T> // NOSONAR equals
         lists.assertIsSortedAccordingToComparator(info, actualAsList(), comparator);
         return myself;
     }
-    
+
     @Override
     public ImmutableListAssert<T> usingElementComparator(Comparator<? super T> customComparator) {
         lists = new Lists(new ComparatorBasedComparisonStrategy(customComparator));
@@ -107,5 +107,5 @@ public class ImmutableListAssert<T> // NOSONAR equals
     private List<T> actualAsList() {
         return actual != null ? ((ImmutableList<T>) actual).asList() : null;
     }
-    
+
 }

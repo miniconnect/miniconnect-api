@@ -23,7 +23,7 @@ public final class ImmutableMap<K, V> implements Serializable {
         this.data = data;
     }
 
-    
+
     public static <K, V> ImmutableMap<K, V> empty() {
         return new ImmutableMap<>(Collections.emptyMap());
     }
@@ -237,7 +237,7 @@ public final class ImmutableMap<K, V> implements Serializable {
     public boolean containsKey(Object key) {
         return data.containsKey(key);
     }
-    
+
     public Set<K> keySet() {
         return Collections.unmodifiableSet(data.keySet());
     }
@@ -296,7 +296,7 @@ public final class ImmutableMap<K, V> implements Serializable {
         }
         return new ImmutableMap<>(mappedData);
     }
-    
+
     public void forEach(BiConsumer<K, V> action) {
         asMap().forEach(action);
     }
@@ -330,12 +330,12 @@ public final class ImmutableMap<K, V> implements Serializable {
     public HashMap<K, V> toHashMap() { // NOSONAR
         return new HashMap<>(data);
     }
-    
+
     @Override
     public int hashCode() {
         return data.hashCode();
     }
-    
+
     @Override
     public boolean equals(Object other) {
         if (this == other) {
@@ -345,11 +345,11 @@ public final class ImmutableMap<K, V> implements Serializable {
         } else if (!(other instanceof ImmutableMap)) {
             return false;
         }
-        
+
         ImmutableMap<?, ?> otherMap = (ImmutableMap<?, ?>) other;
         return data.equals(otherMap.data);
     }
-    
+
     @Override
     public String toString() {
         return data.toString();

@@ -17,14 +17,14 @@ public class ByteStringAssert // NOSONAR equals
 
     @VisibleForTesting
     protected final ByteArrayAssert byteArrayAssert;
-    
-    
+
+
     public ByteStringAssert(ByteString actual) {
         super(actual, ByteStringAssert.class);
         byteArrayAssert = new ByteArrayAssert(actual != null ? actual.extract() : null);
     }
 
-    
+
     @Override
     protected ByteAssert toAssert(Byte value, String description) {
         return new ByteAssert(value).as(description);
@@ -52,7 +52,7 @@ public class ByteStringAssert // NOSONAR equals
         byteArrayAssert.contains(values);
         return myself;
     }
-    
+
     public ByteStringAssert contains(int... values) {
         byteArrayAssert.contains(values);
         return myself;
@@ -61,12 +61,12 @@ public class ByteStringAssert // NOSONAR equals
         byteArrayAssert.contains(values.extract());
         return myself;
     }
-    
+
     public ByteStringAssert containsOnly(byte... values) {
         byteArrayAssert.containsOnly(values);
         return myself;
     }
-    
+
     public ByteStringAssert containsOnly(int... values) {
         byteArrayAssert.containsOnly(values);
         return myself;
@@ -81,7 +81,7 @@ public class ByteStringAssert // NOSONAR equals
         byteArrayAssert.containsOnlyOnce(values);
         return myself;
     }
-    
+
     public ByteStringAssert containsOnlyOnce(int... values) {
         byteArrayAssert.containsOnlyOnce(values);
         return myself;
@@ -96,7 +96,7 @@ public class ByteStringAssert // NOSONAR equals
         byteArrayAssert.containsSequence(values);
         return myself;
     }
-    
+
     public ByteStringAssert containsSequence(int... values) {
         byteArrayAssert.containsSequence(values);
         return myself;
@@ -111,7 +111,7 @@ public class ByteStringAssert // NOSONAR equals
         byteArrayAssert.containsSubsequence(values);
         return myself;
     }
-    
+
     public ByteStringAssert containsSubsequence(int... values) {
         byteArrayAssert.containsSubsequence(values);
         return myself;
@@ -126,7 +126,7 @@ public class ByteStringAssert // NOSONAR equals
         byteArrayAssert.startsWith(values);
         return myself;
     }
-    
+
     public ByteStringAssert startsWith(int... values) {
         byteArrayAssert.startsWith(values);
         return myself;
@@ -141,7 +141,7 @@ public class ByteStringAssert // NOSONAR equals
         byteArrayAssert.endsWith(values);
         return myself;
     }
-    
+
     public ByteStringAssert endsWith(int... values) {
         byteArrayAssert.endsWith(values);
         return myself;
@@ -156,7 +156,7 @@ public class ByteStringAssert // NOSONAR equals
         byteArrayAssert.containsExactly(values);
         return myself;
     }
-    
+
     public ByteStringAssert containsExactly(int... values) {
         byteArrayAssert.containsExactly(values);
         return myself;
@@ -171,7 +171,7 @@ public class ByteStringAssert // NOSONAR equals
         byteArrayAssert.containsExactlyInAnyOrder(values);
         return myself;
     }
-    
+
     public ByteStringAssert containsExactlyInAnyOrder(int... values) {
         byteArrayAssert.containsExactlyInAnyOrder(values);
         return myself;
@@ -186,7 +186,7 @@ public class ByteStringAssert // NOSONAR equals
         byteArrayAssert.containsAnyOf(values);
         return myself;
     }
-    
+
     public ByteStringAssert containsAnyOf(int... values) {
         byteArrayAssert.containsAnyOf(values);
         return myself;
@@ -201,7 +201,7 @@ public class ByteStringAssert // NOSONAR equals
         byteArrayAssert.doesNotContain(values);
         return myself;
     }
-    
+
     public ByteStringAssert doesNotContain(int... values) {
         byteArrayAssert.doesNotContain(values);
         return myself;
@@ -211,7 +211,7 @@ public class ByteStringAssert // NOSONAR equals
         byteArrayAssert.doesNotContain(values.extract());
         return myself;
     }
-    
+
     public ByteStringAssert contains(byte value, Index index) {
         byteArrayAssert.contains(value, index);
         return myself;
@@ -231,5 +231,5 @@ public class ByteStringAssert // NOSONAR equals
         byteArrayAssert.doesNotContain(value, index);
         return myself;
     }
-    
+
 }

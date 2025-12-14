@@ -202,7 +202,6 @@ class ImmutableMapTest {
                 .containsExactly(entry(1, null));
         assertThat(ImmutableMap.of(1, "a", null, "b", 3, null).mapValues((k, v) -> v).asMap())
                 .containsExactlyInAnyOrderEntriesOf(map(entry(1, "a"), entry(null, "b"), entry(3, null)));
-        
         assertThat(ImmutableMap.of(1, "a", null, "b", 3, null).mapValues((k, v) -> k + ":" + v).asMap())
                 .containsExactlyInAnyOrderEntriesOf(
                         map(entry(1, "1:a"), entry(null, "null:b"), entry(3, "3:null")));
@@ -315,7 +314,7 @@ class ImmutableMapTest {
     private static <K, V> Map.Entry<K, V> entry(K key, V value) {
         return new AbstractMap.SimpleEntry<>(key, value);
     }
-    
+
     @SafeVarargs
     private static <K, V> Map<K, V> map(Map.Entry<K, V>... entries) {
         Map<K, V> result = new HashMap<>();
@@ -324,5 +323,5 @@ class ImmutableMapTest {
         }
         return result;
     }
-    
+
 }

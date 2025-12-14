@@ -15,7 +15,7 @@ import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
 
 class ByteStringTest {
-    
+
     @Test
     void testCreators() {
         assertThat(ByteString.of(new byte[] { 108, 111, 114, 101, 109 }).extract())
@@ -63,7 +63,7 @@ class ByteStringTest {
         assertThat(builder.length()).isEqualTo(3);
         assertThat((Iterable<Byte>) builder.build()).map(b -> (int) b).containsExactly(97, 98, 99);
     }
-    
+
     @Test
     void testBuilderComplex() {
         ByteString.Builder builder = ByteString.builder()
@@ -216,7 +216,7 @@ class ByteStringTest {
     @Test
     void testExtractTo() {
         byte[] target = new byte[5];
-        
+
         ByteString.empty().extractTo(target, 0, 0, 0);
         assertThat(target).containsExactly(0, 0, 0, 0, 0);
 
@@ -244,7 +244,7 @@ class ByteStringTest {
         assertThat(bytesOf(ByteString.of("\u0152\u019D\u03A6\u1FFC").asBuffer())).asString(StandardCharsets.UTF_8)
                 .isEqualTo("\u0152\u019D\u03A6\u1FFC");
     }
-    
+
     private byte[] bytesOf(ByteBuffer buffer) {
         byte[] result = new byte[buffer.remaining()];
         buffer.get(result);
@@ -293,7 +293,7 @@ class ByteStringTest {
         assertThat(ByteString.ofByte(114).equals(ByteString.of("r"))).isTrue();
         assertThat(ByteString.of("abc").equals(ByteString.of("abc"))).isTrue();
     }
-    
+
     @Test
     void testToString() throws IOException {
         assertThat((Iterable<Byte>) ByteString.empty()).hasToString("");
@@ -347,5 +347,5 @@ class ByteStringTest {
         assertThat(reader.readRemaining()).containsExactly(12, 43, 0, 1, -80);
         assertThatThrownBy(() -> reader.read()).isInstanceOf(IndexOutOfBoundsException.class);
     }
-    
+
 }

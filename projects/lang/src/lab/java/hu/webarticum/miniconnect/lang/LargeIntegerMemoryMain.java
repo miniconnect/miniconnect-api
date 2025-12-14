@@ -24,5 +24,5 @@ public class LargeIntegerMemoryMain {
         System.out.println(ClassLayout.parseInstance(object).toPrintable());
         System.out.println("=========================================");
     }
-    
+
 }

@@ -15,9 +15,9 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import hu.webarticum.miniconnect.lang.ImmutableList;
 
 public class ImmutableListSerializer extends StdSerializer<ImmutableList<?>> {
-    
+
     private static final long serialVersionUID = 1L;
-    
+
 
     @SuppressWarnings("unchecked")
     public ImmutableListSerializer() {
@@ -32,12 +32,12 @@ public class ImmutableListSerializer extends StdSerializer<ImmutableList<?>> {
         }
         generator.writeEndArray();
     }
-    
+
     @Override
     public JsonNode getSchema(SerializerProvider provider, Type typeHint) throws JsonMappingException {
         return createSchemaNode("array");
     }
-    
+
     @Override
     public void acceptJsonFormatVisitor(JsonFormatVisitorWrapper visitor, JavaType typeHint) throws JsonMappingException {
         SerializerProvider provider = visitor.getProvider();
@@ -46,13 +46,13 @@ public class ImmutableListSerializer extends StdSerializer<ImmutableList<?>> {
         JsonSerializer<Object> itemSerializer = provider.findValueSerializer(itemType);
         visitor.expectArrayFormat(arrayType).itemsFormat(itemSerializer, itemType);
     }
-    
+
     private JavaType extractItemType(SerializerProvider provider, JavaType typeHint) {
         if (typeHint == null || typeHint.containedTypeCount() == 0) {
             return provider.constructType(Object.class);
         }
-        
+
         return typeHint.containedType(0);
     }
-    
+
 }

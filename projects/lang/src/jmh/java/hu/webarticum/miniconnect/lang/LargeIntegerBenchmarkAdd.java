@@ -59,9 +59,9 @@ public class LargeIntegerBenchmarkAdd {
         "47162348791820872334614854",
     })
     private String bStr;
-    
+
     private long longA;
-    
+
     private long longB;
 
     private BigInteger bigIntegerA;
@@ -73,33 +73,33 @@ public class LargeIntegerBenchmarkAdd {
     private LargeInteger largeIntegerB;
 
     private BigInt scalaBigIntA;
-    
+
     private BigInt scalaBigIntB;
-    
+
     private SafeLong spireSafeLongA;
-    
+
     private SafeLong spireSafeLongB;
-    
+
     private Apint apfloatApintA;
-    
+
     private Apint apfloatApintB;
-    
+
     private org.jscience.mathematics.number.LargeInteger jscienceLargeIntegerA;
-    
+
     private org.jscience.mathematics.number.LargeInteger jscienceLargeIntegerB;
-    
+
     private clojure.lang.BigInt clojureBigIntA;
-    
+
     private clojure.lang.BigInt clojureBigIntB;
-    
+
     private org.libj.math.BigInt libjBigIntA;
-    
+
     private org.libj.math.BigInt libjBigIntB;
-    
+
     private org.huldra.math.BigInt huldraBigIntA;
-    
+
     private org.huldra.math.BigInt huldraBigIntB;
-    
+
 
     @Setup(Level.Iteration)
     public void setup() {

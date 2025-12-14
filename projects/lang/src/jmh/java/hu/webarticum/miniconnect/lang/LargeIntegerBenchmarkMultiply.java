@@ -37,9 +37,9 @@ public class LargeIntegerBenchmarkMultiply {
 
     @Param({"-123", "-1", "0", "1", "2", "3", "15", "54378", "36244120342359", "3741618073567480545439713746"})
     private String bStr;
-    
+
     private long longA;
-    
+
     private long longB;
 
     private BigInteger bigIntegerA;
@@ -51,33 +51,33 @@ public class LargeIntegerBenchmarkMultiply {
     private LargeInteger largeIntegerB;
 
     private BigInt scalaBigIntA;
-    
+
     private BigInt scalaBigIntB;
-    
+
     private SafeLong spireSafeLongA;
-    
+
     private SafeLong spireSafeLongB;
-    
+
     private Apint apfloatApintA;
-    
+
     private Apint apfloatApintB;
-    
+
     private org.jscience.mathematics.number.LargeInteger jscienceLargeIntegerA;
-    
+
     private org.jscience.mathematics.number.LargeInteger jscienceLargeIntegerB;
-    
+
     private clojure.lang.BigInt clojureBigIntA;
-    
+
     private clojure.lang.BigInt clojureBigIntB;
-    
+
     private org.libj.math.BigInt libjBigIntA;
-    
+
     private org.libj.math.BigInt libjBigIntB;
-    
+
     private org.huldra.math.BigInt huldraBigIntA;
-    
+
     private org.huldra.math.BigInt huldraBigIntB;
-    
+
 
     @Setup(Level.Iteration)
     public void setup() {

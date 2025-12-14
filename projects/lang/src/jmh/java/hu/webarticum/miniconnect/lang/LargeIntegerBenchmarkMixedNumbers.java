@@ -49,32 +49,32 @@ import org.openjdk.jmh.infra.Blackhole;
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 public class LargeIntegerBenchmarkMixedNumbers {
-    
+
     private static final BigInt SCALA_BIGINT_ONE = BigInt.apply(1);
-    
-    
+
+
     private Random random = new Random();
-    
+
 
     private BigInteger[] bigIntegerValues;
-    
+
     private LargeInteger[] largeIntegerValues;
-    
+
     private BigInt[] scalaBigIntValues;
-    
+
     private SafeLong[] spireSafeLongValues;
-    
+
     private Apint[] apfloatApintValues;
-    
+
     private org.jscience.mathematics.number.LargeInteger[] jscienceLargeIntegerValues;
-    
+
     private clojure.lang.BigInt[] clojureBigIntValues;
-    
+
     private org.libj.math.BigInt[] libjBigIntValues;
-    
+
     private org.huldra.math.BigInt[] huldraBigIntValues;
-    
-    
+
+
     @Setup(Level.Iteration)
     public void setup() {
         bigIntegerValues = new BigInteger[] {
@@ -86,32 +86,32 @@ public class LargeIntegerBenchmarkMixedNumbers {
                 BigInteger.valueOf(random.nextInt(50) + 300L),
                 BigInteger.valueOf(2),
         };
-        
+
         largeIntegerValues = new LargeInteger[bigIntegerValues.length];
         for (int i = 0; i < bigIntegerValues.length; i++) {
             largeIntegerValues[i] = LargeInteger.of(bigIntegerValues[i]);
         }
-        
+
         scalaBigIntValues = new BigInt[bigIntegerValues.length];
         for (int i = 0; i < bigIntegerValues.length; i++) {
             scalaBigIntValues[i] = BigInt.apply(bigIntegerValues[i]);
         }
-        
+
         spireSafeLongValues = new SafeLong[scalaBigIntValues.length];
         for (int i = 0; i < scalaBigIntValues.length; i++) {
             spireSafeLongValues[i] = SafeLong.apply(scalaBigIntValues[i]);
         }
-        
+
         apfloatApintValues = new Apint[bigIntegerValues.length];
         for (int i = 0; i < bigIntegerValues.length; i++) {
             apfloatApintValues[i] = new Apint(bigIntegerValues[i]);
         }
-        
+
         jscienceLargeIntegerValues = new org.jscience.mathematics.number.LargeInteger[bigIntegerValues.length];
         for (int i = 0; i < bigIntegerValues.length; i++) {
             jscienceLargeIntegerValues[i] = org.jscience.mathematics.number.LargeInteger.valueOf(bigIntegerValues[i]);
         }
-        
+
         clojureBigIntValues = new clojure.lang.BigInt[bigIntegerValues.length];
         for (int i = 0; i < bigIntegerValues.length; i++) {
             clojureBigIntValues[i] = clojure.lang.BigInt.fromBigInteger(bigIntegerValues[i]);
@@ -127,7 +127,7 @@ public class LargeIntegerBenchmarkMixedNumbers {
             huldraBigIntValues[i] = new org.huldra.math.BigInt(bigIntegerValues[i].toString());
         }
     }
-    
+
 
     @Benchmark
     public void benchmarkBigInteger(Blackhole blackhole) {

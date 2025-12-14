@@ -12,11 +12,11 @@ import hu.webarticum.miniconnect.lang.assertj.type.ImmutableMapAssert;
 import hu.webarticum.miniconnect.lang.assertj.type.LargeIntegerAssert;
 
 public class Assertions {
-    
+
     private Assertions() {
         // static class
     }
-    
+
 
     public static ByteStringAssert assertThat(ByteString actual) {
         return new ByteStringAssert(actual);

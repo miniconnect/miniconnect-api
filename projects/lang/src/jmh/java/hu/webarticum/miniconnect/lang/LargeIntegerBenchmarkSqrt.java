@@ -32,7 +32,7 @@ import clojure.lang.BigInt;
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 public class LargeIntegerBenchmarkSqrt {
-    
+
     @Param({
             "0", "1", "2", "3", "17", "25", "64", "100", "121", "147",
             "3262", "2348763", "5550736", "123567432", "9223372036854775807",
@@ -41,15 +41,15 @@ public class LargeIntegerBenchmarkSqrt {
             "21416545397522634523928076988623985594776896183857352521",
     })
     private String value;
-    
+
     private LargeInteger largeInteger;
-    
+
     private BigInteger bigInteger;
-    
+
     private org.jscience.mathematics.number.LargeInteger jscienceLargeInteger;
-    
+
     private BigInt clojureBigInt;
-    
+
 
     @Setup(Level.Trial)
     public void setup() {
@@ -78,5 +78,5 @@ public class LargeIntegerBenchmarkSqrt {
     public void benchmarkClojureBigIntSqrt(Blackhole blackhole) {
         blackhole.consume(ClojureArithmetic.sqrt(clojureBigInt));
     }
-    
+
 }

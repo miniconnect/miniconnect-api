@@ -6,11 +6,11 @@ import hu.webarticum.miniconnect.lang.ByteString;
 import hu.webarticum.miniconnect.lang.CheckableCloseable;
 
 public interface MiniContentAccess extends CheckableCloseable {
-    
+
     public long length();
-    
+
     public boolean isLarge();
-    
+
     public boolean isTemporary();
 
     public ByteString get();
@@ -20,5 +20,5 @@ public interface MiniContentAccess extends CheckableCloseable {
     public InputStream inputStream();
 
     public InputStream inputStream(long start, long length);
-    
+
 }

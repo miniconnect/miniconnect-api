@@ -11,16 +11,16 @@ import hu.webarticum.miniconnect.lang.LargeInteger;
 public class LargeIntegerDeserializer extends StdDeserializer<LargeInteger> {
 
     private static final long serialVersionUID = 1L;
-    
+
 
     protected LargeIntegerDeserializer() {
         super(LargeInteger.class);
     }
 
-    
+
     @Override
     public LargeInteger deserialize(JsonParser parser, DeserializationContext context) throws IOException {
         return LargeInteger.of(parser.readValueAs(String.class));
     }
-    
+
 }

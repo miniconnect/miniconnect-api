@@ -31,7 +31,7 @@ public final class ImmutableList<T> implements ReversibleIterable<T>, Serializab
         this.data = data;
     }
 
-    
+
     public static <T> ImmutableList<T> empty() {
         return new ImmutableList<>(Collections.emptyList());
     }
@@ -52,7 +52,7 @@ public final class ImmutableList<T> implements ReversibleIterable<T>, Serializab
         } else if (iterable instanceof Collection) {
             return fromCollection((Collection<T>) iterable);
         }
-        
+
         return fromIterator(iterable.iterator());
     }
 
@@ -142,7 +142,7 @@ public final class ImmutableList<T> implements ReversibleIterable<T>, Serializab
     public boolean containsAll(Collection<?> items) {
         return data.containsAll(items);
     }
-    
+
     public int indexOf(T item) {
         return data.indexOf(item);
     }
@@ -178,7 +178,7 @@ public final class ImmutableList<T> implements ReversibleIterable<T>, Serializab
         }
         return new ImmutableList<>(filteredData);
     }
-    
+
     public ImmutableList<T> section(int from, int until) {
         return new ImmutableList<>(data.subList(from, until));
     }
@@ -216,7 +216,7 @@ public final class ImmutableList<T> implements ReversibleIterable<T>, Serializab
     public ReversibleIterable<T> reverseOrder() {
         ListIterator<T> listIterator = data.listIterator(data.size());
         return ReversibleIterable.reversedOfReference(() -> new Iterator<T>() {
-    
+
             @Override
             public boolean hasNext() {
                 return listIterator.hasPrevious();
@@ -226,7 +226,7 @@ public final class ImmutableList<T> implements ReversibleIterable<T>, Serializab
             public T next() { // NOSONAR
                 return listIterator.previous();
             }
-            
+
         } , this);
     }
 
@@ -254,7 +254,7 @@ public final class ImmutableList<T> implements ReversibleIterable<T>, Serializab
         } else if (newSize < currentSize) {
             return section(0, newSize);
         }
-        
+
         List<T> newData = new ArrayList<>(newSize);
         newData.addAll(data);
         for (int i = currentSize; i < newSize; i++) {
@@ -271,7 +271,7 @@ public final class ImmutableList<T> implements ReversibleIterable<T>, Serializab
     public int binarySearch(T value, Comparator<? super T> comparator) {
         return Collections.binarySearch(data, value, comparator);
     }
-    
+
     @Override
     public Iterator<T> iterator() {
         return Collections.unmodifiableList(data).iterator();
@@ -305,7 +305,7 @@ public final class ImmutableList<T> implements ReversibleIterable<T>, Serializab
     public int hashCode() {
         return data.hashCode();
     }
-    
+
     @Override
     public boolean equals(Object other) {
         if (this == other) {
@@ -315,17 +315,17 @@ public final class ImmutableList<T> implements ReversibleIterable<T>, Serializab
         } else if (!(other instanceof ImmutableList)) {
             return false;
         }
-        
+
         ImmutableList<?> otherList = (ImmutableList<?>) other;
         return data.equals(otherList.data);
     }
-    
+
     @Override
     public String toString() {
         return data.toString();
     }
-    
-    
+
+
     public static <T> Collector<T, ?, ImmutableList<T>> createCollector() {
         return Collector.of(
                 (Supplier<List<T>>) ArrayList::new,
@@ -336,5 +336,5 @@ public final class ImmutableList<T> implements ReversibleIterable<T>, Serializab
                 },
                 ImmutableList::fromCollection);
     }
-    
+
 }

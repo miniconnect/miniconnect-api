@@ -34,43 +34,43 @@ public class LargeIntegerBenchmarkAddition {
     private long[] smallLongValues;
 
     private BigInteger[] smallBigIntegerValues;
-    
+
     private LargeInteger[] smallLargeIntegerValues;
-    
+
     private BigInt[] smallScalaBigIntValues;
-    
+
     private SafeLong[] smallSpireSafeLongValues;
-    
+
     private Apint[] smallApfloatApintValues;
-    
+
     private org.jscience.mathematics.number.LargeInteger[] smallJscienceLargeIntegerValues;
-    
+
     private clojure.lang.BigInt[] smallClosureBigIntValues;
-    
+
     private org.libj.math.BigInt[] smallLibjBigIntValues;
-    
+
     private org.huldra.math.BigInt[] smallHuldraBigIntValues;
-    
+
 
     private BigInteger[] largeBigIntegerValues;
-    
+
     private LargeInteger[] largeLargeIntegerValues;
-    
+
     private BigInt[] largeScalaBigIntValues;
-    
+
     private SafeLong[] largeSpireSafeLongValues;
-    
+
     private Apint[] largeApfloatApintValues;
-    
+
     private org.jscience.mathematics.number.LargeInteger[] largeJscienceLargeIntegerValues;
-    
+
     private clojure.lang.BigInt[] largeClosureBigIntValues;
-    
+
     private org.libj.math.BigInt[] largeLibjBigIntValues;
-    
+
     private org.huldra.math.BigInt[] largeHuldraBigIntValues;
-    
-    
+
+
     @Setup(Level.Iteration)
     public void setup() {
         smallLongValues = new long[] {
@@ -87,33 +87,33 @@ public class LargeIntegerBenchmarkAddition {
         for (int i = 0; i < smallLongValues.length; i++) {
             smallBigIntegerValues[i] = BigInteger.valueOf(smallLongValues[i]);
         }
-        
+
         smallLargeIntegerValues = new LargeInteger[smallBigIntegerValues.length];
         for (int i = 0; i < smallBigIntegerValues.length; i++) {
             smallLargeIntegerValues[i] = LargeInteger.of(smallBigIntegerValues[i]);
         }
-        
+
         smallScalaBigIntValues = new BigInt[smallBigIntegerValues.length];
         for (int i = 0; i < smallBigIntegerValues.length; i++) {
             smallScalaBigIntValues[i] = BigInt.apply(smallBigIntegerValues[i]);
         }
-        
+
         smallSpireSafeLongValues = new SafeLong[smallLongValues.length];
         for (int i = 0; i < smallLongValues.length; i++) {
             smallSpireSafeLongValues[i] = SafeLong.apply(smallLongValues[i]);
         }
-        
+
         smallApfloatApintValues = new Apint[smallLongValues.length];
         for (int i = 0; i < smallLongValues.length; i++) {
             smallApfloatApintValues[i] = new Apint(smallLongValues[i]);
         }
-        
+
         smallJscienceLargeIntegerValues = new org.jscience.mathematics.number.LargeInteger[smallLongValues.length];
         for (int i = 0; i < smallLongValues.length; i++) {
             smallJscienceLargeIntegerValues[i] =
                     org.jscience.mathematics.number.LargeInteger.valueOf(smallLongValues[i]);
         }
-        
+
         smallClosureBigIntValues = new clojure.lang.BigInt[smallLongValues.length];
         for (int i = 0; i < smallLongValues.length; i++) {
             smallClosureBigIntValues[i] = clojure.lang.BigInt.valueOf(i);
@@ -136,22 +136,22 @@ public class LargeIntegerBenchmarkAddition {
                 new BigInteger("32064872579074625870942357"), // s
                 new BigInteger("-70943864902836361890438649134692837024732"), // t
         };
-        
+
         largeLargeIntegerValues = new LargeInteger[largeBigIntegerValues.length];
         for (int i = 0; i < largeBigIntegerValues.length; i++) {
             largeLargeIntegerValues[i] = LargeInteger.of(largeBigIntegerValues[i]);
         }
-        
+
         largeScalaBigIntValues = new BigInt[largeBigIntegerValues.length];
         for (int i = 0; i < largeBigIntegerValues.length; i++) {
             largeScalaBigIntValues[i] = BigInt.apply(largeBigIntegerValues[i]);
         }
-        
+
         largeSpireSafeLongValues = new SafeLong[largeScalaBigIntValues.length];
         for (int i = 0; i < largeScalaBigIntValues.length; i++) {
             largeSpireSafeLongValues[i] = SafeLong.apply(largeScalaBigIntValues[i]);
         }
-        
+
         largeApfloatApintValues = new Apint[largeBigIntegerValues.length];
         for (int i = 0; i < largeBigIntegerValues.length; i++) {
             largeApfloatApintValues[i] = new Apint(largeBigIntegerValues[i]);
@@ -163,7 +163,7 @@ public class LargeIntegerBenchmarkAddition {
             largeJscienceLargeIntegerValues[i] =
                     org.jscience.mathematics.number.LargeInteger.valueOf(largeBigIntegerValues[i]);
         }
-        
+
         largeClosureBigIntValues = new clojure.lang.BigInt[largeBigIntegerValues.length];
         for (int i = 0; i < largeBigIntegerValues.length; i++) {
             largeClosureBigIntValues[i] = clojure.lang.BigInt.fromBigInteger(largeBigIntegerValues[i]);
@@ -179,7 +179,7 @@ public class LargeIntegerBenchmarkAddition {
             largeHuldraBigIntValues[i] = new org.huldra.math.BigInt(largeBigIntegerValues[i].toString());
         }
     }
-    
+
 
     @Benchmark
     public void benchmarkSmallAdditionLong(Blackhole blackhole) {
@@ -324,7 +324,7 @@ public class LargeIntegerBenchmarkAddition {
     }
 
     //////////////////////////////////////////////////////////////////////////
-    
+
     @Benchmark
     public void benchmarkLargeAdditionBigInteger(Blackhole blackhole) {
         BigInteger p = largeBigIntegerValues[0];
@@ -433,7 +433,7 @@ public class LargeIntegerBenchmarkAddition {
     }
 
     //////////////////////////////////////////////////////////////////////////
-    
+
     @Benchmark
     public void benchmarkMixedAdditionBigInteger(Blackhole blackhole) {
         BigInteger a = smallBigIntegerValues[0];
@@ -682,7 +682,7 @@ public class LargeIntegerBenchmarkAddition {
     }
 
     //////////////////////////////////////////////////////////////////////////
-    
+
     @Benchmark
     public void benchmarkMixedBottleneckAdditionBigInteger(Blackhole blackhole) {
         BigInteger f = smallBigIntegerValues[5];

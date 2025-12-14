@@ -24,7 +24,7 @@ public class LargeIntegers extends Numbers<LargeInteger> {
         return INSTANCE;
     }
 
-    
+
     @Override
     protected LargeInteger zero() {
         return LargeInteger.ZERO;
@@ -44,5 +44,5 @@ public class LargeIntegers extends Numbers<LargeInteger> {
     protected boolean isGreaterThan(LargeInteger value, LargeInteger other) {
         return value.subtract(other).compareTo(zero()) > 0;
     }
-    
+
 }

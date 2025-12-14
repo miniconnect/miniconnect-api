@@ -5,7 +5,7 @@ public interface MiniValue {
     public MiniValueDefinition definition();
 
     public boolean isNull();
-    
+
     public MiniContentAccess contentAccess(boolean keep);
 
     public default MiniContentAccess contentAccess() {

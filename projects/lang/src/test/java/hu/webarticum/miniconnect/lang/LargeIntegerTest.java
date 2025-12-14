@@ -16,7 +16,7 @@ import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class LargeIntegerTest {
-    
+
     private static final String CASE_DATA_DIR = "/hu/webarticum/miniconnect/lang/test-cases/LargeIntegerTest";
 
     @Test
@@ -133,7 +133,7 @@ class LargeIntegerTest {
         assertThat(LargeInteger.ofUnsigned(BitSet.valueOf(new byte[] { 42, 0, -3, 42, -12 })).bigIntegerValue())
                 .isEqualTo(1048693243946L);
     }
-    
+
     @Test
     void testArrayCreators() {
         assertThat(LargeInteger.arrayOf(3L, 3125L, -1L, 0L)).containsExactly(
@@ -166,7 +166,7 @@ class LargeIntegerTest {
         assertThat(LargeInteger.TWELVE.longValueExact()).isEqualTo(12L);
         assertThat(LargeInteger.TWENTY.longValueExact()).isEqualTo(20L);
         assertThat(LargeInteger.HUNDRED.longValueExact()).isEqualTo(100L);
-        
+
     }
 
     @Test
@@ -430,7 +430,7 @@ class LargeIntegerTest {
         assertThatThrownBy(n::sqrt).isInstanceOf(ArithmeticException.class);
         assertThatThrownBy(n::sqrtAndRemainder).isInstanceOf(ArithmeticException.class);
     }
-    
+
     @ParameterizedTest
     @CsvFileSource(resources = CASE_DATA_DIR + "/multiply-cases.csv", numLinesToSkip = 1)
     void testDivideRelatedNoRemainder(LargeInteger n, LargeInteger m, LargeInteger result) {
@@ -440,7 +440,7 @@ class LargeIntegerTest {
             testDivideRelatedNoRemainderOneWay(result, m, n);
         }
     }
-    
+
     private void testDivideRelatedNoRemainderOneWay(LargeInteger toBeDivided, LargeInteger dividing, LargeInteger quotient) {
         assertThat(toBeDivided.divide(dividing)).as("%s / %s", toBeDivided, dividing).isEqualTo(quotient);
         assertThat(toBeDivided.remainder(dividing)).as("%s % %s", toBeDivided, dividing).isEqualTo(LargeInteger.ZERO);
@@ -503,7 +503,7 @@ class LargeIntegerTest {
     void testModPowNonPositiveModulusThrow() {
         LargeInteger negativeExponent = LargeInteger.of(-3);
         LargeInteger negativeModulus = LargeInteger.of("-4315351552345256003240342342355054");
-        
+
         assertThat(LargeInteger.of(123)).satisfies(n -> assertThatThrownBy(() ->
                 n.modPow(LargeInteger.TWO, LargeInteger.ZERO))
                 .isInstanceOf(ArithmeticException.class));
@@ -548,7 +548,7 @@ class LargeIntegerTest {
     @Test
     void testModInverseNonPositiveModulusThrow() {
         LargeInteger negativeModulus = LargeInteger.of(-3);
-        
+
         assertThat(LargeInteger.of(123)).satisfies(n -> assertThatThrownBy(() -> n.modInverse(LargeInteger.ZERO))
                 .isInstanceOf(ArithmeticException.class));
         assertThat(LargeInteger.of(7)).satisfies(n -> assertThatThrownBy(() -> n.modInverse(negativeModulus))
@@ -846,7 +846,7 @@ class LargeIntegerTest {
         assertThat(n.clearBit(bitIndex)).as("clear %s[%d]", n, bitIndex).isEqualTo(clearResult);
         assertThat(n.flipBit(bitIndex)).as("flip %s[%d]", n, bitIndex).isEqualTo(flipResult);
     }
-    
+
     @Test
     void testBitBasedThrow() {
         assertThatThrownBy(() -> LargeInteger.ONE.testBit(-1)).isInstanceOf(ArithmeticException.class);

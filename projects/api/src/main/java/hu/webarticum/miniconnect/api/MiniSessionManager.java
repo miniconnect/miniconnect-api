@@ -4,5 +4,5 @@ package hu.webarticum.miniconnect.api;
 public interface MiniSessionManager {
 
     public MiniSession openSession();
-    
+
 }

@@ -19,9 +19,9 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import hu.webarticum.miniconnect.lang.ImmutableMap;
 
 public class ImmutableMapSerializer extends StdSerializer<ImmutableMap<?, ?>> {
-    
+
     private static final long serialVersionUID = 1L;
-    
+
 
     @SuppressWarnings("unchecked")
     public ImmutableMapSerializer() {
@@ -37,7 +37,7 @@ public class ImmutableMapSerializer extends StdSerializer<ImmutableMap<?, ?>> {
         }
         generator.writeEndObject();
     }
-    
+
     @Override
     public JsonNode getSchema(SerializerProvider provider, Type typeHint) throws JsonMappingException {
         return createSchemaNode("object");
@@ -55,5 +55,5 @@ public class ImmutableMapSerializer extends StdSerializer<ImmutableMap<?, ?>> {
                 Collections.emptySet(), null, true, itemTypeSerializer, keySerializer, itemSerializer, null);
         mapSerializer.acceptJsonFormatVisitor(visitor, itemType);
     }
-    
+
 }
