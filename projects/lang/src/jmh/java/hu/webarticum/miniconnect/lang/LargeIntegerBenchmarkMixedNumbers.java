@@ -23,9 +23,9 @@ import org.openjdk.jmh.infra.Blackhole;
 
 /**
  * Compares performance of LargeInteger to other integral types in a complex case.
- * 
+ *
  * <p>Based on the following expression:</p>
- * 
+ *
  * <pre>
  * (
  *     (
@@ -35,7 +35,7 @@ import org.openjdk.jmh.infra.Blackhole;
  *     ) * -(E + 1) * (D | E)
  * ) + A
  * </pre>
- * 
+ *
  * Here, A is a really large number;
  * B and C are not too large numbers, close to each other;
  * D a number within the @code{long} range, but not too small,

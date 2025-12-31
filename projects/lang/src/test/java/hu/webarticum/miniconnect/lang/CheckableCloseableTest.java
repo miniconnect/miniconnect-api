@@ -22,7 +22,7 @@ class CheckableCloseableTest {
 
         @Override
         public void close() {
-            closed = true; 
+            closed = true;
         }
 
         @Override

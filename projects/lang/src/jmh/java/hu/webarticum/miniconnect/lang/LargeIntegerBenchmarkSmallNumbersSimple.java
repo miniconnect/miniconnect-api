@@ -23,9 +23,9 @@ import org.openjdk.jmh.infra.Blackhole;
 
 /**
  * Compares performance of LargeInteger to other integral types in a simple case.
- * 
+ *
  * <p>Based on the following expression:</p>
- * 
+ *
  * <pre>
  * ((A * B) + C) / D
  * </pre>
