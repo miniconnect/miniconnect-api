@@ -20,11 +20,16 @@ public final class ReachabilityGuard implements AutoCloseable {
     }
 
 
+    public void fence() {
+        Object r = ref;
+        FENCE = r;
+        FENCE = null;
+    }
+
     @Override
     public void close() {
-        FENCE = ref;
+        fence();
         ref = null;
-        FENCE = null;
     }
 
 }
