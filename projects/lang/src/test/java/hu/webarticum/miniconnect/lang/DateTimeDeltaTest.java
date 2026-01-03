@@ -180,7 +180,6 @@ class DateTimeDeltaTest {
         assertThatThrownBy(() -> DateTimeDelta.parse("P-T3S")).isInstanceOf(DateTimeParseException.class);
         assertThatThrownBy(() -> DateTimeDelta.parse("PT2Y")).isInstanceOf(DateTimeParseException.class);
         assertThatThrownBy(() -> DateTimeDelta.parse("PT2Y")).isInstanceOf(DateTimeParseException.class);
-        assertThatThrownBy(() -> DateTimeDelta.parse("12:22.55")).isInstanceOf(DateTimeParseException.class);
         assertThatThrownBy(() -> DateTimeDelta.parse("12-32-13-21")).isInstanceOf(DateTimeParseException.class);
         assertThatThrownBy(() -> DateTimeDelta.parse("34 12:41.7")).isInstanceOf(DateTimeParseException.class);
         assertThatThrownBy(() -> DateTimeDelta.parse("7-34 12:31")).isInstanceOf(DateTimeParseException.class);
@@ -287,6 +286,7 @@ class DateTimeDeltaTest {
         assertThat(DateTimeDelta.parse("12:34")).isEqualTo(DateTimeDelta.of(0, 0, 0, 45240, 0));
         assertThat(DateTimeDelta.parse("3 5")).isEqualTo(DateTimeDelta.of(0, 3, 5, 0, 0));
         assertThat(DateTimeDelta.parse("12-8")).isEqualTo(DateTimeDelta.of(12, 8, 0, 0, 0));
+        assertThat(DateTimeDelta.parse("12:34.56")).isEqualTo(DateTimeDelta.of(0, 0, 0, 754, 560_000_000));
     }
 
     @Test

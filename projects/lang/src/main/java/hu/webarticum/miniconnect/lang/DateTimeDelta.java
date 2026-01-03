@@ -107,7 +107,8 @@ public final class DateTimeDelta implements Comparable<DateTimeDelta>, TemporalA
             " *(?:@ *)?" +
             "((?<M00>\\d+) +(?<D00>\\d+)|" +
             "(?<Y0>\\d+)\\-(?<M0>\\d+)(?: +(?<D0>\\d+))?|" +
-            "(?:(?:(?:(?<Y>\\d+)\\-)?(?<M>\\d+) +)?(?<D>\\d+) +)?(?<h>\\d+):(?<m>\\d+)(?::(?:\\.(?<u0>\\d+)|(?<s>\\d+)(?:\\.(?<u>\\d+)?)?))?)" +
+            "(?:(?:(?:(?<Y>\\d+)\\-)?(?<M>\\d+) +)?(?<D>\\d+) +)?(?<h>\\d+):(?<m>\\d+)(?::(?:\\.(?<u0>\\d+)|(?<s>\\d+)(?:\\.(?<u>\\d+)?)?))?|" +
+            "(?<m1>\\d+):(?<s1>\\d+)?\\.(?<u1>\\d+))" +
             "(?<ago> +ago)?" +
             " *");
 
@@ -178,7 +179,9 @@ public final class DateTimeDelta implements Comparable<DateTimeDelta>, TemporalA
     public static DateTimeDelta between(Temporal startInclusive, Temporal endExclusive) {
         LocalDate fallbackDate = getPreferredLocalDate(startInclusive, endExclusive);
         ZoneOffset fallbackOffset = getPreferredZoneOffset(startInclusive, endExclusive);
-        return between(toOffsetDateTime(startInclusive, fallbackDate, fallbackOffset), toOffsetDateTime(endExclusive, fallbackDate, fallbackOffset));
+        OffsetDateTime fromDateTime = toOffsetDateTime(startInclusive, fallbackDate, fallbackOffset);
+        OffsetDateTime untilDateTime = toOffsetDateTime(endExclusive, fallbackDate, fallbackOffset);
+        return between(fromDateTime, untilDateTime);
     }
 
     private static DateTimeDelta between(OffsetDateTime startInclusive, OffsetDateTime endExclusive) {
@@ -335,9 +338,9 @@ public final class DateTimeDelta implements Comparable<DateTimeDelta>, TemporalA
     }
 
     private static DateTimeDelta createFromSqlIntervalMatcher(Matcher matcher) {
-        int nanos = parseFractionAsNanos(extractFirst(matcher, "u", "u0"));
-        int seconds = extractInt(matcher, "s");
-        int minutes = extractInt(matcher, "m");
+        int nanos = parseFractionAsNanos(extractFirst(matcher, "u", "u0", "u1"));
+        int seconds = extractInt(matcher, "s", "s1");
+        int minutes = extractInt(matcher, "m", "m1");
         int hours = extractInt(matcher, "h");
         int days = extractInt(matcher, "D", "D0", "D00");
         int months = extractInt(matcher, "M", "M0", "M00");
