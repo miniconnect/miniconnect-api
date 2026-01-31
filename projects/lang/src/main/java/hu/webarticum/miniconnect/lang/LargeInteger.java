@@ -1323,18 +1323,21 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
             if (value == 0) {
                 return ZERO;
             } else if (val instanceof ImplBig) {
-                return divide(gcd(val)).multiply(val);
+                return divide(gcd(val)).multiply(val).abs();
             }
 
             long otherValue = ((ImplSmall) val).value;
-            long gcd = ((ImplSmall) gcd(val)).value;
-            long valueExclusive = value / gcd;
-            long candidate = valueExclusive * otherValue;
-            if (candidate / otherValue == valueExclusive) {
-                return new ImplSmall((value / gcd) * otherValue);
+            if (otherValue != Long.MIN_VALUE) {
+                long otherValueAbs = Math.abs(otherValue);
+                long gcd = ((ImplSmall) gcd(val)).value;
+                long valueExclusive = Math.abs(value / gcd);
+                long candidate = valueExclusive * otherValueAbs;
+                if (candidate / otherValueAbs == valueExclusive) {
+                    return new ImplSmall(candidate);
+                }
             }
 
-            return divide(gcd(val)).multiply(val);
+            return divide(gcd(val)).multiply(val).abs();
         }
 
         @Override
@@ -2034,7 +2037,7 @@ public abstract class LargeInteger extends Number implements Comparable<LargeInt
                 return ZERO;
             }
 
-            return divide(gcd(val)).multiply(val);
+            return divide(gcd(val)).multiply(val).abs();
         }
 
         @Override
