@@ -55,11 +55,11 @@ public class LargeIntegerBenchmarkToByteArray {
     private LargeInteger largeIntegerValue;
 
     private BigInt scalaBigIntValue;
-    
+
     private org.jscience.mathematics.number.LargeInteger jscienceLargeIntegerValue;
-    
+
     private org.libj.math.BigInt libjBitIntValue;
-    
+
 
     @Setup(Level.Iteration)
     public void setup() {
@@ -70,7 +70,7 @@ public class LargeIntegerBenchmarkToByteArray {
         libjBitIntValue = new org.libj.math.BigInt(valueStr);
     }
 
-    
+
     @Benchmark
     public void benchmarkBigInteger(Blackhole blackhole) {
         blackhole.consume(bigIntegerValue.toByteArray());

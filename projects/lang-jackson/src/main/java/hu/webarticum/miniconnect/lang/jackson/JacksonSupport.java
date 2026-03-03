@@ -13,8 +13,8 @@ public class JacksonSupport {
     private JacksonSupport() {
         // static class
     }
-    
-    
+
+
     public static ObjectMapper createMapper() {
         return new ObjectMapper().registerModule(createModule());
     }
@@ -32,5 +32,5 @@ public class JacksonSupport {
         module.addDeserializer(ImmutableMap.class, new ImmutableMapDeserializer());
         return module;
     }
-    
+
 }

@@ -35,7 +35,7 @@ public class ImmutableMapAssert<K, V> // NOSONAR equals
     @VisibleForTesting
     Maps maps = Maps.instance();
 
-    
+
     public ImmutableMapAssert(ImmutableMap<K, V> actual) {
         super(actual, ImmutableMapAssert.class);
     }
@@ -142,12 +142,12 @@ public class ImmutableMapAssert<K, V> // NOSONAR equals
         maps.assertContains(info, actualAsMap(), arrayOf(entryOf(key, value)));
         return myself;
     }
-    
+
     public ImmutableMapAssert<K, V> doesNotContainEntry(K key, V value) {
         maps.assertDoesNotContain(info, actualAsMap(), arrayOf(entryOf(key, value)));
         return myself;
     }
-    
+
     @SafeVarargs
     public final ImmutableMapAssert<K, V> contains(Map.Entry<? extends K, ? extends V>... entries) {
         maps.assertContains(info, actualAsMap(), entries);
@@ -177,7 +177,7 @@ public class ImmutableMapAssert<K, V> // NOSONAR equals
         maps.assertDoesNotContain(info, actualAsMap(), entries);
         return myself;
     }
-    
+
     public ImmutableMapAssert<K, V> hasEntrySatisfying(Condition<? super Map.Entry<K, V>> entryCondition) {
         maps.assertHasEntrySatisfying(info, actualAsMap(), entryCondition);
         return myself;
@@ -192,7 +192,7 @@ public class ImmutableMapAssert<K, V> // NOSONAR equals
         maps.assertHasEntrySatisfying(info, actualAsMap(), key, valueCondition);
         return myself;
     }
-    
+
     public ImmutableMapAssert<K, V> hasEntrySatisfying(K key, Consumer<? super V> valueRequirements) {
         maps.assertHasEntrySatisfying(info, actualAsMap(), key, valueRequirements);
         return myself;
@@ -202,12 +202,12 @@ public class ImmutableMapAssert<K, V> // NOSONAR equals
         maps.assertAllSatisfy(info, actualAsMap(), entryRequirements);
         return myself;
     }
-    
+
     public ImmutableMapAssert<K, V> anySatisfy(BiConsumer<? super K, ? super V> entryRequirements) {
         maps.assertAnySatisfy(info, actualAsMap(), entryRequirements);
         return myself;
     }
-    
+
     public ImmutableMapAssert<K, V> noneSatisfy(BiConsumer<? super K, ? super V> entryRequirements) {
         maps.assertNoneSatisfy(info, actualAsMap(), entryRequirements);
         return myself;
@@ -223,12 +223,12 @@ public class ImmutableMapAssert<K, V> // NOSONAR equals
         maps.assertContainsKeys(info, actualAsMap(), keys);
         return myself;
     }
-    
+
     public ImmutableMapAssert<K, V> hasKeySatisfying(Condition<? super K> keyCondition) {
         maps.assertHasKeySatisfying(info, actualAsMap(), keyCondition);
         return myself;
     }
-    
+
     public ImmutableMapAssert<K, V> doesNotContainKey(K key) {
         maps.assertDoesNotContainKey(info, actualAsMap(), key);
         return myself;
@@ -239,7 +239,7 @@ public class ImmutableMapAssert<K, V> // NOSONAR equals
         maps.assertContainsOnlyKeys(info, actualAsMap(), keys);
         return myself;
     }
-    
+
     public ImmutableMapAssert<K, V> containsOnlyKeys(Iterable<? extends K> keys) {
         maps.assertContainsOnlyKeys(info, actualAsMap(), keys);
         return myself;
@@ -255,23 +255,23 @@ public class ImmutableMapAssert<K, V> // NOSONAR equals
         maps.assertContainsValue(info, actualAsMap(), value);
         return myself;
     }
-    
+
     @SafeVarargs
     public final ImmutableMapAssert<K, V> containsValues(V... values) {
         maps.assertContainsValues(info, actualAsMap(), values);
         return myself;
     }
-    
+
     public ImmutableMapAssert<K, V> hasValueSatisfying(Condition<? super V> valueCondition) {
         maps.assertHasValueSatisfying(info, actualAsMap(), valueCondition);
         return myself;
     }
-    
+
     public ImmutableMapAssert<K, V> doesNotContainValue(V value) {
         maps.assertDoesNotContainValue(info, actualAsMap(), value);
         return myself;
     }
-    
+
     public IntegerAssert size() {
         return new IntegerAssert(actual.size());
     }
@@ -320,7 +320,7 @@ public class ImmutableMapAssert<K, V> // NOSONAR equals
         }
         return new ImmutableListAssert<>(ImmutableList.fromCollection(values));
     }
-    
+
     private void extractValue(Object value, List<Object> target) {
         if (value instanceof Iterable<?>) {
             ((Iterable<?>) value).iterator().forEachRemaining(target::add);
@@ -350,7 +350,7 @@ public class ImmutableMapAssert<K, V> // NOSONAR equals
         Description currentDescription = info.description();
         return currentDescription != null ? currentDescription.value() : fallbackSupplier.get();
     }
-    
+
     private Map<K, V> actualAsMap() {
         return actual != null ? actual.asMap() : null;
     }
@@ -363,5 +363,5 @@ public class ImmutableMapAssert<K, V> // NOSONAR equals
     public static <K, V> MapEntry<K, V> entryOf(K key, V value) {
         return MapEntry.entry(key, value);
     }
-    
+
 }

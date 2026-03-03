@@ -34,8 +34,8 @@ class ToStringBuilderTest {
     			.build())
     		.isEqualTo("FooClazz { lorem: null, ipsum: hello, dolor: 12, sit: 7542834754234, amet: true }");
     }
-    
+
     private static final class FooClazz {
     }
-    
+
 }

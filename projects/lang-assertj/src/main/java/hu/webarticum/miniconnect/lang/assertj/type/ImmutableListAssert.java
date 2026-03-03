@@ -8,6 +8,7 @@ import org.assertj.core.api.AbstractIterableAssert;
 import org.assertj.core.api.AssertFactory;
 import org.assertj.core.api.Condition;
 import org.assertj.core.api.IndexedObjectEnumerableAssert;
+import org.assertj.core.api.IterableAssert;
 import org.assertj.core.api.ObjectAssert;
 import org.assertj.core.data.Index;
 import org.assertj.core.internal.ComparatorBasedComparisonStrategy;
@@ -29,12 +30,7 @@ public class ImmutableListAssert<T> // NOSONAR equals
 
 
     public ImmutableListAssert(ImmutableList<? extends T> actual) {
-        this(actual, org.assertj.core.api.Assertions::assertThat);
-    }
-
-    public ImmutableListAssert(ImmutableList<? extends T> actual, AssertFactory<T, ObjectAssert<T>> assertFactory) {
         super(actual, ImmutableListAssert.class);
-        this.assertFactory = assertFactory;
     }
 
 
@@ -57,7 +53,7 @@ public class ImmutableListAssert<T> // NOSONAR equals
 
     @Override
     protected ImmutableListAssert<T> newAbstractIterableAssert(Iterable<? extends T> iterable) {
-        return new ImmutableListAssert<>(actual, assertFactory);
+        return new ImmutableListAssert<>(actual);
     }
 
     public ImmutableListAssert<T> has(Condition<? super T> condition, Index index) {
@@ -84,7 +80,7 @@ public class ImmutableListAssert<T> // NOSONAR equals
         lists.assertIsSortedAccordingToComparator(info, actualAsList(), comparator);
         return myself;
     }
-    
+
     @Override
     public ImmutableListAssert<T> usingElementComparator(Comparator<? super T> customComparator) {
         lists = new Lists(new ComparatorBasedComparisonStrategy(customComparator));
@@ -103,13 +99,13 @@ public class ImmutableListAssert<T> // NOSONAR equals
         return super.usingComparisonStrategy(comparisonStrategy);
     }
 
-    public ReversibleIterableAssert<T> reverseOrder() {
-        return new ReversibleIterableAssert<>(actual.reverseOrder(), assertFactory);
+    public IterableAssert<T> reverseOrder() {
+        return new IterableAssert<>(actual.reverseOrder());
     }
 
     @SuppressWarnings("unchecked")
     private List<T> actualAsList() {
         return actual != null ? ((ImmutableList<T>) actual).asList() : null;
     }
-    
+
 }

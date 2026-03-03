@@ -5,7 +5,7 @@ import java.util.Objects;
 public class FindPositionResult {
 
     private final boolean found;
-    
+
     private final LargeInteger position;
 
     private FindPositionResult(boolean found, LargeInteger position) {
@@ -32,12 +32,12 @@ public class FindPositionResult {
     public LargeInteger position() {
         return position;
     }
-    
+
     @Override
     public int hashCode() {
     	return Objects.hash(found, position);
     }
-    
+
     @Override
     public boolean equals(Object obj) {
     	if (obj == this) {
@@ -59,5 +59,5 @@ public class FindPositionResult {
     public String toString() {
         return found ? "Found at " + position : "Not found; insert at " + position;
     }
-    
+
 }

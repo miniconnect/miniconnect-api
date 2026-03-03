@@ -36,7 +36,7 @@ public class LargeIntegerBenchmarkGcd {
 
     @Param({"-17", "0", "1", "5", "6", "100", "5472845709"})
     private String bStr;
-    
+
     private BigInteger bigIntegerA;
 
     private BigInteger bigIntegerB;
@@ -46,17 +46,17 @@ public class LargeIntegerBenchmarkGcd {
     private LargeInteger largeIntegerB;
 
     private BigInt scalaBigIntA;
-    
+
     private BigInt scalaBigIntB;
-    
+
     private SafeLong spireSafeLongA;
-    
+
     private SafeLong spireSafeLongB;
-    
+
     private org.jscience.mathematics.number.LargeInteger jscienceLargeIntegerA;
-    
+
     private org.jscience.mathematics.number.LargeInteger jscienceLargeIntegerB;
-    
+
 
     @Setup(Level.Iteration)
     public void setup() {

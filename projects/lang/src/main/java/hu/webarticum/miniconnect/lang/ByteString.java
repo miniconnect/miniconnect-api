@@ -20,14 +20,14 @@ import java.util.Objects;
 /**
  * Simple immutable wrapper for byte arrays
  */
-public final class ByteString implements Iterable<Byte>, Serializable {
+public final class ByteString implements Comparable<ByteString>, Iterable<Byte>, Serializable {
 
     private static final long serialVersionUID = 2392643209772967829L;
-    
-    
+
+
     private static final ByteString EMPTY = new ByteString(new byte[0]);
-    
-    
+
+
     private final byte[] bytes;
 
 
@@ -93,7 +93,7 @@ public final class ByteString implements Iterable<Byte>, Serializable {
     public static ByteString fromInputStream(InputStream inputStream) {
         return fromInputStream(inputStream, 1024);
     }
-    
+
     public static ByteString fromInputStream(InputStream inputStream, int sizeHint) {
         ByteArrayOutputStream resultBuilder = new ByteArrayOutputStream(sizeHint);
 
@@ -107,7 +107,7 @@ public final class ByteString implements Iterable<Byte>, Serializable {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-        
+
         byte[] bytes = resultBuilder.toByteArray();
         return wrap(bytes);
     }
@@ -132,12 +132,30 @@ public final class ByteString implements Iterable<Byte>, Serializable {
     public byte byteAt(int position) {
         return bytes[position];
     }
-    
+
+    @Override
+    public int compareTo(ByteString other) {
+        if (bytes == other.bytes) {
+            return 0;
+        }
+
+        int commonLength = Math.min(bytes.length, other.bytes.length);
+        for (int i = 0; i < commonLength; i++) {
+            if (bytes[i] != other.bytes[i]) {
+                int unsignedCode = bytes[i] & 0xFF;
+                int otherUnsignedCode = other.bytes[i] & 0xFF;
+                return unsignedCode > otherUnsignedCode ? 1 : -1;
+            }
+        }
+
+        return Integer.compare(bytes.length, other.bytes.length);
+    }
+
     @Override
     public Iterator<Byte> iterator() {
         return new ByteStringIterator();
     }
-    
+
     public ByteString substring(int beginIndex) {
         return substring(beginIndex, bytes.length);
     }
@@ -150,7 +168,7 @@ public final class ByteString implements Iterable<Byte>, Serializable {
         if (beginIndex == 0 && length == bytes.length) {
             return this;
         }
-        
+
         return ByteString.wrap(extractLength(beginIndex, length));
     }
 
@@ -161,7 +179,7 @@ public final class ByteString implements Iterable<Byte>, Serializable {
     public byte[] extract(int beginIndex) {
         return extract(beginIndex, bytes.length);
     }
-    
+
     public byte[] extract(int beginIndex, int endIndex) {
         return extractLength(beginIndex, endIndex - beginIndex);
     }
@@ -234,12 +252,12 @@ public final class ByteString implements Iterable<Byte>, Serializable {
         }
         return resultBuilder.toString();
     }
-    
+
     private boolean isAsciiPrintable(byte b) {
         int intValue = Byte.toUnsignedInt(b);
         return intValue >= 32 && intValue <= 126;
     }
-    
+
     private String toHexadecimalString(byte b) {
         String stringValue = Integer.toString(Byte.toUnsignedInt(b), 16).toUpperCase();
         return stringValue.length() < 2 ? "0" + stringValue : stringValue;
@@ -257,11 +275,11 @@ public final class ByteString implements Iterable<Byte>, Serializable {
         return new Reader();
     }
 
-    
+
     public class ByteStringIterator implements Iterator<Byte> {
-        
+
         private int position = 0;
-        
+
 
         @Override
         public boolean hasNext() {
@@ -273,17 +291,17 @@ public final class ByteString implements Iterable<Byte>, Serializable {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
-            
+
             return bytes[position++];
         }
-        
+
     }
-    
+
 
     public static class Builder {
 
         private final List<byte[]> parts = new ArrayList<>();
-        
+
         private int length = 0;
 
 
@@ -304,7 +322,7 @@ public final class ByteString implements Iterable<Byte>, Serializable {
             System.arraycopy(partContainer, beginIndex, part, 0, length);
             return append(part);
         }
-        
+
         public Builder append(byte[] part) {
             parts.add(part);
             length += part.length;
@@ -343,7 +361,7 @@ public final class ByteString implements Iterable<Byte>, Serializable {
             if (parts.size() == 1) {
                 return ByteString.wrap(parts.get(0));
             }
-            
+
             byte[] bytes = new byte[length];
             int position = 0;
             for (byte[] part : parts) {

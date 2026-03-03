@@ -21,12 +21,12 @@ import hu.webarticum.miniconnect.lang.ImmutableMap;
 public class ImmutableMapDeserializer extends StdDeserializer<ImmutableMap<?, ?>> implements ContextualDeserializer {
 
     private static final long serialVersionUID = 1L;
-    
-    
+
+
     protected ImmutableMapDeserializer() {
         super(ImmutableMap.class);
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public ImmutableMap<?, ?> deserialize(JsonParser parser, DeserializationContext context) throws IOException {
@@ -41,18 +41,18 @@ public class ImmutableMapDeserializer extends StdDeserializer<ImmutableMap<?, ?>
         JavaType valueType = mapType.containedType(1);
         return new ImmutableListContextualDeserializer(keyType, valueType);
     }
-    
-    
+
+
     private static class ImmutableListContextualDeserializer extends StdDeserializer<ImmutableMap<?, ?>> {
-        
+
         private static final long serialVersionUID = 1L;
 
-        
+
         private final JavaType keyType;
-        
+
         private final JavaType valueType;
 
-        
+
         protected ImmutableListContextualDeserializer(JavaType keyType, JavaType valueType) {
             super(ImmutableMap.class);
             this.keyType = keyType;
@@ -64,16 +64,16 @@ public class ImmutableMapDeserializer extends StdDeserializer<ImmutableMap<?, ?>
         public ImmutableMap<?, ?> deserialize(JsonParser parser, DeserializationContext context) throws IOException {
             MapType mapType = context.getTypeFactory().constructMapType(HashMap.class, keyType, valueType);
             TypeReference<?> mapTypeReference = new TypeReference<Object>() {
-                
+
                 @Override
                 public Type getType() {
                     return mapType;
                 }
-                
+
             };
             return ImmutableMap.fromMap(parser.readValueAs(mapTypeReference));
         }
 
     }
-    
+
 }

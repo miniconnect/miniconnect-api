@@ -1,6 +1,26 @@
 # Changelog
 
 
+## Version 0.5.0
+
+Released on *2026-03-03*
+
+### Added:
+
+- Added the `DateTimeDelta` type
+- Added the `ReachabilityGuard` type
+
+### Improved:
+
+- Made `ByteString` comparable
+- Improved JSON serialization for `ImmutableList`
+- Improved API and behavior of `ImmutableList`
+
+### Development:
+
+- Updated to gradle 9 and improved build
+
+
 ## Version 0.4.0
 
 Released on *2025-09-29*

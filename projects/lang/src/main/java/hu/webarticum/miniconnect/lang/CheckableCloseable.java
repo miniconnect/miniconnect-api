@@ -7,12 +7,12 @@ public interface CheckableCloseable extends Closeable {
     public void close();
 
     public boolean isClosed();
-    
+
     public default void checkClosed() {
         if (isClosed()) {
             String className = this.getClass().getName();
             throw new IllegalStateException("Closed instance of " + className);
         }
     }
-    
+
 }

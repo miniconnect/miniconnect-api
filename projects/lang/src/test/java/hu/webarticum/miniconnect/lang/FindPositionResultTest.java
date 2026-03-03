@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 
 class FindPositionResultTest {
-    
+
     @Test
     void testEqualsFound() {
     	assertThat(FindPositionResult.found(LargeInteger.ONE))
@@ -41,5 +41,5 @@ class FindPositionResultTest {
     	assertThat(FindPositionResult.found(LargeInteger.ONE))
 				.hasSameHashCodeAs(FindPositionResult.of(true, LargeInteger.ONE));
     }
-    
+
 }

@@ -30,27 +30,27 @@ import org.openjdk.jmh.infra.Blackhole;
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 public class LargeIntegerBenchmarkPow {
- 
+
     @Param({"1", "2", "3", "17", "23647", "17327046823", "73940723641827470863472481630873"})
     private String baseStr;
 
     @Param({"1", "2", "3", "4", "5", "10", "25"})
     private int exponent;
-    
+
     private long longBase;
 
     private BigInteger bigIntegerBase;
 
     private LargeInteger largeIntegerBase;
-    
+
     private BigInt scalaBigIntBase;
-    
+
     private SafeLong spireSafeLongBase;
-    
+
     private org.jscience.mathematics.number.LargeInteger jscienceLargeIntegerBase;
-    
+
     private clojure.lang.BigInt clojureBigIntBase;
-    
+
 
     @Setup(Level.Iteration)
     public void setup() {

@@ -17,12 +17,12 @@ public class LargeIntegerAssert // NOSONAR equals
 
     @VisibleForTesting
     LargeIntegers largeIntegers = LargeIntegers.instance();
-    
-    
+
+
     public LargeIntegerAssert(LargeInteger actual) {
-        super(actual, LargeInteger.class);
+        super(actual, LargeIntegerAssert.class);
     }
-    
+
 
     @Override
     public LargeIntegerAssert isZero() {
@@ -105,11 +105,11 @@ public class LargeIntegerAssert // NOSONAR equals
     public LargeIntegerAssert isEqualTo(String expected) {
         return isEqualTo(LargeInteger.of(expected));
     }
-    
+
     public LargeIntegerAssert isEqualTo(int expected) {
         return isEqualTo(LargeInteger.of(expected));
     }
-    
+
     public LargeIntegerAssert isEqualTo(long expected) {
         return isEqualTo(LargeInteger.of(expected));
     }

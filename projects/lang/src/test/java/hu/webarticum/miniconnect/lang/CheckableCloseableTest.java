@@ -13,23 +13,23 @@ class CheckableCloseableTest {
         checkableCloseable.close();
         assertThatThrownBy(() -> checkableCloseable.checkClosed()).isInstanceOf(IllegalStateException.class);
     }
-    
-    
+
+
     private static class MockCheckableCloseable implements CheckableCloseable {
-        
+
         private boolean closed = false;
-        
-        
+
+
         @Override
         public void close() {
-            closed = true; 
+            closed = true;
         }
 
         @Override
         public boolean isClosed() {
             return closed;
         }
-        
+
     }
-    
+
 }

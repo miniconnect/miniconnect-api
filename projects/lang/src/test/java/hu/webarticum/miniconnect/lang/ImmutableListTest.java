@@ -25,7 +25,7 @@ class ImmutableListTest {
         assertThat(ImmutableList.fill(3, 4).asList()).containsExactly(4, 4, 4);
         assertThat(ImmutableList.fill(2, i -> (i  +1) + ".").asList()).containsExactly("1.", "2.");
     }
-    
+
     @Test
     void testIsEmpty() {
         assertThat(ImmutableList.empty().isEmpty()).isTrue();
@@ -74,7 +74,7 @@ class ImmutableListTest {
         assertThat(ImmutableList.of(1, 2, 3).containsAll(Arrays.asList(2, 7))).isFalse();
         assertThat(ImmutableList.of(1, 2, 3).containsAll(Arrays.asList(1, 3))).isTrue();
     }
-    
+
     @Test
     void testIndexOf() {
         assertThat(ImmutableList.empty().indexOf(3)).isEqualTo(-1);
@@ -82,7 +82,7 @@ class ImmutableListTest {
         assertThat(ImmutableList.of(1, 2, 3).indexOf(2)).isEqualTo(1);
         assertThat(ImmutableList.of(1, 2, 3, 4, 2, 7).indexOf(2)).isEqualTo(1);
     }
-    
+
     @Test
     void testLastIndexOf() {
         assertThat(ImmutableList.empty().lastIndexOf(3)).isEqualTo(-1);
@@ -90,7 +90,7 @@ class ImmutableListTest {
         assertThat(ImmutableList.of(1, 2, 3).lastIndexOf(2)).isEqualTo(1);
         assertThat(ImmutableList.of(1, 2, 3, 4, 2, 7).lastIndexOf(2)).isEqualTo(4);
     }
-    
+
     @Test
     void testMap() {
         assertThat(ImmutableList.empty().map(v -> ":" + v).asList()).isEmpty();
@@ -299,7 +299,7 @@ class ImmutableListTest {
         assertThat(ImmutableList.empty()).hasToString(Collections.emptyList().toString());
         assertThat(ImmutableList.of(1, 2, 3)).hasToString(Arrays.asList(1, 2, 3).toString());
     }
-    
+
     @Test
     void testCreateCollector() {
         assertThat(Arrays.asList().stream().collect(ImmutableList.createCollector())).isEqualTo(ImmutableList.empty());
@@ -314,5 +314,5 @@ class ImmutableListTest {
                 .collect(ImmutableList.createCollector());
         assertThat(immutableList2).isEqualTo(ImmutableList.of("1", "3", "6", "2", "null", "null", "3", "null"));
     }
-    
+
 }
