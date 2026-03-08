@@ -177,6 +177,20 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
     }
 
     public boolean get(int position) {
+        if (position < 0 || position >= size) {
+            throw new IndexOutOfBoundsException();
+        }
+        int wordIndex = position >>> 6;
+        long word = data[wordIndex];
+        long mask = Long.MIN_VALUE >>> (position & 63);
+        long masked = word & mask;
+        return masked != 0;
+    }
+
+    public boolean getOrZero(int position) {
+        if (position < 0 || position >= size) {
+            return false;
+        }
         int wordIndex = position >>> 6;
         long word = data[wordIndex];
         long mask = Long.MIN_VALUE >>> (position & 63);
@@ -185,6 +199,41 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
     }
 
     public BitString set(int position, boolean value) {
+        if (position < 0 || position >= size) {
+            throw new IndexOutOfBoundsException();
+        }
+        int wordIndex = position >>> 6;
+        long word = data[wordIndex];
+        long mask = Long.MIN_VALUE >>> (position & 63);
+        long masked = word & mask;
+        boolean wasSet = masked != 0;
+        if (wasSet == value) {
+            return this;
+        }
+        long changedWord = word ^ mask;
+        long[] newData = replacedWord(data, wordIndex, changedWord);
+        return new BitString(newData, size);
+    }
+
+    public BitString setExtending(int position, boolean value) {
+        if (position < 0) {
+            throw new IndexOutOfBoundsException();
+        }
+        if (position >= size) {
+            int targetCeilWordCount = (size + 63) >>> 6;
+            BitString result;
+            if (targetCeilWordCount == data.length) {
+                result = new BitString(data, position + 1);
+            } else {
+                long[] newData = new long[targetCeilWordCount];
+                System.arraycopy(data, 0, newData, 0, data.length);
+                result = new BitString(data, position + 1);
+            }
+            if (value) {
+                result = result.set(position, value);
+            }
+            return result;
+        }
         int wordIndex = position >>> 6;
         long word = data[wordIndex];
         long mask = Long.MIN_VALUE >>> (position & 63);
