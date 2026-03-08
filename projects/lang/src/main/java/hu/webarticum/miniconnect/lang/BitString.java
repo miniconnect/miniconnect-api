@@ -6,7 +6,14 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * Simple immutable bit array implementation
+ * Simple immutable bit array implementation.
+ *
+ * It represents the bits in a long array with MSB first order:
+ * the array layout is MSB first, and the MSB of each long corresponds
+ * to the first logical bit it represents from the bit string.
+ * The last long value, if incomplete (in case of size % 64 > 0),
+ * contains the tail part in its MSB positions,
+ * and the unused LSB positions are filled with zeros.
  */
 public final class BitString implements Comparable<BitString>, Iterable<Boolean>, Serializable {
 
@@ -40,7 +47,7 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
             int until = from + 64;
             for (int j = from; j < until; j++) {
                 if (bits[j]) {
-                    word |= 1L << (j & 63);
+                    word |= Long.MIN_VALUE >>> (j & 63);
                 }
             }
             data[i] = word;
@@ -51,7 +58,7 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
             int from = fullWordCount << 6;
             for (int j = from; j < size; j++) {
                 if (bits[j]) {
-                    word |= 1L << (j & 63);
+                    word |= Long.MIN_VALUE >>> (j & 63);
                 }
             }
             data[fullWordCount] = word;
@@ -71,7 +78,7 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
             int until = from + 8;
             for (int j = from; j < until; j++) {
                 long unsigned = ((long) bytes[j]) & 0xFFL;
-                int shift = (j & 7) << 3;
+                int shift = (7 - (j & 7)) << 3;
                 word |= unsigned << shift;
             }
             data[i] = word;
@@ -81,7 +88,7 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
             int from = fullWordCount << 3;
             for (int j = from; j < byteCount; j++) {
                 long unsigned = ((long) bytes[j]) & 0xFFL;
-                int shift = (j & 7) << 3;
+                int shift = (7 - (j & 7)) << 3;
                 word |= unsigned << shift;
             }
             data[fullWordCount] = word;
@@ -109,7 +116,7 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
             if (size != ceilSize) {
                 int fullWordCount = size >>> 6;
                 int tailSize = size & 63;
-                long tailMask = (1L << tailSize) - 1;
+                long tailMask = -1L << (64 - tailSize);
                 data[fullWordCount] &= tailMask;
             }
             return new BitString(data, size);
@@ -131,40 +138,14 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
 
     @Override
     public int compareTo(BitString other) {
-        return compareWordArrays(data, other.data);
-    }
-
-    private static int compareWordArrays(long[] words1, long[] words2) {
-        int commonCount = Math.min(words1.length, words2.length);
+        int commonCount = Math.min(data.length, other.data.length);
         for (int i = 0; i < commonCount; i++) {
-            int cmp = compareWords(words1[i], words2[i]);
+            int cmp = Long.compare(data[i], other.data[i]);
             if (cmp != 0) {
                 return cmp;
             }
         }
-        if (words1.length != commonCount) {
-            for (int i = commonCount; i < words1.length; i++) {
-                if (words1[i] != 0) {
-                    return 1;
-                }
-            }
-        } else if (words2.length != commonCount) {
-            for (int i = commonCount; i < words2.length; i++) {
-                if (words2[i] != 0) {
-                    return -1;
-                }
-            }
-        }
-        return 0;
-    }
-
-    private static int compareWords(long word1, long word2) {
-        long diff = word1 ^ word2;
-        if (diff == 0) {
-            return 0;
-        }
-        long mask = Long.lowestOneBit(diff);
-        return ((word1 & mask) == 0) ? -1 : 1;
+        return Integer.compare(size, other.size);
     }
 
     @Override
@@ -198,19 +179,20 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
     public boolean get(int position) {
         int wordIndex = position >>> 6;
         long word = data[wordIndex];
-        long masked = word & (1L << (position & 63));
+        long mask = Long.MIN_VALUE >>> (position & 63);
+        long masked = word & mask;
         return masked != 0;
     }
 
     public BitString set(int position, boolean value) {
         int wordIndex = position >>> 6;
         long word = data[wordIndex];
-        long masked = word & (1L << (position & 63));
-        boolean found = masked != 0;
-        if (found == value) {
+        long mask = Long.MIN_VALUE >>> (position & 63);
+        long masked = word & mask;
+        boolean wasSet = masked != 0;
+        if (wasSet == value) {
             return this;
         }
-        long mask = 1L << (position & 63);
         long changedWord = word ^ mask;
         long[] newData = replacedWord(data, wordIndex, changedWord);
         return new BitString(newData, size);

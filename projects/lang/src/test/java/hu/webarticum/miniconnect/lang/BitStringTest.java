@@ -15,8 +15,10 @@ class BitStringTest {
     void testOfBitsAndData() {
         assertThat(BitString.of(new boolean[0]).data()).isEmpty();
         assertThat(BitString.of(false).data()).containsExactly(0);
-        assertThat(BitString.of(true, false, true).data()).containsExactly(5);
-        assertThat(BitString.of(true, true, true, true, true).data()).containsExactly(31);
+        assertThat(BitString.of(true, false, true).data()).containsExactly(-6917529027641081856L);
+        assertThat(BitString.of(false, true, true).data()).containsExactly(6917529027641081856L);
+        assertThat(BitString.of(true, true, true, true, true).data()).containsExactly(-576460752303423488L);
+        assertThat(BitString.of(true, false, true, false, false, true, true, false).data()).containsExactly(-6485183463413514240L);
         assertThat(BitString.of(new boolean[64]).data()).containsExactly(0);
         assertThat(BitString.of(new boolean[65]).data()).containsExactly(0, 0);
     }
@@ -28,17 +30,21 @@ class BitStringTest {
         assertThat(BitString.of(new byte[3]).data()).containsExactly(0);
         assertThat(BitString.of(new byte[8]).data()).containsExactly(0);
         assertThat(BitString.of(new byte[9]).data()).containsExactly(0, 0);
-        assertThat(BitString.of(new byte[] { 125, -12 }).data()).containsExactly(62589);
+        assertThat(BitString.of(new byte[] { 1 }).data()).containsExactly(72057594037927936L);
+        assertThat(BitString.of(new byte[] { -41, 117 }).data()).containsExactly(-2921428783279898624L);
         assertThat(BitString.of(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }).data())
-                .containsExactly(506097522914230528L, 2312);
+                .containsExactly(283686952306183L, 578994027093819392L);
         assertThat(BitString.of(new byte[] {
                 0, 4, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 9, 0, 0, 0, 0,
                 0, 0, 7, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 8, 0, 0, 0,
                 1, 0, 0, 0, 0, 0, 0, 1,
+                0, 2, 0,
         }).data())
-                .containsExactly(1024, 150994944, 458752, 34359738368L, 72057594037927937L);
+                .containsExactly(
+                        1125899906842624L, 38654705664L, 7696581394432L,
+                        134217728L, 72057594037927937L, 562949953421312L);
     }
 
     @Test
@@ -59,8 +65,10 @@ class BitStringTest {
         assertThat(BitString.of(new long[1], 140).data()).containsExactly(0, 0, 0);
         assertThat(BitString.of(new long[10], 65).data()).containsExactly(0, 0);
         assertThat(BitString.of(new long[] { 2432501L }, 64).data()).containsExactly(2432501);
-        assertThat(BitString.of(new long[] { 2432501L }, 7).data()).containsExactly(117);
-        assertThat(BitString.of(new long[] { 2432501L }, 193).data()).containsExactly(2432501, 0, 0, 0);
+        assertThat(BitString.of(new long[] { 7756231263636641610L }, 11).data()).containsExactly(7755198558331994112L);
+        assertThat(BitString.of(new long[] { -5031317168539249322L, 3983041279643227983L }, 36).data()).containsExactly(-5031317168688463872L);
+        assertThat(BitString.of(new long[] { -5031317168539249322L, 3983041279643227983L }, 77).data()).containsExactly(-5031317168539249322L, 3981182070595518464L);
+        assertThat(BitString.of(new long[] { -5031317168539249322L, 3983041279643227983L }, 193).data()).containsExactly(-5031317168539249322L, 3983041279643227983L, 0, 0);
     }
 
     @Test
@@ -85,38 +93,37 @@ class BitStringTest {
     @Test
     void testCompareTo() {
         assertThat(BitString.empty().compareTo(BitString.empty())).isZero();
-        assertThat(BitString.empty().compareTo(BitString.of(false))).isZero();
-        assertThat(BitString.of(false).compareTo(BitString.empty())).isZero();
+        assertThat(BitString.empty().compareTo(BitString.of(false))).isNegative();
+        assertThat(BitString.of(false).compareTo(BitString.empty())).isPositive();
         assertThat(BitString.of(true).compareTo(BitString.of(true))).isZero();
-        assertThat(BitString.of(true).compareTo(BitString.of(true, false))).isZero();
-        assertThat(BitString.of(true, false).compareTo(BitString.of(true))).isZero();
+        assertThat(BitString.of(true).compareTo(BitString.of(true, false))).isNegative();
+        assertThat(BitString.of(true, false).compareTo(BitString.of(true))).isPositive();
         assertThat(BitString.of(true, false).compareTo(BitString.of(true, false))).isZero();
-        assertThat(BitString.of(new long[2]).compareTo(BitString.of(new long[5]))).isZero();
-        assertThat(BitString.of(new long[4]).compareTo(BitString.of(new long[1]))).isZero();
+        assertThat(BitString.of(new long[2]).compareTo(BitString.of(new long[5]))).isNegative();
+        assertThat(BitString.of(new long[4]).compareTo(BitString.of(new long[1]))).isPositive();
         assertThat(BitString.of(new long[] { 7, 3 }).compareTo(BitString.of(new long[] { 7, 3 }))).isZero();
         assertThat(BitString.of(new long[] { 7, 3, 0 }).compareTo(BitString.of(new long[] { 7, 3, 0 }))).isZero();
-        assertThat(BitString.of(new long[] { 7, 3, 0 }).compareTo(BitString.of(new long[] { 7, 3, 0, 0, 0 }))).isZero();
-        assertThat(BitString.of(new long[] { 7, 3, 0 }).compareTo(BitString.of(new long[] { 7, 3 }))).isZero();
+        assertThat(BitString.of(new long[] { 7, 3, 0 }).compareTo(BitString.of(new long[] { 7, 3, 0, 0, 0 }))).isNegative();
+        assertThat(BitString.of(new long[] { 7, 3, 0 }).compareTo(BitString.of(new long[] { 7, 3 }))).isPositive();
         assertThat(BitString.empty().compareTo(BitString.of(true))).isNegative();
         assertThat(BitString.of(true).compareTo(BitString.empty())).isPositive();
         assertThat(BitString.empty().compareTo(BitString.of(new long[] { 7, 3, 0 }))).isNegative();
         assertThat(BitString.of(new long[] { 7, 3, 0 }).compareTo(BitString.empty())).isPositive();
         assertThat(BitString.of(new long[] { 7, 3, 1 }).compareTo(BitString.of(new long[] { 7, 3, 3 }))).isNegative();
         assertThat(BitString.of(new long[] { 7, 3, 3 }).compareTo(BitString.of(new long[] { 7, 3, 1 }))).isPositive();
-        assertThat(BitString.of(new long[] { 7, 3, 2 }).compareTo(BitString.of(new long[] { 7, 3, 1 }))).isNegative();
-        assertThat(BitString.of(new long[] { 7, 3, 1 }).compareTo(BitString.of(new long[] { 7, 3, 2 }))).isPositive();
+        assertThat(BitString.of(new long[] { 7, 3, 1 }).compareTo(BitString.of(new long[] { 7, 3, 2 }))).isNegative();
+        assertThat(BitString.of(new long[] { 7, 3, 2 }).compareTo(BitString.of(new long[] { 7, 3, 1 }))).isPositive();
         assertThat(BitString.of(new long[] { 7, 3 }).compareTo(BitString.of(new long[] { 7, 3, 0, 5 }))).isNegative();
         assertThat(BitString.of(new long[] { 7, 3, 0, 5 }).compareTo(BitString.of(new long[] { 7, 3 }))).isPositive();
     }
-    
-        @Test
-        void testIterator() {
-            assertThat(BitString.empty().iterator()).isExhausted();
-            assertThat((Iterable<Boolean>) BitString.of(false)).containsExactly(false);
-            assertThat((Iterable<Boolean>) BitString.of(true, false)).containsExactly(true, false);
-            assertThat((Iterable<Boolean>) BitString.of(new boolean[65])).hasSize(65).containsOnly(false);
-            assertThat((Iterable<Boolean>) BitString.of(new long[] { 11 }, 5));
-        }
+
+    @Test
+    void testIterator() {
+        assertThat(BitString.empty().iterator()).isExhausted();
+        assertThat((Iterable<Boolean>) BitString.of(false)).containsExactly(false);
+        assertThat((Iterable<Boolean>) BitString.of(true, false)).containsExactly(true, false);
+        assertThat((Iterable<Boolean>) BitString.of(new boolean[65])).hasSize(65).containsOnly(false);
+        assertThat((Iterable<Boolean>) BitString.of(new long[] { -7493989779944505344L }, 5)).containsExactly(true, false, false, true, true);
+    }
 
 }
- 
