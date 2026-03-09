@@ -87,6 +87,20 @@ class BitStringTest {
     }
 
     @Test
+    void testOfStringIllegal() {
+        assertThatThrownBy(() -> BitString.of("012010")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> BitString.of("99")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> BitString.of("-1011")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> BitString.of("0110 1001")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> BitString.of("10.11")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> BitString.of("10,11")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> BitString.of("\0")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> BitString.of("false")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> BitString.of("true")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> BitString.of("lorem")).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
     void testSize() {
         assertThat(BitString.empty().size()).isZero();
         assertThat(BitString.of(new boolean[0]).size()).isZero();
@@ -103,6 +117,8 @@ class BitStringTest {
         assertThat(BitString.of(new long[0], 0).size()).isZero();
         assertThat(BitString.of(new long[0], 3).size()).isEqualTo(3);
         assertThat(BitString.of(new long[0], 173).size()).isEqualTo(173);
+        assertThat(BitString.of("000000000").size()).isEqualTo(9);
+        assertThat(BitString.of("11000100011010101111101010100001010111010101010010110001010101110000101011").size()).isEqualTo(74);
     }
 
     @Test
@@ -112,6 +128,7 @@ class BitStringTest {
         assertThat(BitString.of(true).isEmpty()).isFalse();
         assertThat(BitString.of(new long[] { 4160867386445L }, 0).isEmpty()).isTrue();
         assertThat(BitString.of(new long[] { 4160867386445L }, 10).isEmpty()).isFalse();
+        assertThat(BitString.of("00111100011010110").isEmpty()).isFalse();
     }
 
     @Test
@@ -139,6 +156,11 @@ class BitStringTest {
         assertThat(BitString.of(new long[] { 7, 3, 2 }).compareTo(BitString.of(new long[] { 7, 3, 1 }))).isPositive();
         assertThat(BitString.of(new long[] { 7, 3 }).compareTo(BitString.of(new long[] { 7, 3, 0, 5 }))).isNegative();
         assertThat(BitString.of(new long[] { 7, 3, 0, 5 }).compareTo(BitString.of(new long[] { 7, 3 }))).isPositive();
+        assertThat(BitString.of("100000101").compareTo(BitString.of("100000101"))).isZero();
+        assertThat(BitString.of("100000101").compareTo(BitString.of("1000001010"))).isNegative();
+        assertThat(BitString.of("1000001010").compareTo(BitString.of("100000101"))).isPositive();
+        assertThat(BitString.of("100110010").compareTo(BitString.of("100111010"))).isNegative();
+        assertThat(BitString.of("100111010").compareTo(BitString.of("100110010"))).isPositive();
     }
 
     @Test
@@ -148,32 +170,33 @@ class BitStringTest {
         assertThat((Iterable<Boolean>) BitString.of(true, false)).containsExactly(true, false);
         assertThat((Iterable<Boolean>) BitString.of(new boolean[65])).hasSize(65).containsOnly(false);
         assertThat((Iterable<Boolean>) BitString.of(new long[] { -7493989779944505344L }, 5)).containsExactly(true, false, false, true, true);
+        assertThat((Iterable<Boolean>) BitString.of("110100111010"))
+                .containsExactly(true, true, false, true, false, false, true, true, true, false, true, false);
+        assertThat((Iterable<Boolean>) BitString.of("0011101101011000"))
+                .containsExactly(false, false, true, true, true, false, true, true, false, true, false, true, true, false, false, false);
     }
 
     @Test
     void testHashCode() {
-        assertThat((Object) BitString.of(false)).hasSameHashCodeAs(BitString.of(new long[1], 1));
-        assertThat((Object) BitString.of(true)).hasSameHashCodeAs(BitString.of(new long[] { -9223372036854775808L }, 1));
-        assertThat((Object) BitString.of(new long[] { -5031317168539249322L, 3983041279643227983L }, 77))
-                .hasSameHashCodeAs(BitString.of(new long[] { -5031317168539249322L, 3983041279643227983L, 4611278346822072L }, 77));
+        assertThat((Object) BitString.of(false)).hasSameHashCodeAs(BitString.of("0"));
+        assertThat((Object) BitString.of(true)).hasSameHashCodeAs(BitString.of("1"));
+        assertThat((Object) BitString.of("11010001101011010100")).hasSameHashCodeAs(BitString.of("11010001101011010100"));
     }
 
     @Test
     void testEquals() {
-        assertThat((Object) BitString.of(false)).isEqualTo(BitString.of(new long[1], 1));
-        assertThat((Object) BitString.of(true)).isEqualTo(BitString.of(new long[] { -9223372036854775808L }, 1));
-        assertThat((Object) BitString.of(new long[] { -5031317168539249322L, 3983041279643227983L }, 77))
-                .isEqualTo(BitString.of(new long[] { -5031317168539249322L, 3983041279643227983L, 4611278346822072L }, 77));
+        assertThat((Object) BitString.of(false)).isEqualTo(BitString.of("0"));
+        assertThat((Object) BitString.of(true)).isEqualTo(BitString.of("1"));
+        assertThat((Object) BitString.of("11010001101011010100")).isEqualTo(BitString.of("11010001101011010100"));
     }
 
     @Test
     void testEqualsFalse() {
-        assertThat((Object) BitString.empty()).isNotEqualTo(BitString.of(false));
-        assertThat((Object) BitString.of(false)).isNotEqualTo(BitString.empty());
-        assertThat((Object) BitString.of(true)).isNotEqualTo(BitString.empty());
+        assertThat((Object) BitString.empty()).isNotEqualTo(BitString.of("0"));
+        assertThat((Object) BitString.of(false)).isNotEqualTo(BitString.of("1"));
+        assertThat((Object) BitString.of(true)).isNotEqualTo(BitString.of("0"));
+        assertThat((Object) BitString.of("11010001101011010100")).isNotEqualTo(BitString.of("10110101001110011001"));
         assertThat((Object) BitString.of(new long[1])).isNotEqualTo(BitString.of(new long[2]));
-        assertThat((Object) BitString.of(new long[] { -5031317168539249322L, 3983041279643227983L }))
-                .isNotEqualTo(BitString.of(new long[] { -5031317168539249322L, 3983041279643227984L }));
     }
 
     @Test
@@ -186,35 +209,38 @@ class BitStringTest {
                 .hasToString("11010010111010111010100001101110101110101000101011101011101100010011101011101001011101101011");
         assertThat((Object) BitString.of(new long[] { -3248317512688145487L, 4245054622059724800L }, 100))
                 .hasToString("1101001011101011101010000110111010111010100010101110101110110001001110101110100101110110101100000000");
+        assertThat((Object) BitString.of("100010111011")).hasToString("100010111011");
     }
 
     @Test
     void testResizeToSameSize() {
         assertThat((Object) BitString.empty().resize(0)).isEqualTo(BitString.empty());
-        assertThat((Object) BitString.empty().resize(1)).isEqualTo(BitString.of(false));
-        assertThat((Object) BitString.empty().resize(67)).isEqualTo(BitString.of(new long[2], 67));
-        assertThat((Object) BitString.of(false, true, true, false).resize(4)).isEqualTo(BitString.of(false, true, true, false));
+        assertThat((Object) BitString.empty().resize(1)).isEqualTo(BitString.of("0"));
+        assertThat((Object) BitString.of("0110").resize(4)).isEqualTo(BitString.of("0110"));
         assertThat((Object) BitString.of(new long[] { 512342L }, 77).resize(77)).isEqualTo(BitString.of(new long[] { 512342L }, 77));
         assertThat((Object) BitString.of(new long[5]).resize(320)).isEqualTo(BitString.of(new long[5]));
     }
 
     @Test
     void testResizeLarger() {
-        assertThat((Object) BitString.empty().resize(3)).isEqualTo(BitString.of(false, false, false));
-        assertThat((Object) BitString.of(true, false).resize(7)).isEqualTo(BitString.of(true, false, false, false, false, false, false));
-        assertThat((Object) BitString.of(true, false).resize(7))
-                .isEqualTo(BitString.of(true, false, false, false, false, false, false));
+        assertThat((Object) BitString.empty().resize(3)).isEqualTo(BitString.of("000"));
+        assertThat((Object) BitString.of("10").resize(7)).isEqualTo(BitString.of("1000000"));
+        assertThat((Object) BitString.empty().resize(67))
+                .isEqualTo(BitString.of("0000000000000000000000000000000000000000000000000000000000000000000"));
+        assertThat((Object) BitString.of("1101001").resize(67))
+                .isEqualTo(BitString.of("1101001000000000000000000000000000000000000000000000000000000000000"));
         assertThat((Object) BitString.of(new long[5]).resize(372)).isEqualTo(BitString.of(new long[5], 372));
     }
 
     @Test
     void testResizeSmaller() {
-        assertThat((Object) BitString.of(true, false).resize(0)).isEqualTo(BitString.empty());
-        assertThat((Object) BitString.of(true, false).resize(1)).isEqualTo(BitString.of(true));
-        assertThat((Object) BitString.of(false, true).resize(1)).isEqualTo(BitString.of(false));
+        assertThat((Object) BitString.of("10").resize(0)).isEqualTo(BitString.empty());
+        assertThat((Object) BitString.of("10").resize(1)).isEqualTo(BitString.of("1"));
+        assertThat((Object) BitString.of("01").resize(1)).isEqualTo(BitString.of("0"));
+        assertThat((Object) BitString.of("0110").resize(2)).isEqualTo(BitString.of("01"));
+        assertThat((Object) BitString.of("11001010001010101110").resize(9)).isEqualTo(BitString.of("110010100"));
         assertThat((Object) BitString.of(new long[5]).resize(0)).isEqualTo(BitString.empty());
-        assertThat((Object) BitString.of(new long[5]).resize(3)).isEqualTo(BitString.of(new long[1], 3));
-        assertThat((Object) BitString.of(false, true, true, false).resize(2)).isEqualTo(BitString.of(false, true));
+        assertThat((Object) BitString.of(new long[5]).resize(3)).isEqualTo(BitString.of("000"));
     }
 
     @Test
@@ -224,22 +250,24 @@ class BitStringTest {
 
     @Test
     void testGet() {
-        assertThat(BitString.of(false).get(0)).isFalse();
-        assertThat(BitString.of(true).get(0)).isTrue();
-        assertThat(BitString.of(true, false, true, true, false, true, false, false).get(5)).isTrue();
+        assertThat(BitString.of("0").get(0)).isFalse();
+        assertThat(BitString.of("1").get(0)).isTrue();
+        assertThat(BitString.of("10110100").get(5)).isTrue();
+        assertThat(BitString.of("100101101100010011101000101100101001001100011110100111101000111100111010").get(68)).isTrue();
         assertThat(BitString.of(new long[] { -3248317512688145487L, 4245054622059724800L }, 92).get(17)).isFalse();
         assertThat(BitString.of(new long[] { -3248317512688145487L, 4245054622059724800L }, 92).get(67)).isTrue();
         assertThat(BitString.empty().get(-1)).isFalse();
         assertThat(BitString.empty().get(0)).isFalse();
-        assertThat(BitString.of(true).get(1)).isFalse();
+        assertThat(BitString.of("1").get(1)).isFalse();
         assertThat(BitString.of(new long[2]).get(130)).isFalse();
     }
 
     @Test
     void testGetStrict() {
-        assertThat(BitString.of(false).getStrict(0)).isFalse();
-        assertThat(BitString.of(true).getStrict(0)).isTrue();
-        assertThat(BitString.of(true, false, true, true, false, true, false, false).getStrict(5)).isTrue();
+        assertThat(BitString.of("0").getStrict(0)).isFalse();
+        assertThat(BitString.of("1").getStrict(0)).isTrue();
+        assertThat(BitString.of("10110100").getStrict(5)).isTrue();
+        assertThat(BitString.of("100101101100010011101000101100101001001100011110100111101000111100111010").getStrict(68)).isTrue();
         assertThat(BitString.of(new long[] { -3248317512688145487L, 4245054622059724800L }, 92).getStrict(17)).isFalse();
         assertThat(BitString.of(new long[] { -3248317512688145487L, 4245054622059724800L }, 92).getStrict(67)).isTrue();
     }
@@ -254,16 +282,13 @@ class BitStringTest {
 
     @Test
     void testSet() {
-        assertThat((Object) BitString.of(false).set(0, true)).isEqualTo(BitString.of(true));
-        assertThat((Object) BitString.of(false).set(2, true)).isEqualTo(BitString.of(false, false, true));
-        assertThat((Object) BitString.of(true).set(0, false)).isEqualTo(BitString.of(false));
-        assertThat((Object) BitString.of(true).set(5, false)).isEqualTo(BitString.of(true, false, false, false, false, false));
-        assertThat((Object) BitString.of(true, false, true, true, false, true, false, false).set(3, true))
-                .isEqualTo(BitString.of(true, false, true, true, false, true, false, false));
-        assertThat((Object) BitString.of(true, false, true, true, false, true, false, false).set(3, false))
-                .isEqualTo(BitString.of(true, false, true, false, false, true, false, false));
-        assertThat((Object) BitString.of(true, false, true, true, false, true, false, false).set(11, true))
-                .isEqualTo(BitString.of(true, false, true, true, false, true, false, false, false, false, false, true));
+        assertThat((Object) BitString.of("0").set(0, true)).isEqualTo(BitString.of("1"));
+        assertThat((Object) BitString.of("0").set(2, true)).isEqualTo(BitString.of("001"));
+        assertThat((Object) BitString.of("1").set(0, false)).isEqualTo(BitString.of("0"));
+        assertThat((Object) BitString.of("1").set(5, false)).isEqualTo(BitString.of("100000"));
+        assertThat((Object) BitString.of("10110100").set(3, true)).isEqualTo(BitString.of("10110100"));
+        assertThat((Object) BitString.of("10110100").set(3, false)).isEqualTo(BitString.of("10100100"));
+        assertThat((Object) BitString.of("10110100").set(11, true)).isEqualTo(BitString.of("101101000001"));
     }
 
     @Test
@@ -275,10 +300,8 @@ class BitStringTest {
     void testSetStrict() {
         assertThat((Object) BitString.of(false).setStrict(0, true)).isEqualTo(BitString.of(true));
         assertThat((Object) BitString.of(true).setStrict(0, false)).isEqualTo(BitString.of(false));
-        assertThat((Object) BitString.of(true, false, true, true, false, true, false, false).setStrict(3, true))
-                .isEqualTo(BitString.of(true, false, true, true, false, true, false, false));
-        assertThat((Object) BitString.of(true, false, true, true, false, true, false, false).setStrict(3, false))
-                .isEqualTo(BitString.of(true, false, true, false, false, true, false, false));
+        assertThat((Object) BitString.of("10110100").setStrict(3, true)).isEqualTo(BitString.of("10110100"));
+        assertThat((Object) BitString.of("10110100").setStrict(3, false)).isEqualTo(BitString.of("10100100"));
     }
 
     @Test
