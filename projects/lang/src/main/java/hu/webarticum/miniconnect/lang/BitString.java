@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 /**
  * Simple immutable bit array implementation.
@@ -377,6 +378,37 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
             System.arraycopy(data, commonDataSize, resultData, commonDataSize, resultDataSize - commonDataSize);
         } else if (data.length != other.data.length) {
             System.arraycopy(other.data, commonDataSize, resultData, commonDataSize, resultDataSize - commonDataSize);
+        }
+        return new BitString(resultData, resultSize);
+    }
+
+    public BitString concat(BitString other) {
+        if (other.isEmpty()) {
+            return this;
+        }
+        int resultSize = size + other.size;
+        int resultDataSize = (resultSize + 63) >>> 6;
+        long[] resultData = new long[resultDataSize];
+        int fullWordCount = size >>> 6;
+        if (fullWordCount != 0) {
+            System.arraycopy(data, 0, resultData, 0, fullWordCount);
+        }
+        int tailSize = size & 63;
+        if (tailSize == 0) {
+            System.arraycopy(other.data, fullWordCount, resultData, fullWordCount, other.data.length);
+        } else {
+            long wordPrefix = data[fullWordCount];
+            int suffixSize = 64 - tailSize;
+            for (int i = 0; i < other.data.length; i++) {
+                long wordSuffix = other.data[i] >>> tailSize;
+                long word = wordPrefix | wordSuffix;
+                resultData[fullWordCount + i] = word;
+                wordPrefix = other.data[i] << suffixSize;
+            }
+            int otherTailSize = other.size & 63;
+            if (tailSize + otherTailSize > 64) {
+                resultData[resultDataSize - 1] = wordPrefix;
+            }
         }
         return new BitString(resultData, resultSize);
     }
