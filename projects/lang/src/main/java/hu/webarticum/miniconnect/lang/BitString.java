@@ -123,6 +123,42 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         }
     }
 
+    public static BitString of(String values) {
+        int size = values.length();
+        int wordCount = (size + 63) >>> 6;
+        long[] data = new long[wordCount];
+        int fullWordCount = size >>> 6;
+        for (int i = 0; i < fullWordCount; i++) {
+            long word = 0;
+            int from = i << 6;
+            int until = from + 64;
+            for (int j = from; j < until; j++) {
+                char c = values.charAt(j);
+                if (c == '1') {
+                    word |= Long.MIN_VALUE >>> (j & 63);
+                } else if (c != '0') {
+                    throw new IllegalArgumentException("Invalid character: '" + c + "' at " + j);
+                }
+            }
+            data[i] = word;
+        }
+        int tailSize = size & 63;
+        if (tailSize > 0) {
+            long word = 0;
+            int from = fullWordCount << 6;
+            for (int j = from; j < size; j++) {
+                char c = values.charAt(j);
+                if (c == '1') {
+                    word |= Long.MIN_VALUE >>> (j & 63);
+                } else if (c != '0') {
+                    throw new IllegalArgumentException("Invalid character: '" + c + "' at " + j);
+                }
+            }
+            data[fullWordCount] = word;
+        }
+        return new BitString(data, size);
+    }
+
 
     public int size() {
         return size;
@@ -174,6 +210,32 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
             resultBuilder.append(get(i) ? '1' : '0');
         }
         return resultBuilder.toString();
+    }
+
+    public BitString resize(int newSize) {
+        if (newSize > size) {
+            int newDataSize = (newSize + 63) >>> 6;
+            long[] newData = new long[newDataSize];
+            System.arraycopy(data, 0, newData, 0, data.length);
+            return new BitString(newData, newSize);
+        } else if (newSize == size) {
+            return this;
+        } else if (newSize < 0) {
+            throw new IllegalArgumentException("Size must not be negative");
+        } else {
+            int newDataSize = (newSize + 63) >>> 6;
+            long[] newData = new long[newDataSize];
+            int fullWordSize = newSize >>> 6;
+            if (fullWordSize != 0) {
+                System.arraycopy(data, 0, newData, 0, fullWordSize);
+            }
+            int newTailSize = newSize & 63;
+            if (newTailSize != 0) {
+                long tailMask = -1L << (64 - newTailSize);
+                newData[fullWordSize] = data[fullWordSize] & tailMask;
+            }
+            return new BitString(newData, newSize);
+        }
     }
 
     public boolean get(int position) {
@@ -274,7 +336,7 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         @Override
         public Boolean next() {
             if (!hasNext()) {
-                throw new NoSuchElementException("no more bits");
+                throw new NoSuchElementException("No more bits");
             }
             boolean result = get(position);
             position++;
