@@ -324,6 +324,20 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         return result;
     }
 
+    public BitString not() {
+        long[] newData = new long[data.length];
+        int fullWordCount = size >>> 6;
+        for (int i = 0; i < fullWordCount; i++) {
+            newData[i] = ~data[i];
+        }
+        if (data.length != fullWordCount) {
+            int tailSize = size & 63;
+            long tailMask = -1L << (64 - tailSize);
+            newData[fullWordCount] = ~data[fullWordCount] & tailMask;
+        }
+        return new BitString(newData, size);
+    }
+
     private class BitStringIterator implements Iterator<Boolean> {
 
         int position = 0;
