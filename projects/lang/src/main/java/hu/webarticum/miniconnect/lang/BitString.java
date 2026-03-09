@@ -338,6 +338,49 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         return new BitString(newData, size);
     }
 
+    public BitString and(BitString other) {
+        int resultSize = Math.max(size, other.size);
+        int resultDataSize = Math.max(data.length, other.data.length);
+        long[] resultData = new long[resultDataSize];
+        int commonDataSize = Math.min(data.length, other.data.length);
+        for (int i = 0; i < commonDataSize; i++) {
+            resultData[i] = data[i] & other.data[i];
+        }
+        return new BitString(resultData, resultSize);
+    }
+
+    public BitString or(BitString other) {
+        int resultSize = Math.max(size, other.size);
+        int resultDataSize = Math.max(data.length, other.data.length);
+        long[] resultData = new long[resultDataSize];
+        int commonDataSize = Math.min(data.length, other.data.length);
+        for (int i = 0; i < commonDataSize; i++) {
+            resultData[i] = data[i] | other.data[i];
+        }
+        if (data.length > other.data.length) {
+            System.arraycopy(data, commonDataSize, resultData, commonDataSize, resultDataSize - commonDataSize);
+        } else if (data.length != other.data.length) {
+            System.arraycopy(other.data, commonDataSize, resultData, commonDataSize, resultDataSize - commonDataSize);
+        }
+        return new BitString(resultData, resultSize);
+    }
+
+    public BitString xor(BitString other) {
+        int resultSize = Math.max(size, other.size);
+        int resultDataSize = Math.max(data.length, other.data.length);
+        long[] resultData = new long[resultDataSize];
+        int commonDataSize = Math.min(data.length, other.data.length);
+        for (int i = 0; i < commonDataSize; i++) {
+            resultData[i] = data[i] ^ other.data[i];
+        }
+        if (data.length > other.data.length) {
+            System.arraycopy(data, commonDataSize, resultData, commonDataSize, resultDataSize - commonDataSize);
+        } else if (data.length != other.data.length) {
+            System.arraycopy(other.data, commonDataSize, resultData, commonDataSize, resultDataSize - commonDataSize);
+        }
+        return new BitString(resultData, resultSize);
+    }
+
     private class BitStringIterator implements Iterator<Boolean> {
 
         int position = 0;

@@ -324,4 +324,40 @@ class BitStringTest {
                 .isEqualTo(BitString.of("0110101110010101111010101000100111100011110000101000101101100100110010"));
     }
 
+    @Test
+    void testAnd() {
+        assertThat((Object) BitString.empty().and(BitString.empty())).isEqualTo(BitString.empty());
+        assertThat((Object) BitString.of("1010").and(BitString.empty())).isEqualTo(BitString.of("0000"));
+        assertThat((Object) BitString.empty().and(BitString.of("1100"))).isEqualTo(BitString.of("0000"));
+        assertThat((Object) BitString.of("1010").and(BitString.of("1100"))).isEqualTo(BitString.of("1000"));
+        assertThat((Object) BitString.of(
+                "00110111011010111000110000101011010110000101010111010010000011110010011100011110").and(BitString.of(
+                "010111010101110001010111010111000110101101110101011110101"))).isEqualTo(BitString.of(
+                "00010101010010000000010000001000010010000101010101010010000000000000000000000000"));
+    }
+
+    @Test
+    void testOr() {
+        assertThat((Object) BitString.empty().or(BitString.empty())).isEqualTo(BitString.empty());
+        assertThat((Object) BitString.of("1010").or(BitString.empty())).isEqualTo(BitString.of("1010"));
+        assertThat((Object) BitString.empty().or(BitString.of("1100"))).isEqualTo(BitString.of("1100"));
+        assertThat((Object) BitString.of("1010").or(BitString.of("1100"))).isEqualTo(BitString.of("1110"));
+        assertThat((Object) BitString.of(
+                "00110111011010111000110000101011010110000101010111010010000011110010011100011110").or(BitString.of(
+                "010111010101110001010111010111000110101101110101011110101"))).isEqualTo(BitString.of(
+                "01111111011111111101111101111111011110110111010111111010100011110010011100011110"));
+    }
+
+    @Test
+    void testXor() {
+        assertThat((Object) BitString.empty().xor(BitString.empty())).isEqualTo(BitString.empty());
+        assertThat((Object) BitString.of("1010").xor(BitString.empty())).isEqualTo(BitString.of("1010"));
+        assertThat((Object) BitString.empty().xor(BitString.of("1100"))).isEqualTo(BitString.of("1100"));
+        assertThat((Object) BitString.of("1010").xor(BitString.of("1100"))).isEqualTo(BitString.of("0110"));
+        assertThat((Object) BitString.of(
+                "00110111011010111000110000101011010110000101010111010010000011110010011100011110").xor(BitString.of(
+                "010111010101110001010111010111000110101101110101011110101"))).isEqualTo(BitString.of(
+                "01101010001101111101101101110111001100110010000010101000100011110010011100011110"));
+    }
+
 }
