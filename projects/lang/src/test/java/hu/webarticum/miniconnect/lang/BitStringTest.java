@@ -181,65 +181,65 @@ class BitStringTest {
         assertThat(BitString.of(true, false, true, true, false, true, false, false).get(5)).isTrue();
         assertThat(BitString.of(new long[] { -3248317512688145487L, 4245054622059724800L }, 92).get(17)).isFalse();
         assertThat(BitString.of(new long[] { -3248317512688145487L, 4245054622059724800L }, 92).get(67)).isTrue();
+        assertThat(BitString.empty().get(-1)).isFalse();
+        assertThat(BitString.empty().get(0)).isFalse();
+        assertThat(BitString.of(true).get(1)).isFalse();
+        assertThat(BitString.of(new long[2]).get(130)).isFalse();
     }
 
     @Test
-    void testGetOutOfBounds() {
-        assertThatThrownBy(() -> BitString.empty().get(-1)).isInstanceOf(IndexOutOfBoundsException.class);
-        assertThatThrownBy(() -> BitString.empty().get(0)).isInstanceOf(IndexOutOfBoundsException.class);
-        assertThatThrownBy(() -> BitString.of(true).get(1)).isInstanceOf(IndexOutOfBoundsException.class);
-        assertThatThrownBy(() -> BitString.of(new long[2]).get(130)).isInstanceOf(IndexOutOfBoundsException.class);
+    void testGetStrict() {
+        assertThat(BitString.of(false).getStrict(0)).isFalse();
+        assertThat(BitString.of(true).getStrict(0)).isTrue();
+        assertThat(BitString.of(true, false, true, true, false, true, false, false).getStrict(5)).isTrue();
+        assertThat(BitString.of(new long[] { -3248317512688145487L, 4245054622059724800L }, 92).getStrict(17)).isFalse();
+        assertThat(BitString.of(new long[] { -3248317512688145487L, 4245054622059724800L }, 92).getStrict(67)).isTrue();
     }
 
     @Test
-    void testGetOrZero() {
-        assertThat(BitString.of(false).getOrZero(0)).isFalse();
-        assertThat(BitString.of(true).getOrZero(0)).isTrue();
-        assertThat(BitString.of(true, false, true, true, false, true, false, false).getOrZero(5)).isTrue();
-        assertThat(BitString.of(new long[] { -3248317512688145487L, 4245054622059724800L }, 92).getOrZero(17)).isFalse();
-        assertThat(BitString.of(new long[] { -3248317512688145487L, 4245054622059724800L }, 92).getOrZero(67)).isTrue();
-        assertThat(BitString.empty().getOrZero(-1)).isFalse();
-        assertThat(BitString.empty().getOrZero(0)).isFalse();
-        assertThat(BitString.of(true).getOrZero(1)).isFalse();
-        assertThat(BitString.of(new long[2]).getOrZero(130)).isFalse();
+    void testGetStrictOutOfBounds() {
+        assertThatThrownBy(() -> BitString.empty().getStrict(-1)).isInstanceOf(IndexOutOfBoundsException.class);
+        assertThatThrownBy(() -> BitString.empty().getStrict(0)).isInstanceOf(IndexOutOfBoundsException.class);
+        assertThatThrownBy(() -> BitString.of(true).getStrict(1)).isInstanceOf(IndexOutOfBoundsException.class);
+        assertThatThrownBy(() -> BitString.of(new long[2]).getStrict(130)).isInstanceOf(IndexOutOfBoundsException.class);
     }
 
     @Test
     void testSet() {
         assertThat((Object) BitString.of(false).set(0, true)).isEqualTo(BitString.of(true));
+        assertThat((Object) BitString.of(false).set(2, true)).isEqualTo(BitString.of(false, false, true));
         assertThat((Object) BitString.of(true).set(0, false)).isEqualTo(BitString.of(false));
+        assertThat((Object) BitString.of(true).set(5, false)).isEqualTo(BitString.of(true, false, false, false, false, false));
         assertThat((Object) BitString.of(true, false, true, true, false, true, false, false).set(3, true))
                 .isEqualTo(BitString.of(true, false, true, true, false, true, false, false));
         assertThat((Object) BitString.of(true, false, true, true, false, true, false, false).set(3, false))
                 .isEqualTo(BitString.of(true, false, true, false, false, true, false, false));
-    }
-
-    @Test
-    void testSetOutOfBounds() {
-        assertThatThrownBy(() -> BitString.empty().set(-1, false)).isInstanceOf(IndexOutOfBoundsException.class);
-        assertThatThrownBy(() -> BitString.empty().set(0, false)).isInstanceOf(IndexOutOfBoundsException.class);
-        assertThatThrownBy(() -> BitString.empty().set(1, false)).isInstanceOf(IndexOutOfBoundsException.class);
-        assertThatThrownBy(() -> BitString.of(new long[1]).set(71, false)).isInstanceOf(IndexOutOfBoundsException.class);
-        assertThatThrownBy(() -> BitString.of(new long[1], 3).set(22, false)).isInstanceOf(IndexOutOfBoundsException.class);
-    }
-
-    @Test
-    void testSetExtending() {
-        assertThat((Object) BitString.of(false).setExtending(0, true)).isEqualTo(BitString.of(true));
-        assertThat((Object) BitString.of(false).setExtending(2, true)).isEqualTo(BitString.of(false, false, true));
-        assertThat((Object) BitString.of(true).setExtending(0, false)).isEqualTo(BitString.of(false));
-        assertThat((Object) BitString.of(true).setExtending(5, false)).isEqualTo(BitString.of(true, false, false, false, false, false));
-        assertThat((Object) BitString.of(true, false, true, true, false, true, false, false).setExtending(3, true))
-                .isEqualTo(BitString.of(true, false, true, true, false, true, false, false));
-        assertThat((Object) BitString.of(true, false, true, true, false, true, false, false).setExtending(3, false))
-                .isEqualTo(BitString.of(true, false, true, false, false, true, false, false));
-        assertThat((Object) BitString.of(true, false, true, true, false, true, false, false).setExtending(11, true))
+        assertThat((Object) BitString.of(true, false, true, true, false, true, false, false).set(11, true))
                 .isEqualTo(BitString.of(true, false, true, true, false, true, false, false, false, false, false, true));
     }
 
     @Test
-    void testSetExtendingNegative() {
-        assertThatThrownBy(() -> BitString.empty().setExtending(-1, false)).isInstanceOf(IndexOutOfBoundsException.class);
+    void testSetNegative() {
+        assertThatThrownBy(() -> BitString.empty().set(-1, false)).isInstanceOf(IndexOutOfBoundsException.class);
+    }
+
+    @Test
+    void testSetStrict() {
+        assertThat((Object) BitString.of(false).setStrict(0, true)).isEqualTo(BitString.of(true));
+        assertThat((Object) BitString.of(true).setStrict(0, false)).isEqualTo(BitString.of(false));
+        assertThat((Object) BitString.of(true, false, true, true, false, true, false, false).setStrict(3, true))
+                .isEqualTo(BitString.of(true, false, true, true, false, true, false, false));
+        assertThat((Object) BitString.of(true, false, true, true, false, true, false, false).setStrict(3, false))
+                .isEqualTo(BitString.of(true, false, true, false, false, true, false, false));
+    }
+
+    @Test
+    void testSetStrictOutOfBounds() {
+        assertThatThrownBy(() -> BitString.empty().setStrict(-1, false)).isInstanceOf(IndexOutOfBoundsException.class);
+        assertThatThrownBy(() -> BitString.empty().setStrict(0, false)).isInstanceOf(IndexOutOfBoundsException.class);
+        assertThatThrownBy(() -> BitString.empty().setStrict(1, false)).isInstanceOf(IndexOutOfBoundsException.class);
+        assertThatThrownBy(() -> BitString.of(new long[1]).setStrict(71, false)).isInstanceOf(IndexOutOfBoundsException.class);
+        assertThatThrownBy(() -> BitString.of(new long[1], 3).setStrict(22, false)).isInstanceOf(IndexOutOfBoundsException.class);
     }
 
 }
