@@ -414,8 +414,65 @@ class BitStringTest {
                         "1110101111010101001001010001101010001101000101010001100101111000" +
                         "1110001100111101010100101101010010101011001011010111010111100001" +
                         "0110111000111000111110"));
-        
-        
+    }
+
+    @Test
+    void testSubstring() {
+        assertThat((Object) BitString.empty().substring(0, 0)).isEqualTo(BitString.empty());
+        assertThat((Object) BitString.of("10").substring(0, 0)).isEqualTo(BitString.empty());
+        assertThat((Object) BitString.of("10").substring(1, 1)).isEqualTo(BitString.empty());
+        assertThat((Object) BitString.of("10").substring(2, 2)).isEqualTo(BitString.empty());
+        assertThat((Object) BitString.of("10").substring(0, 1)).isEqualTo(BitString.of("1"));
+        assertThat((Object) BitString.of("10").substring(1, 2)).isEqualTo(BitString.of("0"));
+        assertThat((Object) BitString.of("10").substring(0, 2)).isEqualTo(BitString.of("10"));
+        assertThat((Object) BitString.of("1011001000").substring(2, 9)).isEqualTo(BitString.of("1100100"));
+        assertThat((Object) BitString.of(
+                "1010101001100101001001001110101001110011010111000110011001010011" +
+                "101010111110101010"
+            ).substring(54, 73)).isEqualTo(BitString.of(
+                "1001010011101010111"));
+        assertThat((Object) BitString.of(
+                "1101010101110101011110001010111010100011001010100010100111010100" +
+                "0100110101000101011001001101100101011101010101100011010101101011" +
+                "0101011110111000111010"
+            ).substring(64, 135)).isEqualTo(BitString.of(
+                "0100110101000101011001001101100101011101010101100011010101101011" +
+                "0101011"));
+        BitString fourAndHalf = BitString.of(
+                "1010011101010100010101101001101101010001101011101010101010101011" +
+                "0101010110101110010011001101011000101011010101010101001110001100" +
+                "0111010101110101011010101010101101111010010010001010101101010100" +
+                "1010001101110000110101010100111010100010101000101101011101010101" +
+                "10101011101011110101010101010011");
+        assertThat((Object) fourAndHalf.substring(42, 170)).isEqualTo(BitString.of(
+                "1011101010101010101011010101011010111001001100110101100010101101" +
+                "0101010101001110001100011101010111010101101010101010110111101001"));
+        assertThat((Object) fourAndHalf.substring(42, 181)).isEqualTo(BitString.of(
+                "1011101010101010101011010101011010111001001100110101100010101101" +
+                "0101010101001110001100011101010111010101101010101010110111101001" +
+                "00100010101"));
+        assertThat((Object) fourAndHalf.substring(42, 192)).isEqualTo(BitString.of(
+                "1011101010101010101011010101011010111001001100110101100010101101" +
+                "0101010101001110001100011101010111010101101010101010110111101001" +
+                "0010001010101101010100"));
+        assertThat((Object) fourAndHalf.substring(42, 204)).isEqualTo(BitString.of(
+                "1011101010101010101011010101011010111001001100110101100010101101" +
+                "0101010101001110001100011101010111010101101010101010110111101001" +
+                "0010001010101101010100101000110111"));
+    }
+
+    @Test
+    void testSubstringIllegal() {
+        BitString bitString = BitString.of("0110");
+        assertThatThrownBy(() -> bitString.substring(-1, 3)).isInstanceOf(IndexOutOfBoundsException.class);
+        assertThatThrownBy(() -> bitString.substring(2, 7)).isInstanceOf(IndexOutOfBoundsException.class);
+        assertThatThrownBy(() -> bitString.substring(-1, 7)).isInstanceOf(IndexOutOfBoundsException.class);
+        assertThatThrownBy(() -> bitString.substring(-1, -1)).isInstanceOf(IndexOutOfBoundsException.class);
+        assertThatThrownBy(() -> bitString.substring(7, 7)).isInstanceOf(IndexOutOfBoundsException.class);
+        assertThatThrownBy(() -> bitString.substring(3, 2)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> bitString.substring(3, -1)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> bitString.substring(7, 2)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> BitString.empty().substring(0, 1)).isInstanceOf(IndexOutOfBoundsException.class);
     }
 
 }

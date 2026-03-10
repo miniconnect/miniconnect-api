@@ -413,6 +413,55 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         return new BitString(resultData, resultSize);
     }
 
+    public BitString substring(int from, int until) {
+        if (from < 0 || until > size) {
+            throw new IndexOutOfBoundsException();
+        } else if (from > until) {
+            throw new IllegalArgumentException("Invalid substring");
+        } else if (from == until) {
+            return EMPTY;
+        }
+        int resultSize = until - from;
+        int resultDataSize = (resultSize + 63) >>> 6;
+        int shift = from & 63;
+        long[] resultData = new long[resultDataSize];
+        int resultTailSize = resultSize & 63;
+        int fromWordIndex = from >>> 6;
+        int resultFullWordCount = resultSize >>> 6;
+        if (shift == 0) {
+            System.arraycopy(data, fromWordIndex, resultData, 0, resultFullWordCount);
+            if (resultTailSize != 0) {
+                int lastAffectedWordIndex = until >>> 6;
+                long tailMask = -1L << (64 - resultTailSize);
+                resultData[resultDataSize - 1] = data[lastAffectedWordIndex] & tailMask;
+            }
+        } else {
+            int prefixSize = 64 - shift;
+            long wordPrefix = data[fromWordIndex] << shift;
+            int firstAlignedWordIndex = fromWordIndex + 1;
+            for (int i = 0; i < resultFullWordCount; i++) {
+                long dataWord = data[firstAlignedWordIndex + i];
+                long wordSuffix = dataWord >>> prefixSize;
+                long word = wordPrefix | wordSuffix;
+                resultData[i] = word;
+                wordPrefix = dataWord << shift;
+            }
+            if (resultTailSize != 0) {
+                long word = wordPrefix;
+                if (shift + resultTailSize > 64) {
+                    int lastAffectedWordIndex = until >>> 6;
+                    long dataWord = data[lastAffectedWordIndex];
+                    long wordSuffix = dataWord >>> prefixSize;
+                    word = wordPrefix | wordSuffix;
+                }
+                long wordMask = -1L << (64 - resultTailSize);
+                word &= wordMask;
+                resultData[resultDataSize - 1] = word;
+            }
+        }
+        return new BitString(resultData, resultSize);
+    }
+
     private class BitStringIterator implements Iterator<Boolean> {
 
         int position = 0;
