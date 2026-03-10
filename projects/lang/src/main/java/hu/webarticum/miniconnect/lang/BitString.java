@@ -213,32 +213,6 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         return resultBuilder.toString();
     }
 
-    public BitString resize(int newSize) {
-        if (newSize > size) {
-            int newDataSize = (newSize + 63) >>> 6;
-            long[] newData = new long[newDataSize];
-            System.arraycopy(data, 0, newData, 0, data.length);
-            return new BitString(newData, newSize);
-        } else if (newSize == size) {
-            return this;
-        } else if (newSize < 0) {
-            throw new IllegalArgumentException("Size must not be negative");
-        } else {
-            int newDataSize = (newSize + 63) >>> 6;
-            long[] newData = new long[newDataSize];
-            int fullWordSize = newSize >>> 6;
-            if (fullWordSize != 0) {
-                System.arraycopy(data, 0, newData, 0, fullWordSize);
-            }
-            int newTailSize = newSize & 63;
-            if (newTailSize != 0) {
-                long tailMask = -1L << (64 - newTailSize);
-                newData[fullWordSize] = data[fullWordSize] & tailMask;
-            }
-            return new BitString(newData, newSize);
-        }
-    }
-
     public boolean get(int position) {
         if (position < 0 || position >= size) {
             return false;
@@ -481,6 +455,70 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
             return result;
         }
 
+    }
+
+    public BitString padLeft(int minSize) {
+        if (minSize <= size) {
+            return this;
+        }
+        int newDataSize = (minSize + 63) >>> 6;
+        long[] newData = new long[newDataSize];
+        int padSize = minSize - size;
+        int firstFilledResultWordIndex = padSize >>> 6;
+        if ((padSize & 63) == 0) {
+            System.arraycopy(data, 0, newData, firstFilledResultWordIndex, data.length);
+        } else {
+            long wordPrefix = 0L;
+            int prefixSize = padSize & 63;
+            int suffixSize = 64 - prefixSize;
+            for (int i = 0; i < data.length; i++) {
+                long wordSuffix = data[i] >>> prefixSize;
+                long word = wordPrefix | wordSuffix;
+                newData[firstFilledResultWordIndex + i] = word;
+                wordPrefix = data[i] << suffixSize;
+            }
+            int tailSize = size & 63;
+            if (prefixSize + tailSize > 64) {
+                newData[newDataSize - 1] = wordPrefix;
+            }
+        }
+        return new BitString(newData, minSize);
+    }
+
+    public BitString padRight(int minSize) {
+        if (minSize <= size) {
+            return this;
+        }
+        int newDataSize = (minSize + 63) >>> 6;
+        long[] newData = new long[newDataSize];
+        System.arraycopy(data, 0, newData, 0, data.length);
+        return new BitString(newData, minSize);
+    }
+
+    public BitString resize(int newSize) {
+        if (newSize > size) {
+            int newDataSize = (newSize + 63) >>> 6;
+            long[] newData = new long[newDataSize];
+            System.arraycopy(data, 0, newData, 0, data.length);
+            return new BitString(newData, newSize);
+        } else if (newSize == size) {
+            return this;
+        } else if (newSize < 0) {
+            throw new IllegalArgumentException("Size must not be negative");
+        } else {
+            int newDataSize = (newSize + 63) >>> 6;
+            long[] newData = new long[newDataSize];
+            int fullWordSize = newSize >>> 6;
+            if (fullWordSize != 0) {
+                System.arraycopy(data, 0, newData, 0, fullWordSize);
+            }
+            int newTailSize = newSize & 63;
+            if (newTailSize != 0) {
+                long tailMask = -1L << (64 - newTailSize);
+                newData[fullWordSize] = data[fullWordSize] & tailMask;
+            }
+            return new BitString(newData, newSize);
+        }
     }
 
 }

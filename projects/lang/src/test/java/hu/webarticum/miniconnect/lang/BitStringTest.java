@@ -213,42 +213,6 @@ class BitStringTest {
     }
 
     @Test
-    void testResizeToSameSize() {
-        assertThat((Object) BitString.empty().resize(0)).isEqualTo(BitString.empty());
-        assertThat((Object) BitString.empty().resize(1)).isEqualTo(BitString.of("0"));
-        assertThat((Object) BitString.of("0110").resize(4)).isEqualTo(BitString.of("0110"));
-        assertThat((Object) BitString.of(new long[] { 512342L }, 77).resize(77)).isEqualTo(BitString.of(new long[] { 512342L }, 77));
-        assertThat((Object) BitString.of(new long[5]).resize(320)).isEqualTo(BitString.of(new long[5]));
-    }
-
-    @Test
-    void testResizeLarger() {
-        assertThat((Object) BitString.empty().resize(3)).isEqualTo(BitString.of("000"));
-        assertThat((Object) BitString.of("10").resize(7)).isEqualTo(BitString.of("1000000"));
-        assertThat((Object) BitString.empty().resize(67))
-                .isEqualTo(BitString.of("0000000000000000000000000000000000000000000000000000000000000000000"));
-        assertThat((Object) BitString.of("1101001").resize(67))
-                .isEqualTo(BitString.of("1101001000000000000000000000000000000000000000000000000000000000000"));
-        assertThat((Object) BitString.of(new long[5]).resize(372)).isEqualTo(BitString.of(new long[5], 372));
-    }
-
-    @Test
-    void testResizeSmaller() {
-        assertThat((Object) BitString.of("10").resize(0)).isEqualTo(BitString.empty());
-        assertThat((Object) BitString.of("10").resize(1)).isEqualTo(BitString.of("1"));
-        assertThat((Object) BitString.of("01").resize(1)).isEqualTo(BitString.of("0"));
-        assertThat((Object) BitString.of("0110").resize(2)).isEqualTo(BitString.of("01"));
-        assertThat((Object) BitString.of("11001010001010101110").resize(9)).isEqualTo(BitString.of("110010100"));
-        assertThat((Object) BitString.of(new long[5]).resize(0)).isEqualTo(BitString.empty());
-        assertThat((Object) BitString.of(new long[5]).resize(3)).isEqualTo(BitString.of("000"));
-    }
-
-    @Test
-    void testResizeNegative() {
-        assertThatThrownBy(() -> BitString.empty().resize(-1)).isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
     void testGet() {
         assertThat(BitString.of("0").get(0)).isFalse();
         assertThat(BitString.of("1").get(0)).isTrue();
@@ -473,6 +437,80 @@ class BitStringTest {
         assertThatThrownBy(() -> bitString.substring(3, -1)).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> bitString.substring(7, 2)).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> BitString.empty().substring(0, 1)).isInstanceOf(IndexOutOfBoundsException.class);
+    }
+
+    @Test
+    void testPadLeft() {
+        assertThat((Object) BitString.empty().padLeft(0)).isEqualTo(BitString.empty());
+        assertThat((Object) BitString.empty().padLeft(1)).isEqualTo(BitString.of("0"));
+        assertThat((Object) BitString.empty().padLeft(5)).isEqualTo(BitString.of("00000"));
+        assertThat((Object) BitString.of("0").padLeft(0)).isEqualTo(BitString.of("0"));
+        assertThat((Object) BitString.of("0").padLeft(1)).isEqualTo(BitString.of("0"));
+        assertThat((Object) BitString.of("0").padLeft(7)).isEqualTo(BitString.of("0000000"));
+        assertThat((Object) BitString.of("1").padLeft(0)).isEqualTo(BitString.of("1"));
+        assertThat((Object) BitString.of("1").padLeft(1)).isEqualTo(BitString.of("1"));
+        assertThat((Object) BitString.of("1").padLeft(7)).isEqualTo(BitString.of("0000001"));
+        assertThat((Object) BitString.of("11010100").padLeft(3)).isEqualTo(BitString.of("11010100"));
+        assertThat((Object) BitString.of("11010100").padLeft(12)).isEqualTo(BitString.of("000011010100"));
+        assertThat((Object) BitString.of("11010100").padLeft(65))
+                .isEqualTo(BitString.of("00000000000000000000000000000000000000000000000000000000011010100"));
+        assertThat((Object) BitString.of("11010100").padLeft(133)).isEqualTo(BitString.of(
+                "0000000000000000000000000000000000000000000000000000000000000000" +
+                "0000000000000000000000000000000000000000000000000000000000000110" +
+                "10100"));
+    }
+
+    @Test
+    void testPadRight() {
+        assertThat((Object) BitString.empty().padRight(0)).isEqualTo(BitString.empty());
+        assertThat((Object) BitString.empty().padRight(1)).isEqualTo(BitString.of("0"));
+        assertThat((Object) BitString.empty().padRight(5)).isEqualTo(BitString.of("00000"));
+        assertThat((Object) BitString.of("0").padRight(0)).isEqualTo(BitString.of("0"));
+        assertThat((Object) BitString.of("0").padRight(1)).isEqualTo(BitString.of("0"));
+        assertThat((Object) BitString.of("0").padRight(7)).isEqualTo(BitString.of("0000000"));
+        assertThat((Object) BitString.of("1").padRight(0)).isEqualTo(BitString.of("1"));
+        assertThat((Object) BitString.of("1").padRight(1)).isEqualTo(BitString.of("1"));
+        assertThat((Object) BitString.of("1").padRight(7)).isEqualTo(BitString.of("1000000"));
+        assertThat((Object) BitString.of("11010100").padRight(3)).isEqualTo(BitString.of("11010100"));
+        assertThat((Object) BitString.of("11010100").padRight(12)).isEqualTo(BitString.of("110101000000"));
+        assertThat((Object) BitString.of("11010100").padRight(65))
+                .isEqualTo(BitString.of("11010100000000000000000000000000000000000000000000000000000000000"));
+    }
+
+    @Test
+    void testResizeToSameSize() {
+        assertThat((Object) BitString.empty().resize(0)).isEqualTo(BitString.empty());
+        assertThat((Object) BitString.empty().resize(1)).isEqualTo(BitString.of("0"));
+        assertThat((Object) BitString.of("0110").resize(4)).isEqualTo(BitString.of("0110"));
+        assertThat((Object) BitString.of(new long[] { 512342L }, 77).resize(77)).isEqualTo(BitString.of(new long[] { 512342L }, 77));
+        assertThat((Object) BitString.of(new long[5]).resize(320)).isEqualTo(BitString.of(new long[5]));
+    }
+
+    @Test
+    void testResizeLarger() {
+        assertThat((Object) BitString.empty().resize(3)).isEqualTo(BitString.of("000"));
+        assertThat((Object) BitString.of("10").resize(7)).isEqualTo(BitString.of("1000000"));
+        assertThat((Object) BitString.empty().resize(67))
+                .isEqualTo(BitString.of("0000000000000000000000000000000000000000000000000000000000000000000"));
+        assertThat((Object) BitString.of("1101001").resize(67))
+                .isEqualTo(BitString.of("1101001000000000000000000000000000000000000000000000000000000000000"));
+        assertThat((Object) BitString.of(new long[5]).resize(372)).isEqualTo(BitString.of(new long[5], 372));
+    }
+
+    @Test
+    void testResizeSmaller() {
+        assertThat((Object) BitString.of("10").resize(0)).isEqualTo(BitString.empty());
+        assertThat((Object) BitString.of("10").resize(1)).isEqualTo(BitString.of("1"));
+        assertThat((Object) BitString.of("01").resize(1)).isEqualTo(BitString.of("0"));
+        assertThat((Object) BitString.of("0110").resize(2)).isEqualTo(BitString.of("01"));
+        assertThat((Object) BitString.of("11001010001010101110").resize(9)).isEqualTo(BitString.of("110010100"));
+        assertThat((Object) BitString.of(new long[5]).resize(0)).isEqualTo(BitString.empty());
+        assertThat((Object) BitString.of(new long[5]).resize(3)).isEqualTo(BitString.of("000"));
+    }
+
+    @Test
+    void testResizeNegative() {
+        assertThatThrownBy(() -> BitString.empty().resize(-1)).isInstanceOf(IllegalArgumentException.class);
     }
 
 }
