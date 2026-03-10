@@ -436,27 +436,6 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         return new BitString(resultData, resultSize);
     }
 
-    private class BitStringIterator implements Iterator<Boolean> {
-
-        int position = 0;
-
-        @Override
-        public boolean hasNext() {
-            return position < size;
-        }
-
-        @Override
-        public Boolean next() {
-            if (!hasNext()) {
-                throw new NoSuchElementException("No more bits");
-            }
-            boolean result = get(position);
-            position++;
-            return result;
-        }
-
-    }
-
     public BitString padLeft(int minSize) {
         if (minSize <= size) {
             return this;
@@ -519,6 +498,28 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
             }
             return new BitString(newData, newSize);
         }
+    }
+
+
+    private class BitStringIterator implements Iterator<Boolean> {
+
+        int position = 0;
+
+        @Override
+        public boolean hasNext() {
+            return position < size;
+        }
+
+        @Override
+        public Boolean next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException("No more bits");
+            }
+            boolean result = get(position);
+            position++;
+            return result;
+        }
+
     }
 
 }
