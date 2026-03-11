@@ -440,6 +440,182 @@ class BitStringTest {
     }
 
     @Test
+    void testWindowFullyOutside() {
+        assertThat((Object) BitString.empty().window(0, 0)).isEqualTo(BitString.empty());
+        assertThat((Object) BitString.empty().window(-3, 0)).isEqualTo(BitString.of("000"));
+        assertThat((Object) BitString.empty().window(-64, 0)).isEqualTo(BitString.of(new long[1]));
+        assertThat((Object) BitString.empty().window(-256, -128)).isEqualTo(BitString.of(new long[2]));
+        assertThat((Object) BitString.empty().window(-256, -120)).isEqualTo(BitString.of(new long[3], 136));
+        assertThat((Object) BitString.empty().window(50, 60)).isEqualTo(BitString.of("0000000000"));
+        assertThat((Object) BitString.of("10011").window(0, 0)).isEqualTo(BitString.empty());
+        assertThat((Object) BitString.of("10011").window(-3, 0)).isEqualTo(BitString.of("000"));
+        assertThat((Object) BitString.of("10011").window(-64, 0)).isEqualTo(BitString.of(new long[1]));
+        assertThat((Object) BitString.of("10011").window(-256, -128)).isEqualTo(BitString.of(new long[2]));
+        assertThat((Object) BitString.of("10011").window(-256, -120)).isEqualTo(BitString.of(new long[3], 136));
+        assertThat((Object) BitString.of("10011").window(50, 60)).isEqualTo(BitString.of("0000000000"));
+    }
+
+    @Test
+    void testWindowUnshiftedFromNegative() {
+        assertThat((Object) BitString.of("10011").window(-64, 3)).isEqualTo(BitString.of(
+                "0000000000000000000000000000000000000000000000000000000000000000" +
+                "100"));
+        assertThat((Object) BitString.of("10011").window(-64, 14)).isEqualTo(BitString.of(
+                "0000000000000000000000000000000000000000000000000000000000000000" +
+                "10011000000000"));
+        assertThat((Object) BitString.of("10011").window(-64, 71)).isEqualTo(BitString.of(
+                "0000000000000000000000000000000000000000000000000000000000000000" +
+                "1001100000000000000000000000000000000000000000000000000000000000" +
+                "0000000"));
+        BitString twoAndHalf = BitString.of(
+                "1101001111001000101011010111010100101011101101011101010110101111" +
+                "0110011101011011010001001101011101000101011101011001111000101010" +
+                "01110001010110011110001101101110");
+        assertThat((Object) twoAndHalf.window(-64, 43)).isEqualTo(BitString.of(
+                "0000000000000000000000000000000000000000000000000000000000000000" +
+                "1101001111001000101011010111010100101011101"));
+        assertThat((Object) twoAndHalf.window(-64, 64)).isEqualTo(BitString.of(
+                "0000000000000000000000000000000000000000000000000000000000000000" +
+                "1101001111001000101011010111010100101011101101011101010110101111"));
+        assertThat((Object) twoAndHalf.window(-64, 72)).isEqualTo(BitString.of(
+                "0000000000000000000000000000000000000000000000000000000000000000" +
+                "1101001111001000101011010111010100101011101101011101010110101111" +
+                "01100111"));
+        assertThat((Object) twoAndHalf.window(-64, 128)).isEqualTo(BitString.of(
+                "0000000000000000000000000000000000000000000000000000000000000000" +
+                "1101001111001000101011010111010100101011101101011101010110101111" +
+                "0110011101011011010001001101011101000101011101011001111000101010"));
+        assertThat((Object) twoAndHalf.window(-64, 140)).isEqualTo(BitString.of(
+                "0000000000000000000000000000000000000000000000000000000000000000" +
+                "1101001111001000101011010111010100101011101101011101010110101111" +
+                "0110011101011011010001001101011101000101011101011001111000101010" +
+                "011100010101"));
+        assertThat((Object) twoAndHalf.window(-64, 160)).isEqualTo(BitString.of(
+                "0000000000000000000000000000000000000000000000000000000000000000" +
+                "1101001111001000101011010111010100101011101101011101010110101111" +
+                "0110011101011011010001001101011101000101011101011001111000101010" +
+                "01110001010110011110001101101110"));
+        assertThat((Object) twoAndHalf.window(-64, 179)).isEqualTo(BitString.of(
+                "0000000000000000000000000000000000000000000000000000000000000000" +
+                "1101001111001000101011010111010100101011101101011101010110101111" +
+                "0110011101011011010001001101011101000101011101011001111000101010" +
+                "011100010101100111100011011011100000000000000000000"));
+        assertThat((Object) twoAndHalf.window(-64, 192)).isEqualTo(BitString.of(
+                "0000000000000000000000000000000000000000000000000000000000000000" +
+                "1101001111001000101011010111010100101011101101011101010110101111" +
+                "0110011101011011010001001101011101000101011101011001111000101010" +
+                "0111000101011001111000110110111000000000000000000000000000000000"));
+        assertThat((Object) twoAndHalf.window(-64, 218)).isEqualTo(BitString.of(
+                "0000000000000000000000000000000000000000000000000000000000000000" +
+                "1101001111001000101011010111010100101011101101011101010110101111" +
+                "0110011101011011010001001101011101000101011101011001111000101010" +
+                "0111000101011001111000110110111000000000000000000000000000000000" +
+                "00000000000000000000000000"));
+    }
+
+    @Test
+    void testWindowUnshiftedFromZero() {
+        assertThat((Object) BitString.of("10011").window(0, 3)).isEqualTo(BitString.of("100"));
+        assertThat((Object) BitString.of("10011").window(0, 14)).isEqualTo(BitString.of("10011000000000"));
+        assertThat((Object) BitString.of("10011").window(0, 71)).isEqualTo(BitString.of(
+                "1001100000000000000000000000000000000000000000000000000000000000" +
+                "0000000"));
+        BitString twoAndHalf = BitString.of(
+                "1101001111001000101011010111010100101011101101011101010110101111" +
+                "0110011101011011010001001101011101000101011101011001111000101010" +
+                "01110001010110011110001101101110");
+        assertThat((Object) twoAndHalf.window(0, 43)).isEqualTo(BitString.of(
+                "1101001111001000101011010111010100101011101"));
+        assertThat((Object) twoAndHalf.window(0, 64)).isEqualTo(BitString.of(
+                "1101001111001000101011010111010100101011101101011101010110101111"));
+        assertThat((Object) twoAndHalf.window(0, 72)).isEqualTo(BitString.of(
+                "1101001111001000101011010111010100101011101101011101010110101111" +
+                "01100111"));
+        assertThat((Object) twoAndHalf.window(0, 128)).isEqualTo(BitString.of(
+                "1101001111001000101011010111010100101011101101011101010110101111" +
+                "0110011101011011010001001101011101000101011101011001111000101010"));
+        assertThat((Object) twoAndHalf.window(0, 140)).isEqualTo(BitString.of(
+                "1101001111001000101011010111010100101011101101011101010110101111" +
+                "0110011101011011010001001101011101000101011101011001111000101010" +
+                "011100010101"));
+        assertThat((Object) twoAndHalf.window(0, 160)).isEqualTo(BitString.of(
+                "1101001111001000101011010111010100101011101101011101010110101111" +
+                "0110011101011011010001001101011101000101011101011001111000101010" +
+                "01110001010110011110001101101110"));
+        assertThat((Object) twoAndHalf.window(0, 179)).isEqualTo(BitString.of(
+                "1101001111001000101011010111010100101011101101011101010110101111" +
+                "0110011101011011010001001101011101000101011101011001111000101010" +
+                "011100010101100111100011011011100000000000000000000"));
+        assertThat((Object) twoAndHalf.window(0, 192)).isEqualTo(BitString.of(
+                "1101001111001000101011010111010100101011101101011101010110101111" +
+                "0110011101011011010001001101011101000101011101011001111000101010" +
+                "0111000101011001111000110110111000000000000000000000000000000000"));
+        assertThat((Object) twoAndHalf.window(0, 218)).isEqualTo(BitString.of(
+                "1101001111001000101011010111010100101011101101011101010110101111" +
+                "0110011101011011010001001101011101000101011101011001111000101010" +
+                "0111000101011001111000110110111000000000000000000000000000000000" +
+                "00000000000000000000000000"));
+    }
+
+    @Test
+    void testWindowUnshiftedFromInner() {
+        BitString twoAndHalf = BitString.of(
+                "1101001111001000101011010111010100101011101101011101010110101111" +
+                "0110011101011011010001001101011101000101011101011001111000101010" +
+                "01110001010110011110001101101110");
+        assertThat((Object) twoAndHalf.window(64, 64)).isEqualTo(BitString.empty());
+        assertThat((Object) twoAndHalf.window(64, 72)).isEqualTo(BitString.of("01100111"));
+        assertThat((Object) twoAndHalf.window(64, 128)).isEqualTo(BitString.of(
+                "0110011101011011010001001101011101000101011101011001111000101010"));
+        assertThat((Object) twoAndHalf.window(64, 140)).isEqualTo(BitString.of(
+                "0110011101011011010001001101011101000101011101011001111000101010" +
+                "011100010101"));
+        assertThat((Object) twoAndHalf.window(64, 160)).isEqualTo(BitString.of(
+                "0110011101011011010001001101011101000101011101011001111000101010" +
+                "01110001010110011110001101101110"));
+        assertThat((Object) twoAndHalf.window(64, 179)).isEqualTo(BitString.of(
+                "0110011101011011010001001101011101000101011101011001111000101010" +
+                "011100010101100111100011011011100000000000000000000"));
+        assertThat((Object) twoAndHalf.window(64, 192)).isEqualTo(BitString.of(
+                "0110011101011011010001001101011101000101011101011001111000101010" +
+                "0111000101011001111000110110111000000000000000000000000000000000"));
+        assertThat((Object) twoAndHalf.window(64, 218)).isEqualTo(BitString.of(
+                "0110011101011011010001001101011101000101011101011001111000101010" +
+                "0111000101011001111000110110111000000000000000000000000000000000" +
+                "00000000000000000000000000"));
+    }
+
+    @Test
+    void testWindowUnshiftedFromTail() {
+        BitString twoAndHalf = BitString.of(
+                "1101001111001000101011010111010100101011101101011101010110101111" +
+                "0110011101011011010001001101011101000101011101011001111000101010" +
+                "01110001010110011110001101101110");
+        assertThat((Object) twoAndHalf.window(128, 128)).isEqualTo(BitString.empty());
+        assertThat((Object) twoAndHalf.window(128, 140)).isEqualTo(BitString.of("011100010101"));
+        assertThat((Object) twoAndHalf.window(128, 160)).isEqualTo(BitString.of(
+                "01110001010110011110001101101110"));
+        assertThat((Object) twoAndHalf.window(128, 179)).isEqualTo(BitString.of(
+                "011100010101100111100011011011100000000000000000000"));
+        assertThat((Object) twoAndHalf.window(128, 192)).isEqualTo(BitString.of(
+                "0111000101011001111000110110111000000000000000000000000000000000"));
+        assertThat((Object) twoAndHalf.window(128, 218)).isEqualTo(BitString.of(
+                "0111000101011001111000110110111000000000000000000000000000000000" +
+                "00000000000000000000000000"));
+    }
+
+    @Test
+    void testWindowShifted() {
+        // TODO
+    }
+
+    @Test
+    void testWindowIllegal() {
+        BitString bitString = BitString.of("10011");
+        assertThatThrownBy(() -> bitString.window(3, 2)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
     void testPadLeft() {
         assertThat((Object) BitString.empty().padLeft(0)).isEqualTo(BitString.empty());
         assertThat((Object) BitString.empty().padLeft(1)).isEqualTo(BitString.of("0"));

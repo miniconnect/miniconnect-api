@@ -436,6 +436,48 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         return new BitString(resultData, resultSize);
     }
 
+    public BitString window(int from, int until) {
+        if (from > until) {
+            throw new IllegalArgumentException("Invalid substring");
+        } else if (from == until) {
+            return EMPTY;
+        }
+        int resultSize = until - from;
+        int resultDataSize = (resultSize + 63) >>> 6;
+        long[] resultData = new long[resultDataSize];
+        if (resultDataSize == 0 || until <= 0 || from >= size) {
+            return new BitString(resultData, resultSize);
+        }
+        int shift = from & 63;
+        if (shift == 0) {
+            int fromWordIndex = from >> 6;
+            int sourceStartWordIndex = Math.max(0, fromWordIndex);
+            int targetStartWordIndex = Math.max(0, -fromWordIndex);
+            int effectiveUntil = Math.min(size, until);
+            int effectiveUntilWholeWordIndex = effectiveUntil >>> 6;
+            int copyWholeWordCount = effectiveUntilWholeWordIndex - sourceStartWordIndex;
+            if (copyWholeWordCount > 0) {
+                System.arraycopy(data, sourceStartWordIndex, resultData, targetStartWordIndex, copyWholeWordCount);
+            }
+            int effectiveTailSize = effectiveUntil & 63;
+            if (effectiveTailSize != 0) {
+                int resultTailWordIndex = (effectiveUntil - from) >>> 6;
+                if (until < size) {
+                    long tailMask = -1L << (64 - effectiveTailSize);
+                    resultData[resultTailWordIndex] = data[effectiveUntilWholeWordIndex] & tailMask;
+                } else {
+                    resultData[resultTailWordIndex] = data[effectiveUntilWholeWordIndex];
+                }
+            }
+            return new BitString(resultData, resultSize);
+        } else {
+
+            // TODO
+            throw new UnsupportedOperationException("Shifted window operation is not implemented yet");
+
+        }
+    }
+
     public BitString padLeft(int minSize) {
         if (minSize <= size) {
             return this;
