@@ -442,10 +442,13 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         } else if (from == until) {
             return EMPTY;
         }
+        if (until == from) {
+            return new BitString(new long[0], 0);
+        }
         int resultSize = until - from;
         int resultDataSize = (resultSize + 63) >>> 6;
         long[] resultData = new long[resultDataSize];
-        if (resultDataSize == 0 || until <= 0 || from >= size) {
+        if (size == 0 || until <= 0 || from >= size) {
             return new BitString(resultData, resultSize);
         }
         int shift = from & 63;
@@ -469,13 +472,43 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
                     resultData[resultTailWordIndex] = data[effectiveUntilWholeWordIndex];
                 }
             }
-            return new BitString(resultData, resultSize);
         } else {
-
-            // TODO
-            throw new UnsupportedOperationException("Shifted window operation is not implemented yet");
-
+            int fromWordIndex = from >> 6;
+            int sourceStartWordIndex = Math.max(0, fromWordIndex);
+            int targetStartWordIndex = Math.max(0, -fromWordIndex);
+            if (targetStartWordIndex > 0) {
+                targetStartWordIndex--;
+            }
+            int effectiveUntil = Math.min(size, until);
+            int effectiveTargetUntil = effectiveUntil - from;
+            int resultEndFilledWordCount = effectiveTargetUntil >>> 6;
+            int prefixSize = 64 - shift;
+            long wordPrefix = from >= 0 ? data[sourceStartWordIndex] << shift : 0L;
+            int dataIndex = sourceStartWordIndex;
+            for (int i = targetStartWordIndex; i < resultEndFilledWordCount; i++) {
+                long dataWord = data[dataIndex];
+                long wordSuffix = dataWord >>> prefixSize;
+                long word = wordPrefix | wordSuffix;
+                resultData[i] = word;
+                wordPrefix = dataWord << shift;
+                dataIndex++;
+            }
+            int effectiveTargetTail = effectiveTargetUntil & 63;
+            if (effectiveTargetTail != 0) {
+                long word = wordPrefix;
+                if (effectiveTargetTail < prefixSize) {
+                    long mask = -1L << (64 - effectiveTargetTail);
+                    word &= mask;
+                } else if (effectiveTargetTail != prefixSize && dataIndex < data.length) {
+                    long dataWord = data[dataIndex];
+                    long wordSuffix = dataWord >>> prefixSize;
+                    long mask = -1L << (64 - effectiveTargetTail);
+                    word = (word | wordSuffix) & mask;
+                }
+                resultData[resultEndFilledWordCount] = word;
+            }
         }
+        return new BitString(resultData, resultSize);
     }
 
     public BitString padLeft(int minSize) {
@@ -493,10 +526,11 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
             int prefixSize = padSize & 63;
             int suffixSize = 64 - prefixSize;
             for (int i = 0; i < data.length; i++) {
-                long wordSuffix = data[i] >>> prefixSize;
+                long dataWord = data[i];
+                long wordSuffix = dataWord >>> prefixSize;
                 long word = wordPrefix | wordSuffix;
                 newData[firstFilledResultWordIndex + i] = word;
-                wordPrefix = data[i] << suffixSize;
+                wordPrefix = dataWord << suffixSize;
             }
             int tailSize = size & 63;
             if (prefixSize + tailSize > 64) {
