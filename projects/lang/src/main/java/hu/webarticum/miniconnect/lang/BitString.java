@@ -473,17 +473,13 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
                 }
             }
         } else {
-            int fromWordIndex = from >> 6;
-            int sourceStartWordIndex = Math.max(0, fromWordIndex);
-            int targetStartWordIndex = Math.max(0, -fromWordIndex);
-            if (targetStartWordIndex > 0) {
-                targetStartWordIndex--;
-            }
+            int sourceStartWordIndex = Math.max(0, (from + 63) >> 6);
+            int targetStartWordIndex = Math.max(0, -1 - (from >> 6));
             int effectiveUntil = Math.min(size, until);
             int effectiveTargetUntil = effectiveUntil - from;
             int resultEndFilledWordCount = effectiveTargetUntil >>> 6;
             int prefixSize = 64 - shift;
-            long wordPrefix = from >= 0 ? data[sourceStartWordIndex] << shift : 0L;
+            long wordPrefix = sourceStartWordIndex > 0 ? data[sourceStartWordIndex - 1] << shift : 0L;
             int dataIndex = sourceStartWordIndex;
             for (int i = targetStartWordIndex; i < resultEndFilledWordCount; i++) {
                 long dataWord = data[dataIndex];
