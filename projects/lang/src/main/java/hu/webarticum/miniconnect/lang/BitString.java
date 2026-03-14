@@ -1,6 +1,7 @@
 package hu.webarticum.miniconnect.lang;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -456,19 +457,19 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
             int sourceStartWordIndex = Math.max(0, fromWordIndex);
             int targetStartWordIndex = Math.max(0, -fromWordIndex);
             int effectiveUntil = Math.min(size, until);
-            int effectiveUntilWholeWordIndex = effectiveUntil >>> 6;
-            int copyWholeWordCount = effectiveUntilWholeWordIndex - sourceStartWordIndex;
-            if (copyWholeWordCount > 0) {
-                System.arraycopy(data, sourceStartWordIndex, resultData, targetStartWordIndex, copyWholeWordCount);
+            int effectiveUntilFullWordIndex = effectiveUntil >>> 6;
+            int copyFullWordCount = effectiveUntilFullWordIndex - sourceStartWordIndex;
+            if (copyFullWordCount > 0) {
+                System.arraycopy(data, sourceStartWordIndex, resultData, targetStartWordIndex, copyFullWordCount);
             }
             int effectiveTailSize = effectiveUntil & 63;
             if (effectiveTailSize != 0) {
                 int resultTailWordIndex = (effectiveUntil - from) >>> 6;
                 if (until < size) {
                     long tailMask = -1L << (64 - effectiveTailSize);
-                    resultData[resultTailWordIndex] = data[effectiveUntilWholeWordIndex] & tailMask;
+                    resultData[resultTailWordIndex] = data[effectiveUntilFullWordIndex] & tailMask;
                 } else {
-                    resultData[resultTailWordIndex] = data[effectiveUntilWholeWordIndex];
+                    resultData[resultTailWordIndex] = data[effectiveUntilFullWordIndex];
                 }
             }
         } else {
@@ -582,6 +583,70 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         }
         word |= data[data.length - 2] << tailSize;
         return word;
+    }
+
+    public byte[] toByteArrayLeftAligned() {
+        int byteCount = (size + 7) >>> 3;
+        byte[] result = new byte[byteCount];
+        int fullWordCount = size >>> 6;
+        for (int i = 0; i < fullWordCount; i++) {
+            long word = data[i];
+            int fromByteIndex = i << 3;
+            for (int j = 0; j < 8; j++) {
+                int byteIndex = fromByteIndex + j;
+                int shift = 56 - (j << 3);
+                result[byteIndex] = (byte) ((word >>> shift) & 255);
+            }
+        }
+        int tailByteCount = byteCount & 7;
+        if (tailByteCount > 0) {
+            long word = data[fullWordCount];
+            int fromByteIndex = fullWordCount << 3;
+            for (int i = 0; i < tailByteCount; i++) {
+                int byteIndex = fromByteIndex + i;
+                int shift = 56 - (i << 3);
+                result[byteIndex] = (byte) ((word >>> shift) & 255);
+            }
+        }
+        return result;
+    }
+
+    public byte[] toByteArrayRightAligned() {
+        int byteTailSize = size & 7;
+        if (byteTailSize == 0) {
+            return toByteArrayLeftAligned();
+        }
+        int byteCount = (size + 7) >>> 3;
+        byte[] result = new byte[byteCount];
+        int fullWordCount = byteCount >>> 3;
+        byte bytePrefix = 0;
+        for (int i = 0; i < fullWordCount; i++) {
+            long word = data[i];
+            int fromByteIndex = i << 3;
+            result[fromByteIndex] = (byte) ((word >>> (64 - byteTailSize)) | bytePrefix);
+            for (int j = 1; j < 8; j++) {
+                int byteIndex = fromByteIndex + j;
+                int shift = 64 - byteTailSize - (j << 3);
+                result[byteIndex] = (byte) ((word >>> shift) & 255);
+            }
+            bytePrefix = (byte) (word << byteTailSize);
+        }
+        int tailByteCount = byteCount & 7;
+        if (tailByteCount > 0) {
+            long word = data[fullWordCount];
+            int fromByteIndex = fullWordCount << 3;
+            result[fromByteIndex] = (byte) ((word >>> (64 - byteTailSize)) | bytePrefix);
+            for (int i = 1; i < tailByteCount; i++) {
+                int byteIndex = fromByteIndex + i;
+                int shift = 64 - byteTailSize - (i << 3);
+                result[byteIndex] = (byte) ((word >>> shift) & 255);
+            }
+        }
+        return result;
+    }
+
+    public BigInteger toUnsignedBigInteger() {
+        return new BigInteger(1, toByteArrayRightAligned());
     }
 
 

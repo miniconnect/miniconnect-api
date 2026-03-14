@@ -913,4 +913,98 @@ class BitStringTest {
                 7362656064861449899L);
     }
 
+    @Test
+    void testToByteArrayLeftAligned() {
+        assertThat(BitString.empty().toByteArrayLeftAligned()).isEmpty();
+        assertThat(BitString.of("0").toByteArrayLeftAligned()).containsExactly(0);
+        assertThat(BitString.of("000").toByteArrayLeftAligned()).containsExactly(0);
+        assertThat(BitString.of("00000000").toByteArrayLeftAligned()).containsExactly(0);
+        assertThat(BitString.of("0000000000").toByteArrayLeftAligned()).containsExactly(0, 0);
+        assertThat(BitString.of("0000000000000000").toByteArrayLeftAligned()).containsExactly(0, 0);
+        assertThat(BitString.of("00000000000000000").toByteArrayLeftAligned()).containsExactly(0, 0, 0);
+        assertThat(BitString.of("1").toByteArrayLeftAligned()).containsExactly(128);
+        assertThat(BitString.of("10").toByteArrayLeftAligned()).containsExactly(128);
+        assertThat(BitString.of("10000").toByteArrayLeftAligned()).containsExactly(128);
+        assertThat(BitString.of("10000000").toByteArrayLeftAligned()).containsExactly(128);
+        assertThat(BitString.of("1000000000").toByteArrayLeftAligned()).containsExactly(128, 0);
+        assertThat(BitString.of("1000000000000000").toByteArrayLeftAligned()).containsExactly(128, 0);
+        assertThat(BitString.of("1000000000000000000").toByteArrayLeftAligned()).containsExactly(128, 0, 0);
+        assertThat(BitString.of("11").toByteArrayLeftAligned()).containsExactly(192);
+        assertThat(BitString.of("1011").toByteArrayLeftAligned()).containsExactly(176);
+        assertThat(BitString.of("10011011").toByteArrayLeftAligned()).containsExactly(155);
+        assertThat(BitString.of("11011100010110").toByteArrayLeftAligned()).containsExactly(220, 88);
+        assertThat(BitString.of("1011000101110110").toByteArrayLeftAligned()).containsExactly(177, 118);
+        assertThat(BitString.of("1011011011101001101").toByteArrayLeftAligned()).containsExactly(182, 233, 160);
+        assertThat(BitString.of("011").toByteArrayLeftAligned()).containsExactly(96);
+        assertThat(BitString.of("00010100000011").toByteArrayLeftAligned()).containsExactly(20, 12);
+        assertThat(BitString.of("0011011001000100011000").toByteArrayLeftAligned()).containsExactly(54, 68, 96);
+        assertThat(BitString.of(
+                "1011001011101001100111010100011101011011010100011101010111010101" +
+                "1101010110101000111010101101001001000111010100010101011110101011" +
+                "101010").toByteArrayLeftAligned()).containsExactly(
+                178, 233, 157, 71, 91, 81, 213, 213, 213, 168, 234, 210, 71, 81, 87, 171, 168);
+    }
+
+    @Test
+    void testToByteArrayRightAligned() {
+        assertThat(BitString.empty().toByteArrayRightAligned()).isEmpty();
+        assertThat(BitString.of("0").toByteArrayRightAligned()).containsExactly(0);
+        assertThat(BitString.of("000").toByteArrayRightAligned()).containsExactly(0);
+        assertThat(BitString.of("00000000").toByteArrayRightAligned()).containsExactly(0);
+        assertThat(BitString.of("0000000000").toByteArrayRightAligned()).containsExactly(0, 0);
+        assertThat(BitString.of("0000000000000000").toByteArrayRightAligned()).containsExactly(0, 0);
+        assertThat(BitString.of("00000000000000000").toByteArrayRightAligned()).containsExactly(0, 0, 0);
+        assertThat(BitString.of("1").toByteArrayRightAligned()).containsExactly(1);
+        assertThat(BitString.of("10").toByteArrayRightAligned()).containsExactly(2);
+        assertThat(BitString.of("10000").toByteArrayRightAligned()).containsExactly(16);
+        assertThat(BitString.of("10000000").toByteArrayRightAligned()).containsExactly(128);
+        assertThat(BitString.of("1000000000").toByteArrayRightAligned()).containsExactly(2, 0);
+        assertThat(BitString.of("1000000000000000").toByteArrayRightAligned()).containsExactly(128, 0);
+        assertThat(BitString.of("1000000000000000000").toByteArrayRightAligned()).containsExactly(4, 0, 0);
+        assertThat(BitString.of("11").toByteArrayRightAligned()).containsExactly(3);
+        assertThat(BitString.of("1011").toByteArrayRightAligned()).containsExactly(11);
+        assertThat(BitString.of("10011011").toByteArrayRightAligned()).containsExactly(155);
+        assertThat(BitString.of("11011100010110").toByteArrayRightAligned()).containsExactly(55, 22);
+        assertThat(BitString.of("1011000101110110").toByteArrayRightAligned()).containsExactly(177, 118);
+        assertThat(BitString.of("1011011011101001101").toByteArrayRightAligned()).containsExactly(5, 183, 77);
+        assertThat(BitString.of("011").toByteArrayRightAligned()).containsExactly(3);
+        assertThat(BitString.of("00010100000011").toByteArrayRightAligned()).containsExactly(5, 3);
+        assertThat(BitString.of("0011011001000100011000").toByteArrayRightAligned()).containsExactly(13, 145, 24);
+        assertThat(BitString.of(
+                "1011001011101001100111010100011101011011010100011101010111010101" +
+                "1101010110101000111010101101001001000111010100010101011110101011" +
+                "101010").toByteArrayRightAligned()).containsExactly(
+                44, -70, 103, 81, -42, -44, 117, 117, 117, 106, 58, -76, -111, -44, 85, -22, -22);
+    }
+
+    @Test
+    void testToUnsignedBigInteger() {
+        assertThat(BitString.empty().toUnsignedBigInteger()).isZero();
+        assertThat(BitString.of("0").toUnsignedBigInteger()).isZero();
+        assertThat(BitString.of("000").toUnsignedBigInteger()).isZero();
+        assertThat(BitString.of("00000000").toUnsignedBigInteger()).isZero();
+        assertThat(BitString.of("0000000000").toUnsignedBigInteger()).isZero();
+        assertThat(BitString.of("0000000000000000").toUnsignedBigInteger()).isZero();
+        assertThat(BitString.of("00000000000000000").toUnsignedBigInteger()).isZero();
+        assertThat(BitString.of("1").toUnsignedBigInteger()).isEqualTo(1);
+        assertThat(BitString.of("10").toUnsignedBigInteger()).isEqualTo(2);
+        assertThat(BitString.of("10000").toUnsignedBigInteger()).isEqualTo(16);
+        assertThat(BitString.of("10000000").toUnsignedBigInteger()).isEqualTo(128);
+        assertThat(BitString.of("1000000000").toUnsignedBigInteger()).isEqualTo(512);
+        assertThat(BitString.of("1000000000000000").toUnsignedBigInteger()).isEqualTo(32768);
+        assertThat(BitString.of("1000000000000000000").toUnsignedBigInteger()).isEqualTo(262144);
+        assertThat(BitString.of("11").toUnsignedBigInteger()).isEqualTo(3);
+        assertThat(BitString.of("1011").toUnsignedBigInteger()).isEqualTo(11);
+        assertThat(BitString.of("10011011").toUnsignedBigInteger()).isEqualTo(155);
+        assertThat(BitString.of("11011100010110").toUnsignedBigInteger()).isEqualTo(14102);
+        assertThat(BitString.of("1011000101110110").toUnsignedBigInteger()).isEqualTo(45430);
+        assertThat(BitString.of("1011011011101001101").toUnsignedBigInteger()).isEqualTo(374605);
+        assertThat(BitString.of("011").toUnsignedBigInteger()).isEqualTo(3);
+        assertThat(BitString.of("00010100000011").toUnsignedBigInteger()).isEqualTo(1283);
+        assertThat(BitString.of("0011011001000100011000").toUnsignedBigInteger()).isEqualTo(889112);
+        assertThat(BitString.of(
+                "1011001011101001100111010100011101011011010100011101010111010101" +
+                "1101010110101000111010101101001001000111010100010101011110101011" +
+                "101010").toUnsignedBigInteger()).isEqualTo("15220197018209473326918024313688311589610");
+    }
 }
