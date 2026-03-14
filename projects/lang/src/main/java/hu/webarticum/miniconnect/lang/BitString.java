@@ -571,6 +571,19 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         }
     }
 
+    public long toLong() {
+        if (size == 0) {
+            return 0L;
+        }
+        int tailSize = size & 63;
+        long word = data[data.length - 1] >>> (64 - tailSize);
+        if (data.length == 1) {
+            return word;
+        }
+        word |= data[data.length - 2] << tailSize;
+        return word;
+    }
+
 
     private class BitStringIterator implements Iterator<Boolean> {
 

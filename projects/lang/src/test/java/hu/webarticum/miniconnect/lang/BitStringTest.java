@@ -867,4 +867,50 @@ class BitStringTest {
         assertThatThrownBy(() -> BitString.empty().resize(-1)).isInstanceOf(IllegalArgumentException.class);
     }
 
+    @Test
+    void testToLong() {
+        assertThat(BitString.empty().toLong()).isZero();
+        assertThat(BitString.of("0").toLong()).isZero();
+        assertThat(BitString.of("00").toLong()).isZero();
+        assertThat(BitString.of("000").toLong()).isZero();
+        assertThat(BitString.of("000000000000").toLong()).isZero();
+        assertThat(BitString.of(
+                "0000000000000000000000000000000000000000000000000000000000000000").toLong()).isZero();
+        assertThat(BitString.of(
+                "0000000000000000000000000000000000000000000000000000000000000000" +
+                "0000000000000000000000000").toLong()).isZero();
+        assertThat(BitString.of("1").toLong()).isOne();
+        assertThat(BitString.of("01").toLong()).isOne();
+        assertThat(BitString.of("001").toLong()).isOne();
+        assertThat(BitString.of("000000000000001").toLong()).isOne();
+        assertThat(BitString.of(
+                "0000000000000000000000000000000000000000000000000000000000000001").toLong()).isOne();
+        assertThat(BitString.of(
+                "0000000000000000000000000000000000000000000000000000000000000000" +
+                "0000000000000000000000001").toLong()).isOne();
+        assertThat(BitString.of("10").toLong()).isEqualTo(2);
+        assertThat(BitString.of("100").toLong()).isEqualTo(4);
+        assertThat(BitString.of("1000").toLong()).isEqualTo(8);
+        assertThat(BitString.of("1000000000").toLong()).isEqualTo(512);
+        assertThat(BitString.of(
+                "1000000000000000000000000000000000000000000000000000000000000000").toLong()).isEqualTo(
+                -9223372036854775808L);
+        assertThat(BitString.of(
+                "1000000000000000000000000000000000000000000000000000000000000000" +
+                "000000000000000000").toLong()).isZero();
+        assertThat(BitString.of("1011").toLong()).isEqualTo(11);
+        assertThat(BitString.of("100111010").toLong()).isEqualTo(314);
+        assertThat(BitString.of("000111011010001011101000110101110100").toLong()).isEqualTo(7955451252L);
+        assertThat(BitString.of(
+                "1101011101011011101010010100101101111001110100101011101000100110").toLong()).isEqualTo(
+                -2928560991042880986L);
+        assertThat(BitString.of(
+                "1000000000000000000000000000000000000000000000000000000000000000" +
+                "0000000001101001101").toLong()).isEqualTo(845);
+        assertThat(BitString.of(
+                "0111011110101000101110110101100110001011010110100010101110100101" +
+                "01011100010010111010101011").toLong()).isEqualTo(
+                7362656064861449899L);
+    }
+
 }
