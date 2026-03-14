@@ -57,6 +57,7 @@ public class ByteStringAssert // NOSONAR equals
         byteArrayAssert.contains(values);
         return myself;
     }
+
     public ByteStringAssert contains(ByteString values) {
         byteArrayAssert.contains(values.extract());
         return myself;
