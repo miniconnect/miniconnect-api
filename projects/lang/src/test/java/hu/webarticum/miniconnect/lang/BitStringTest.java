@@ -914,6 +914,83 @@ class BitStringTest {
     }
 
     @Test
+    void testToBooleanArray() {
+        assertThat(BitString.empty().toBooleanArray()).isEmpty();
+        assertThat(BitString.of("0").toBooleanArray()).containsExactly(false);
+        assertThat(BitString.of("000").toBooleanArray()).containsExactly(false, false, false);
+        assertThat(BitString.of("00000000").toBooleanArray()).containsExactly(
+                false, false, false, false, false, false, false, false);
+        assertThat(BitString.of("0000000000").toBooleanArray()).containsExactly(
+                false, false, false, false, false, false, false, false,
+                false, false);
+        assertThat(BitString.of("0000000000000000").toBooleanArray()).containsExactly(
+                false, false, false, false, false, false, false, false,
+                false, false, false, false, false, false, false, false);
+        assertThat(BitString.of("00000000000000000").toBooleanArray()).containsExactly(
+                false, false, false, false, false, false, false, false,
+                false, false, false, false, false, false, false, false,
+                false);
+        assertThat(BitString.of("1").toBooleanArray()).containsExactly(true);
+        assertThat(BitString.of("10").toBooleanArray()).containsExactly(true, false);
+        assertThat(BitString.of("10000").toBooleanArray()).containsExactly(true, false, false, false, false);
+        assertThat(BitString.of("10000000").toBooleanArray()).containsExactly(
+                true, false, false, false, false, false, false, false);
+        assertThat(BitString.of("1000000000").toBooleanArray()).containsExactly(
+                true, false, false, false, false, false, false, false,
+                false, false);
+        assertThat(BitString.of("1000000000000000").toBooleanArray()).containsExactly(
+                true, false, false, false, false, false, false, false,
+                false, false, false, false, false, false, false, false);
+        assertThat(BitString.of("1000000000000000000").toBooleanArray()).containsExactly(
+                true, false, false, false, false, false, false, false,
+                false, false, false, false, false, false, false, false,
+                false, false, false);
+        assertThat(BitString.of("11").toBooleanArray()).containsExactly(true, true);
+        assertThat(BitString.of("1011").toBooleanArray()).containsExactly(true, false, true, true);
+        assertThat(BitString.of("10011011").toBooleanArray()).containsExactly(
+                true, false, false, true, true, false, true, true);
+        assertThat(BitString.of("11011100010110").toBooleanArray()).containsExactly(
+                true, true, false, true, true, true, false, false,
+                false, true, false, true, true, false);
+        assertThat(BitString.of("1011000101110110").toBooleanArray()).containsExactly(
+                true, false, true, true, false, false, false, true,
+                false, true, true, true, false, true, true, false);
+        assertThat(BitString.of("1011011011101001101").toBooleanArray()).containsExactly(
+                true, false, true, true, false, true, true, false,
+                true, true, true, false, true, false, false, true,
+                true, false, true);
+        assertThat(BitString.of("011").toBooleanArray()).containsExactly(false, true, true);
+        assertThat(BitString.of("00010100000011").toBooleanArray()).containsExactly(
+                false, false, false, true, false, true, false, false,
+                false, false, false, false, true, true);
+        assertThat(BitString.of("0011011001000100011000").toBooleanArray()).containsExactly(
+                false, false, true, true, false, true, true, false,
+                false, true, false, false, false, true, false, false,
+                false, true, true, false, false, false);
+        assertThat(BitString.of(
+                "1011001011101001100111010100011101011011010100011101010111010101" +
+                "1101010110101000111010101101001001000111010100010101011110101011" +
+                "101010").toBooleanArray()).containsExactly(
+                true, false, true, true, false, false, true, false,
+                true, true, true, false, true, false, false, true,
+                true, false, false, true, true, true, false, true,
+                false, true, false, false, false, true, true, true,
+                false, true, false, true, true, false, true, true,
+                false, true, false, true, false, false, false, true,
+                true, true, false, true, false, true, false, true,
+                true, true, false, true, false, true, false, true,
+                true, true, false, true, false, true, false, true,
+                true, false, true, false, true, false, false, false,
+                true, true, true, false, true, false, true, false,
+                true, true, false, true, false, false, true, false,
+                false, true, false, false, false, true, true, true,
+                false, true, false, true, false, false, false, true,
+                false, true, false, true, false, true, true, true,
+                true, false, true, false, true, false, true, true,
+                true, false, true, false, true, false);
+    }
+
+    @Test
     void testToByteArrayLeftAligned() {
         assertThat(BitString.empty().toByteArrayLeftAligned()).isEmpty();
         assertThat(BitString.of("0").toByteArrayLeftAligned()).containsExactly(0);

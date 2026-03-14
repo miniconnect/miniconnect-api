@@ -585,6 +585,34 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         return word;
     }
 
+    public boolean[] toBooleanArray() {
+        boolean[] result = new boolean[size];
+        int fullWordSize = size >>> 6;
+        long mask = -9223372036854775808L;
+        for (int i = 0; i < fullWordSize; i++) {
+            long word = data[i];
+            int startBitIndex = i << 6;
+            result[startBitIndex] = (word & mask) != 0;
+            for (int j = 1; j < 64; j++) {
+                word <<= 1;
+                int bitIndex = startBitIndex + j;
+                result[bitIndex] = (word & mask) != 0;
+            }
+        }
+        int tailSize = size & 63;
+        if (tailSize != 0) {
+            long word = data[fullWordSize];
+            int startBitIndex = fullWordSize << 6;
+            result[startBitIndex] = (word & mask) != 0;
+            for (int i = 1; i < tailSize; i++) {
+                word <<= 1;
+                int bitIndex = startBitIndex + i;
+                result[bitIndex] = (word & mask) != 0;
+            }
+        }
+        return result;
+    }
+
     public byte[] toByteArrayLeftAligned() {
         int byteCount = (size + 7) >>> 3;
         byte[] result = new byte[byteCount];
