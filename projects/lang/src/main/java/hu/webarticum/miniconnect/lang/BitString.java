@@ -422,6 +422,8 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
             throw new IllegalArgumentException("Invalid substring");
         } else if (from == until) {
             return EMPTY;
+        } else if (from == 0 && until == size) {
+            return this;
         }
         int resultSize = until - from;
         int resultDataSize = (resultSize + 63) >>> 6;
@@ -469,9 +471,8 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
             throw new IllegalArgumentException("Invalid substring");
         } else if (from == until) {
             return EMPTY;
-        }
-        if (until == from) {
-            return new BitString(new long[0], 0);
+        } else if (from == 0 && until == size) {
+            return this;
         }
         int resultSize = until - from;
         int resultDataSize = (resultSize + 63) >>> 6;
