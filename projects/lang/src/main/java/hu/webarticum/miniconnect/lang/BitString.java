@@ -536,6 +536,53 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         return new BitString(resultData, resultSize);
     }
 
+    public BitString shiftRight(int shift) {
+        if (size == 0 || shift == 0) {
+            return this;
+        } else if (shift < 0 || shift >= size) {
+            return new BitString(new long[data.length], size);
+        } else if (data.length == 1) {
+            long mask = -1L << (64 - size);
+            long resultWord = (data[0] >>> shift) & mask;
+            return new BitString(new long[] { resultWord }, size);
+        }
+        long[] resultData = new long[data.length];
+        int shiftWordCount = shift >>> 6;
+        int inWordShift = shift & 63;
+        int tailSize = size & 63;
+        if (inWordShift == 0) {
+            int copyWordCount = data.length - shiftWordCount;
+            System.arraycopy(data, 0, resultData, shiftWordCount, copyWordCount);
+            if (tailSize != 0) {
+                int lastWordIndex = data.length - 1;
+                long mask = -1L << (64 - tailSize);
+                resultData[lastWordIndex] = resultData[lastWordIndex] & mask;
+            }
+        } else {
+            int fullWordCount = size >>> 6;
+            int commonEndFilledWordCount = fullWordCount - shiftWordCount;
+            int prefixSize = 64 - inWordShift;
+            long wordPrefix = 0;
+            for (int i = 0; i < commonEndFilledWordCount; i++) {
+                long dataWord = data[i];
+                long wordSuffix = dataWord >>> inWordShift;
+                resultData[i + shiftWordCount] = wordPrefix | wordSuffix;
+                wordPrefix = dataWord << prefixSize;
+            }
+            if (tailSize != 0) {
+                int lastWordIndex = data.length - 1;
+                long mask = -1L << (64 - tailSize);
+                if (inWordShift >= tailSize) {
+                    resultData[lastWordIndex] = wordPrefix & mask;
+                } else {
+                    long wordSuffix = data[commonEndFilledWordCount] >>> inWordShift;
+                    resultData[lastWordIndex] = (wordPrefix | wordSuffix) & mask;
+                }
+            }
+        }
+        return new BitString(resultData, size);
+    }
+
     public BitString padLeft(int minSize) {
         if (minSize <= size) {
             return this;
