@@ -213,6 +213,34 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         return resultBuilder.toString();
     }
 
+    public boolean hasZerosOnly() {
+        for (long word : data) {
+            if (word != 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean hasOnesOnly() {
+        int fullWordCount = size >>> 6;
+        for (int i = 0; i < fullWordCount; i++) {
+            long word = data[i];
+            if (word != -1L) {
+                return false;
+            }
+        }
+        int tailSize = size & 63;
+        if (tailSize > 0) {
+            long lastWord = data[fullWordCount];
+            long onePaddedLastWord = lastWord | (-1L >>> tailSize);
+            if (onePaddedLastWord != -1L) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public boolean get(int position) {
         if (position < 0 || position >= size) {
             return false;

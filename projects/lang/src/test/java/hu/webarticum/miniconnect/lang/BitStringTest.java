@@ -224,6 +224,45 @@ class BitStringTest {
     }
 
     @Test
+    void testHasZerosOnly() {
+        assertThat(BitString.empty().hasZerosOnly()).isTrue();
+        assertThat(BitString.of("0").hasZerosOnly()).isTrue();
+        assertThat(BitString.of("00").hasZerosOnly()).isTrue();
+        assertThat(BitString.of("00000").hasZerosOnly()).isTrue();
+        assertThat(BitString.of("00000000").hasZerosOnly()).isTrue();
+        assertThat(BitString.of("00000000000000000").hasZerosOnly()).isTrue();
+        assertThat(BitString.of("1").hasZerosOnly()).isFalse();
+        assertThat(BitString.of("01").hasZerosOnly()).isFalse();
+        assertThat(BitString.of("10").hasZerosOnly()).isFalse();
+        assertThat(BitString.of("01101").hasZerosOnly()).isFalse();
+        assertThat(BitString.of("11010110").hasZerosOnly()).isFalse();
+        assertThat(BitString.of("11111111").hasZerosOnly()).isFalse();
+        assertThat(BitString.of("100011110101").hasZerosOnly()).isFalse();
+        assertThat(BitString.of("00000000101").hasZerosOnly()).isFalse();
+        assertThat(BitString.of("1000000000000").hasZerosOnly()).isFalse();
+    }
+
+    @Test
+    void testHasOnesOnly() {
+        assertThat(BitString.empty().hasOnesOnly()).isTrue();
+        assertThat(BitString.of("1").hasOnesOnly()).isTrue();
+        assertThat(BitString.of("11").hasOnesOnly()).isTrue();
+        assertThat(BitString.of("11111").hasOnesOnly()).isTrue();
+        assertThat(BitString.of("11111111").hasOnesOnly()).isTrue();
+        assertThat(BitString.of("11111111111111111").hasOnesOnly()).isTrue();
+        assertThat(BitString.of("0").hasOnesOnly()).isFalse();
+        assertThat(BitString.of("10").hasOnesOnly()).isFalse();
+        assertThat(BitString.of("01").hasOnesOnly()).isFalse();
+        assertThat(BitString.of("01101").hasOnesOnly()).isFalse();
+        assertThat(BitString.of("11010110").hasOnesOnly()).isFalse();
+        assertThat(BitString.of("00000000").hasOnesOnly()).isFalse();
+        assertThat(BitString.of("11111111000").hasOnesOnly()).isFalse();
+        assertThat(BitString.of("111111110001").hasOnesOnly()).isFalse();
+        assertThat(BitString.of("00000000111111").hasOnesOnly()).isFalse();
+        assertThat(BitString.of("00010000111111").hasOnesOnly()).isFalse();
+    }
+
+    @Test
     void testGet() {
         assertThat(BitString.of("0").get(0)).isFalse();
         assertThat(BitString.of("1").get(0)).isTrue();
