@@ -536,6 +536,49 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         return new BitString(resultData, resultSize);
     }
 
+    public BitString shiftLeft(int shift) {
+        if (size == 0 || shift == 0) {
+            return this;
+        } else if (shift < 0 || shift >= size) {
+            return new BitString(new long[data.length], size);
+        } else if (data.length == 1) {
+            long mask = -1L << (64 - size);
+            long resultWord = (data[0] << shift) & mask;
+            return new BitString(new long[] { resultWord }, size);
+        }
+        long[] resultData = new long[data.length];
+        int shiftWordCount = shift >>> 6;
+        int inWordShift = shift & 63;
+        int tailSize = size & 63;
+        if (inWordShift == 0) {
+            int copyWordCount = data.length - shiftWordCount;
+            System.arraycopy(data, shiftWordCount, resultData, 0, copyWordCount);
+            if (tailSize != 0) {
+                int lastWordIndex = data.length - 1;
+                long mask = -1L << (64 - tailSize);
+                resultData[0] = resultData[0] & mask;
+            }
+        } else {
+            int innerWordCount = data.length - 1;
+            int shiftWordCountCeiled = shiftWordCount + 1;
+            int intersectionWordCount = innerWordCount - shiftWordCount;
+            int fullTailSize = tailSize == 0 ? 64 : tailSize;
+            int prefixSize = 64 - inWordShift;
+            long dataWord = data[shiftWordCount];
+            for (int i = 0; i < intersectionWordCount; i++) {
+                long wordPrefix = dataWord << inWordShift;
+                dataWord = data[i + shiftWordCountCeiled];
+                long wordSuffix = dataWord >>> prefixSize;
+                resultData[i] = wordPrefix | wordSuffix;
+            }
+            if (inWordShift < fullTailSize) {
+                long wordPrefix = dataWord << inWordShift;
+                resultData[intersectionWordCount] = wordPrefix;
+            }
+        }
+        return new BitString(resultData, size);
+    }
+
     public BitString shiftRight(int shift) {
         if (size == 0 || shift == 0) {
             return this;
@@ -561,13 +604,13 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         } else {
             int fullWordCount = size >>> 6;
             int commonEndFilledWordCount = fullWordCount - shiftWordCount;
-            int prefixSize = 64 - inWordShift;
+            int suffixSize = 64 - inWordShift;
             long wordPrefix = 0;
             for (int i = 0; i < commonEndFilledWordCount; i++) {
                 long dataWord = data[i];
                 long wordSuffix = dataWord >>> inWordShift;
                 resultData[i + shiftWordCount] = wordPrefix | wordSuffix;
-                wordPrefix = dataWord << prefixSize;
+                wordPrefix = dataWord << suffixSize;
             }
             if (tailSize != 0) {
                 int lastWordIndex = data.length - 1;
