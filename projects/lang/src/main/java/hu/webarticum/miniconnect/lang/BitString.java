@@ -690,6 +690,224 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         }
     }
 
+    public int indexOf(boolean bit) {
+        return bit ? indexOfOne() : indexOfZero();
+    }
+
+    public int indexOfOne() {
+        int fullWordCount = length >>> 6;
+        for (int i = 0; i < fullWordCount; i++) {
+            int pos = Long.numberOfLeadingZeros(data[i]);
+            if (pos != 64) {
+                return (i << 6) + pos;
+            }
+        }
+        int tailLength = length & 63;
+        if (tailLength != 0) {
+            long mask = -1L << (64 - tailLength);
+            long tailWord = data[fullWordCount] & mask;
+            int pos = Long.numberOfLeadingZeros(tailWord);
+            if (pos != 64) {
+                return (fullWordCount << 6) + pos;
+            }
+        }
+        return -1;
+    }
+
+    public int indexOfZero() {
+        int fullWordCount = length >>> 6;
+        for (int i = 0; i < fullWordCount; i++) {
+            int pos = Long.numberOfLeadingZeros(~data[i]);
+            if (pos != 64) {
+                return (i << 6) + pos;
+            }
+        }
+        int tailLength = length & 63;
+        if (tailLength != 0) {
+            long mask = -1L << (64 - tailLength);
+            long invertedTailWord = (~data[fullWordCount]) & mask;
+            int pos = Long.numberOfLeadingZeros(invertedTailWord);
+            if (pos != 64) {
+                return (fullWordCount << 6) + pos;
+            }
+        }
+        return -1;
+    }
+
+    public int indexOf(char bitChar) {
+        if (bitChar == '1') {
+            return indexOf(true);
+        } else if (bitChar == '0') {
+            return indexOf(false);
+        } else {
+            throw new IllegalArgumentException("Invalid character: '" + bitChar + "'");
+        }
+    }
+
+    public int lastIndexOf(boolean bit) {
+        return bit ? lastIndexOfOne() : lastIndexOfZero();
+    }
+
+    public int lastIndexOfOne() {
+        int fullWordCount = length >>> 6;
+        int tailLength = length & 63;
+        if (tailLength != 0) {
+            long mask = -1L << (64 - tailLength);
+            long tailWord = data[fullWordCount] & mask;
+            int pad = Long.numberOfTrailingZeros(tailWord);
+            if (pad != 64) {
+                int pos = 64 - pad - 1;
+                return (fullWordCount << 6) + pos;
+            }
+        }
+        for (int i = fullWordCount - 1; i >= 0; i--) {
+            int pad = Long.numberOfTrailingZeros(data[i]);
+            if (pad != 64) {
+                int pos = 64 - pad - 1;
+                return (i << 6) + pos;
+            }
+        }
+        return -1;
+    }
+
+    public int lastIndexOfZero() {
+        int fullWordCount = length >>> 6;
+        int tailLength = length & 63;
+        if (tailLength != 0) {
+            long mask = -1L << (64 - tailLength);
+            long invertedTailWord = (~data[fullWordCount]) & mask;
+            int pad = Long.numberOfTrailingZeros(invertedTailWord);
+            if (pad != 64) {
+                int pos = 64 - pad - 1;
+                return (fullWordCount << 6) + pos;
+            }
+        }
+        for (int i = fullWordCount - 1; i >= 0; i--) {
+            int pad = Long.numberOfTrailingZeros(~data[i]);
+            if (pad != 64) {
+                int pos = 64 - pad - 1;
+                return (i << 6) + pos;
+            }
+        }
+        return -1;
+    }
+
+    public int lastIndexOf(char bitChar) {
+        if (bitChar == '1') {
+            return lastIndexOf(true);
+        } else if (bitChar == '0') {
+            return lastIndexOf(false);
+        } else {
+            throw new IllegalArgumentException("Invalid character: '" + bitChar + "'");
+        }
+    }
+
+    public boolean match(BitString substring, int position) {
+        if (position > length || position < 0) {
+            return false;
+        } else if (substring.length == 0) {
+            return true;
+        } else if (position + substring.length > length) {
+            return false;
+        }
+        return matchInternal(substring, position);
+    }
+
+    private boolean matchInternal(BitString substring, int position) {
+        int substringDataLength = (substring.length + 63) >>> 6;
+        int shift = position & 63;
+        int substringTailLength = substring.length & 63;
+        int fromWordIndex = position >>> 6;
+        int substringFullWordCount = substring.length >>> 6;
+        if (shift == 0) {
+            for (int i = 0; i < substringFullWordCount; i++) {
+                if (substring.data[i] != data[fromWordIndex + i]) {
+                    return false;
+                }
+            }
+            if (substringTailLength != 0) {
+                int until = position + substring.length;
+                int lastAffectedWordIndex = until >>> 6;
+                long tailMask = -1L << (64 - substringTailLength);
+                long word = data[lastAffectedWordIndex] & tailMask;
+                if (substring.data[substringDataLength - 1] != word) {
+                    return false;
+                }
+            }
+        } else {
+            int prefixLength = 64 - shift;
+            long wordPrefix = data[fromWordIndex] << shift;
+            int firstAlignedWordIndex = fromWordIndex + 1;
+            for (int i = 0; i < substringFullWordCount; i++) {
+                long dataWord = data[firstAlignedWordIndex + i];
+                long wordSuffix = dataWord >>> prefixLength;
+                long word = wordPrefix | wordSuffix;
+                if (substring.data[i] != word) {
+                    return false;
+                }
+                wordPrefix = dataWord << shift;
+            }
+            if (substringTailLength != 0) {
+                long word = wordPrefix;
+                if (shift + substringTailLength > 64) {
+                    int until = position + substring.length;
+                    int lastAffectedWordIndex = until >>> 6;
+                    long dataWord = data[lastAffectedWordIndex];
+                    long wordSuffix = dataWord >>> prefixLength;
+                    word = wordPrefix | wordSuffix;
+                }
+                long wordMask = -1L << (64 - substringTailLength);
+                word &= wordMask;
+                if (substring.data[substringDataLength - 1] != word) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public int indexOf(BitString substring) {
+        if (substring.length == 0) {
+            return 0;
+        } else if (length == 0) {
+            return -1;
+        } else if (substring.length == 1) {
+            return indexOf(substring.get(0));
+        } else if (substring.length == length) {
+            return equals(substring) ? 0 : -1;
+        } else if (substring.length > length) {
+            return -1;
+        }
+        int maxValidPosition = length - substring.length;
+        for (int i = 0; i <= maxValidPosition; i++) {
+            if (matchInternal(substring, i)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public int lastIndexOf(BitString substring) {
+        if (substring.length == 0) {
+            return length;
+        } else if (length == 0) {
+            return -1;
+        } else if (substring.length == 1) {
+            return lastIndexOf(substring.get(0));
+        } else if (substring.length == length) {
+            return equals(substring) ? 0 : -1;
+        } else if (substring.length > length) {
+            return -1;
+        }
+        int maxValidPosition = length - substring.length;
+        for (int i = maxValidPosition; i >= 0; i--) {
+            if (matchInternal(substring, i)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     public long toLong() {
         if (length == 0) {
             return 0L;
