@@ -12,7 +12,7 @@ import java.util.NoSuchElementException;
  * It represents the bits in a long array with MSB first order:
  * the array layout is MSB first, and the MSB of each long corresponds
  * to the first logical bit it represents from the bit string.
- * The last long value, if incomplete (in case of size % 64 > 0),
+ * The last long value, if incomplete (in case of length % 64 > 0),
  * contains the tail part in its MSB positions,
  * and the unused LSB positions are filled with zeros.
  */
@@ -25,12 +25,12 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
 
     private final long[] data;
 
-    private final int size;
+    private final int length;
 
 
-    private BitString(long[] data, int size) {
+    private BitString(long[] data, int length) {
         this.data = data;
-        this.size = size;
+        this.length = length;
     }
 
     public static BitString empty() {
@@ -38,10 +38,10 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
     }
 
     public static BitString of(boolean... bits) {
-        int size = bits.length;
-        int wordCount = (size + 63) >>> 6;
+        int length = bits.length;
+        int wordCount = (length + 63) >>> 6;
         long[] data = new long[wordCount];
-        int fullWordCount = size >>> 6;
+        int fullWordCount = length >>> 6;
         for (int i = 0; i < fullWordCount; i++) {
             long word = 0;
             int from = i << 6;
@@ -53,26 +53,26 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
             }
             data[i] = word;
         }
-        int tailSize = size & 63;
-        if (tailSize > 0) {
+        int tailLength = length & 63;
+        if (tailLength > 0) {
             long word = 0;
             int from = fullWordCount << 6;
-            for (int j = from; j < size; j++) {
+            for (int j = from; j < length; j++) {
                 if (bits[j]) {
                     word |= Long.MIN_VALUE >>> (j & 63);
                 }
             }
             data[fullWordCount] = word;
         }
-        return new BitString(data, size);
+        return new BitString(data, length);
     }
 
     public static BitString of(byte[] bytes) {
         int byteCount = bytes.length;
-        int size = byteCount << 3;
-        int wordCount = (size + 63) >>> 6;
+        int length = byteCount << 3;
+        int wordCount = (length + 63) >>> 6;
         long[] data = new long[wordCount];
-        int fullWordCount = size >>> 6;
+        int fullWordCount = length >>> 6;
         for (int i = 0; i < fullWordCount; i++) {
             long word = 0;
             int from = i << 3;
@@ -94,41 +94,41 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
             }
             data[fullWordCount] = word;
         }
-        return new BitString(data, size);
+        return new BitString(data, length);
     }
 
     public static BitString of(long[] longs) {
         return new BitString(Arrays.copyOf(longs, longs.length), longs.length << 6);
     }
 
-    public static BitString of(long[] longs, int size) {
-        int ceilWordCount = (size + 63) >>> 6;
-        int rawSize = longs.length << 6;
-        if (size == rawSize) {
-            return new BitString(Arrays.copyOf(longs, longs.length), size);
-        } else if (size > rawSize) {
+    public static BitString of(long[] longs, int length) {
+        int ceilWordCount = (length + 63) >>> 6;
+        int rawLength = longs.length << 6;
+        if (length == rawLength) {
+            return new BitString(Arrays.copyOf(longs, longs.length), length);
+        } else if (length > rawLength) {
             long[] data = new long[ceilWordCount];
             System.arraycopy(longs, 0, data, 0, longs.length);
-            return new BitString(data, size);
+            return new BitString(data, length);
         } else {
             long[] data = new long[ceilWordCount];
             System.arraycopy(longs, 0, data, 0, ceilWordCount);
-            int ceilSize = ceilWordCount << 6;
-            if (size != ceilSize) {
-                int fullWordCount = size >>> 6;
-                int tailSize = size & 63;
-                long tailMask = -1L << (64 - tailSize);
+            int ceilLength = ceilWordCount << 6;
+            if (length != ceilLength) {
+                int fullWordCount = length >>> 6;
+                int tailLength = length & 63;
+                long tailMask = -1L << (64 - tailLength);
                 data[fullWordCount] &= tailMask;
             }
-            return new BitString(data, size);
+            return new BitString(data, length);
         }
     }
 
     public static BitString of(String values) {
-        int size = values.length();
-        int wordCount = (size + 63) >>> 6;
+        int length = values.length();
+        int wordCount = (length + 63) >>> 6;
         long[] data = new long[wordCount];
-        int fullWordCount = size >>> 6;
+        int fullWordCount = length >>> 6;
         for (int i = 0; i < fullWordCount; i++) {
             long word = 0;
             int from = i << 6;
@@ -143,11 +143,11 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
             }
             data[i] = word;
         }
-        int tailSize = size & 63;
-        if (tailSize > 0) {
+        int tailLength = length & 63;
+        if (tailLength > 0) {
             long word = 0;
             int from = fullWordCount << 6;
-            for (int j = from; j < size; j++) {
+            for (int j = from; j < length; j++) {
                 char c = values.charAt(j);
                 if (c == '1') {
                     word |= Long.MIN_VALUE >>> (j & 63);
@@ -157,16 +157,16 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
             }
             data[fullWordCount] = word;
         }
-        return new BitString(data, size);
+        return new BitString(data, length);
     }
 
 
-    public int size() {
-        return size;
+    public int length() {
+        return length;
     }
 
     public boolean isEmpty() {
-        return size == 0;
+        return length == 0;
     }
 
     public long[] data() {
@@ -182,7 +182,7 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
                 return cmp;
             }
         }
-        return Integer.compare(size, other.size);
+        return Integer.compare(length, other.length);
     }
 
     @Override
@@ -192,7 +192,7 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
 
     @Override
     public int hashCode() {
-        return (size * 37) + Arrays.hashCode(data);
+        return (length * 37) + Arrays.hashCode(data);
     }
 
     @Override
@@ -201,13 +201,13 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
             return false;
         }
         BitString other = (BitString) obj;
-        return size == other.size && Arrays.equals(data, other.data);
+        return length == other.length && Arrays.equals(data, other.data);
     }
 
     @Override
     public String toString() {
-        StringBuilder resultBuilder = new StringBuilder(size());
-        for (int i = 0; i < size(); i++) {
+        StringBuilder resultBuilder = new StringBuilder(length());
+        for (int i = 0; i < length(); i++) {
             resultBuilder.append(get(i) ? '1' : '0');
         }
         return resultBuilder.toString();
@@ -223,17 +223,17 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
     }
 
     public boolean hasOnesOnly() {
-        int fullWordCount = size >>> 6;
+        int fullWordCount = length >>> 6;
         for (int i = 0; i < fullWordCount; i++) {
             long word = data[i];
             if (word != -1L) {
                 return false;
             }
         }
-        int tailSize = size & 63;
-        if (tailSize > 0) {
+        int tailLength = length & 63;
+        if (tailLength > 0) {
             long lastWord = data[fullWordCount];
-            long onePaddedLastWord = lastWord | (-1L >>> tailSize);
+            long onePaddedLastWord = lastWord | (-1L >>> tailLength);
             if (onePaddedLastWord != -1L) {
                 return false;
             }
@@ -242,7 +242,7 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
     }
 
     public boolean get(int position) {
-        if (position < 0 || position >= size) {
+        if (position < 0 || position >= length) {
             return false;
         }
         int wordIndex = position >>> 6;
@@ -253,7 +253,7 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
     }
 
     public boolean getStrict(int position) {
-        if (position < 0 || position >= size) {
+        if (position < 0 || position >= length) {
             throw new IndexOutOfBoundsException();
         }
         int wordIndex = position >>> 6;
@@ -267,8 +267,8 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         if (position < 0) {
             throw new IndexOutOfBoundsException();
         }
-        if (position >= size) {
-            int targetCeilWordCount = (size + 63) >>> 6;
+        if (position >= length) {
+            int targetCeilWordCount = (length + 63) >>> 6;
             BitString result;
             if (targetCeilWordCount == data.length) {
                 result = new BitString(data, position + 1);
@@ -292,11 +292,11 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         }
         long changedWord = word ^ mask;
         long[] newData = replacedWord(data, wordIndex, changedWord);
-        return new BitString(newData, size);
+        return new BitString(newData, length);
     }
 
     public BitString setStrict(int position, boolean value) {
-        if (position < 0 || position >= size) {
+        if (position < 0 || position >= length) {
             throw new IndexOutOfBoundsException();
         }
         int wordIndex = position >>> 6;
@@ -309,7 +309,7 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         }
         long changedWord = word ^ mask;
         long[] newData = replacedWord(data, wordIndex, changedWord);
-        return new BitString(newData, size);
+        return new BitString(newData, length);
     }
 
     private long[] replacedWord(long[] original, int wordIndex, long newWord) {
@@ -329,141 +329,141 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
 
     public BitString not() {
         long[] newData = new long[data.length];
-        int fullWordCount = size >>> 6;
+        int fullWordCount = length >>> 6;
         for (int i = 0; i < fullWordCount; i++) {
             newData[i] = ~data[i];
         }
         if (data.length != fullWordCount) {
-            int tailSize = size & 63;
-            long tailMask = -1L << (64 - tailSize);
+            int tailLength = length & 63;
+            long tailMask = -1L << (64 - tailLength);
             newData[fullWordCount] = ~data[fullWordCount] & tailMask;
         }
-        return new BitString(newData, size);
+        return new BitString(newData, length);
     }
 
     public BitString and(BitString other) {
-        int resultSize = Math.max(size, other.size);
-        int resultDataSize = Math.max(data.length, other.data.length);
-        long[] resultData = new long[resultDataSize];
-        int commonDataSize = Math.min(data.length, other.data.length);
-        for (int i = 0; i < commonDataSize; i++) {
+        int resultLength = Math.max(length, other.length);
+        int resultDataLength = Math.max(data.length, other.data.length);
+        long[] resultData = new long[resultDataLength];
+        int commonDataLength = Math.min(data.length, other.data.length);
+        for (int i = 0; i < commonDataLength; i++) {
             resultData[i] = data[i] & other.data[i];
         }
-        return new BitString(resultData, resultSize);
+        return new BitString(resultData, resultLength);
     }
 
     public BitString or(BitString other) {
-        int resultSize = Math.max(size, other.size);
-        int resultDataSize = Math.max(data.length, other.data.length);
-        long[] resultData = new long[resultDataSize];
-        int commonDataSize = Math.min(data.length, other.data.length);
-        for (int i = 0; i < commonDataSize; i++) {
+        int resultLength = Math.max(length, other.length);
+        int resultDataLength = Math.max(data.length, other.data.length);
+        long[] resultData = new long[resultDataLength];
+        int commonDataLength = Math.min(data.length, other.data.length);
+        for (int i = 0; i < commonDataLength; i++) {
             resultData[i] = data[i] | other.data[i];
         }
         if (data.length > other.data.length) {
-            System.arraycopy(data, commonDataSize, resultData, commonDataSize, resultDataSize - commonDataSize);
+            System.arraycopy(data, commonDataLength, resultData, commonDataLength, resultDataLength - commonDataLength);
         } else if (data.length != other.data.length) {
-            System.arraycopy(other.data, commonDataSize, resultData, commonDataSize, resultDataSize - commonDataSize);
+            System.arraycopy(other.data, commonDataLength, resultData, commonDataLength, resultDataLength - commonDataLength);
         }
-        return new BitString(resultData, resultSize);
+        return new BitString(resultData, resultLength);
     }
 
     public BitString xor(BitString other) {
-        int resultSize = Math.max(size, other.size);
-        int resultDataSize = Math.max(data.length, other.data.length);
-        long[] resultData = new long[resultDataSize];
-        int commonDataSize = Math.min(data.length, other.data.length);
-        for (int i = 0; i < commonDataSize; i++) {
+        int resultLength = Math.max(length, other.length);
+        int resultDataLength = Math.max(data.length, other.data.length);
+        long[] resultData = new long[resultDataLength];
+        int commonDataLength = Math.min(data.length, other.data.length);
+        for (int i = 0; i < commonDataLength; i++) {
             resultData[i] = data[i] ^ other.data[i];
         }
         if (data.length > other.data.length) {
-            System.arraycopy(data, commonDataSize, resultData, commonDataSize, resultDataSize - commonDataSize);
+            System.arraycopy(data, commonDataLength, resultData, commonDataLength, resultDataLength - commonDataLength);
         } else if (data.length != other.data.length) {
-            System.arraycopy(other.data, commonDataSize, resultData, commonDataSize, resultDataSize - commonDataSize);
+            System.arraycopy(other.data, commonDataLength, resultData, commonDataLength, resultDataLength - commonDataLength);
         }
-        return new BitString(resultData, resultSize);
+        return new BitString(resultData, resultLength);
     }
 
     public BitString concat(BitString other) {
         if (other.isEmpty()) {
             return this;
         }
-        int resultSize = size + other.size;
-        int resultDataSize = (resultSize + 63) >>> 6;
-        long[] resultData = new long[resultDataSize];
-        int fullWordCount = size >>> 6;
+        int resultLength = length + other.length;
+        int resultDataLength = (resultLength + 63) >>> 6;
+        long[] resultData = new long[resultDataLength];
+        int fullWordCount = length >>> 6;
         if (fullWordCount != 0) {
             System.arraycopy(data, 0, resultData, 0, fullWordCount);
         }
-        int tailSize = size & 63;
-        if (tailSize == 0) {
+        int tailLength = length & 63;
+        if (tailLength == 0) {
             System.arraycopy(other.data, fullWordCount, resultData, fullWordCount, other.data.length);
         } else {
             long wordPrefix = data[fullWordCount];
-            int suffixSize = 64 - tailSize;
+            int suffixLength = 64 - tailLength;
             for (int i = 0; i < other.data.length; i++) {
-                long wordSuffix = other.data[i] >>> tailSize;
+                long wordSuffix = other.data[i] >>> tailLength;
                 long word = wordPrefix | wordSuffix;
                 resultData[fullWordCount + i] = word;
-                wordPrefix = other.data[i] << suffixSize;
+                wordPrefix = other.data[i] << suffixLength;
             }
-            int otherTailSize = other.size & 63;
-            if (tailSize + otherTailSize > 64) {
-                resultData[resultDataSize - 1] = wordPrefix;
+            int otherTailLength = other.length & 63;
+            if (tailLength + otherTailLength > 64) {
+                resultData[resultDataLength - 1] = wordPrefix;
             }
         }
-        return new BitString(resultData, resultSize);
+        return new BitString(resultData, resultLength);
     }
 
     public BitString substring(int from, int until) {
-        if (from < 0 || until > size) {
+        if (from < 0 || until > length) {
             throw new IndexOutOfBoundsException();
         } else if (from > until) {
             throw new IllegalArgumentException("Invalid substring");
         } else if (from == until) {
             return EMPTY;
-        } else if (from == 0 && until == size) {
+        } else if (from == 0 && until == length) {
             return this;
         }
-        int resultSize = until - from;
-        int resultDataSize = (resultSize + 63) >>> 6;
+        int resultLength = until - from;
+        int resultDataLength = (resultLength + 63) >>> 6;
         int shift = from & 63;
-        long[] resultData = new long[resultDataSize];
-        int resultTailSize = resultSize & 63;
+        long[] resultData = new long[resultDataLength];
+        int resultTailLength = resultLength & 63;
         int fromWordIndex = from >>> 6;
-        int resultFullWordCount = resultSize >>> 6;
+        int resultFullWordCount = resultLength >>> 6;
         if (shift == 0) {
             System.arraycopy(data, fromWordIndex, resultData, 0, resultFullWordCount);
-            if (resultTailSize != 0) {
+            if (resultTailLength != 0) {
                 int lastAffectedWordIndex = until >>> 6;
-                long tailMask = -1L << (64 - resultTailSize);
-                resultData[resultDataSize - 1] = data[lastAffectedWordIndex] & tailMask;
+                long tailMask = -1L << (64 - resultTailLength);
+                resultData[resultDataLength - 1] = data[lastAffectedWordIndex] & tailMask;
             }
         } else {
-            int prefixSize = 64 - shift;
+            int prefixLength = 64 - shift;
             long wordPrefix = data[fromWordIndex] << shift;
             int firstAlignedWordIndex = fromWordIndex + 1;
             for (int i = 0; i < resultFullWordCount; i++) {
                 long dataWord = data[firstAlignedWordIndex + i];
-                long wordSuffix = dataWord >>> prefixSize;
+                long wordSuffix = dataWord >>> prefixLength;
                 long word = wordPrefix | wordSuffix;
                 resultData[i] = word;
                 wordPrefix = dataWord << shift;
             }
-            if (resultTailSize != 0) {
+            if (resultTailLength != 0) {
                 long word = wordPrefix;
-                if (shift + resultTailSize > 64) {
+                if (shift + resultTailLength > 64) {
                     int lastAffectedWordIndex = until >>> 6;
                     long dataWord = data[lastAffectedWordIndex];
-                    long wordSuffix = dataWord >>> prefixSize;
+                    long wordSuffix = dataWord >>> prefixLength;
                     word = wordPrefix | wordSuffix;
                 }
-                long wordMask = -1L << (64 - resultTailSize);
+                long wordMask = -1L << (64 - resultTailLength);
                 word &= wordMask;
-                resultData[resultDataSize - 1] = word;
+                resultData[resultDataLength - 1] = word;
             }
         }
-        return new BitString(resultData, resultSize);
+        return new BitString(resultData, resultLength);
     }
 
     public BitString window(int from, int until) {
@@ -471,31 +471,31 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
             throw new IllegalArgumentException("Invalid substring");
         } else if (from == until) {
             return EMPTY;
-        } else if (from == 0 && until == size) {
+        } else if (from == 0 && until == length) {
             return this;
         }
-        int resultSize = until - from;
-        int resultDataSize = (resultSize + 63) >>> 6;
-        long[] resultData = new long[resultDataSize];
-        if (size == 0 || until <= 0 || from >= size) {
-            return new BitString(resultData, resultSize);
+        int resultLength = until - from;
+        int resultDataLength = (resultLength + 63) >>> 6;
+        long[] resultData = new long[resultDataLength];
+        if (length == 0 || until <= 0 || from >= length) {
+            return new BitString(resultData, resultLength);
         }
         int shift = from & 63;
         if (shift == 0) {
             int fromWordIndex = from >> 6;
             int sourceStartWordIndex = Math.max(0, fromWordIndex);
             int targetStartWordIndex = Math.max(0, -fromWordIndex);
-            int effectiveUntil = Math.min(size, until);
+            int effectiveUntil = Math.min(length, until);
             int effectiveUntilFullWordIndex = effectiveUntil >>> 6;
             int copyFullWordCount = effectiveUntilFullWordIndex - sourceStartWordIndex;
             if (copyFullWordCount > 0) {
                 System.arraycopy(data, sourceStartWordIndex, resultData, targetStartWordIndex, copyFullWordCount);
             }
-            int effectiveTailSize = effectiveUntil & 63;
-            if (effectiveTailSize != 0) {
+            int effectiveTailLength = effectiveUntil & 63;
+            if (effectiveTailLength != 0) {
                 int resultTailWordIndex = (effectiveUntil - from) >>> 6;
-                if (until < size) {
-                    long tailMask = -1L << (64 - effectiveTailSize);
+                if (until < length) {
+                    long tailMask = -1L << (64 - effectiveTailLength);
                     resultData[resultTailWordIndex] = data[effectiveUntilFullWordIndex] & tailMask;
                 } else {
                     resultData[resultTailWordIndex] = data[effectiveUntilFullWordIndex];
@@ -504,15 +504,15 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         } else {
             int sourceStartWordIndex = Math.max(0, (from + 63) >> 6);
             int targetStartWordIndex = Math.max(0, -1 - (from >> 6));
-            int effectiveUntil = Math.min(size, until);
+            int effectiveUntil = Math.min(length, until);
             int effectiveTargetUntil = effectiveUntil - from;
             int resultEndFilledWordCount = effectiveTargetUntil >>> 6;
-            int prefixSize = 64 - shift;
+            int prefixLength = 64 - shift;
             long wordPrefix = sourceStartWordIndex > 0 ? data[sourceStartWordIndex - 1] << shift : 0L;
             int dataIndex = sourceStartWordIndex;
             for (int i = targetStartWordIndex; i < resultEndFilledWordCount; i++) {
                 long dataWord = data[dataIndex];
-                long wordSuffix = dataWord >>> prefixSize;
+                long wordSuffix = dataWord >>> prefixLength;
                 long word = wordPrefix | wordSuffix;
                 resultData[i] = word;
                 wordPrefix = dataWord << shift;
@@ -521,100 +521,100 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
             int effectiveTargetTail = effectiveTargetUntil & 63;
             if (effectiveTargetTail != 0) {
                 long word = wordPrefix;
-                if (effectiveTargetTail < prefixSize) {
+                if (effectiveTargetTail < prefixLength) {
                     long mask = -1L << (64 - effectiveTargetTail);
                     word &= mask;
-                } else if (effectiveTargetTail != prefixSize && dataIndex < data.length) {
+                } else if (effectiveTargetTail != prefixLength && dataIndex < data.length) {
                     long dataWord = data[dataIndex];
-                    long wordSuffix = dataWord >>> prefixSize;
+                    long wordSuffix = dataWord >>> prefixLength;
                     long mask = -1L << (64 - effectiveTargetTail);
                     word = (word | wordSuffix) & mask;
                 }
                 resultData[resultEndFilledWordCount] = word;
             }
         }
-        return new BitString(resultData, resultSize);
+        return new BitString(resultData, resultLength);
     }
 
     public BitString shiftLeft(int shift) {
-        if (size == 0 || shift == 0) {
+        if (length == 0 || shift == 0) {
             return this;
-        } else if (shift < 0 || shift >= size) {
-            return new BitString(new long[data.length], size);
+        } else if (shift < 0 || shift >= length) {
+            return new BitString(new long[data.length], length);
         } else if (data.length == 1) {
-            long mask = -1L << (64 - size);
+            long mask = -1L << (64 - length);
             long resultWord = (data[0] << shift) & mask;
-            return new BitString(new long[] { resultWord }, size);
+            return new BitString(new long[] { resultWord }, length);
         }
         long[] resultData = new long[data.length];
         int shiftWordCount = shift >>> 6;
         int inWordShift = shift & 63;
-        int tailSize = size & 63;
+        int tailLength = length & 63;
         if (inWordShift == 0) {
             int copyWordCount = data.length - shiftWordCount;
             System.arraycopy(data, shiftWordCount, resultData, 0, copyWordCount);
-            if (tailSize != 0) {
-                long mask = -1L << (64 - tailSize);
+            if (tailLength != 0) {
+                long mask = -1L << (64 - tailLength);
                 resultData[0] = resultData[0] & mask;
             }
         } else {
             int innerWordCount = data.length - 1;
             int shiftWordCountCeiled = shiftWordCount + 1;
             int intersectionWordCount = innerWordCount - shiftWordCount;
-            int fullTailSize = tailSize == 0 ? 64 : tailSize;
-            int prefixSize = 64 - inWordShift;
+            int fullTailLength = tailLength == 0 ? 64 : tailLength;
+            int prefixLength = 64 - inWordShift;
             long dataWord = data[shiftWordCount];
             for (int i = 0; i < intersectionWordCount; i++) {
                 long wordPrefix = dataWord << inWordShift;
                 dataWord = data[i + shiftWordCountCeiled];
-                long wordSuffix = dataWord >>> prefixSize;
+                long wordSuffix = dataWord >>> prefixLength;
                 resultData[i] = wordPrefix | wordSuffix;
             }
-            if (inWordShift < fullTailSize) {
+            if (inWordShift < fullTailLength) {
                 long wordPrefix = dataWord << inWordShift;
                 resultData[intersectionWordCount] = wordPrefix;
             }
         }
-        return new BitString(resultData, size);
+        return new BitString(resultData, length);
     }
 
     public BitString shiftRight(int shift) {
-        if (size == 0 || shift == 0) {
+        if (length == 0 || shift == 0) {
             return this;
-        } else if (shift < 0 || shift >= size) {
-            return new BitString(new long[data.length], size);
+        } else if (shift < 0 || shift >= length) {
+            return new BitString(new long[data.length], length);
         } else if (data.length == 1) {
-            long mask = -1L << (64 - size);
+            long mask = -1L << (64 - length);
             long resultWord = (data[0] >>> shift) & mask;
-            return new BitString(new long[] { resultWord }, size);
+            return new BitString(new long[] { resultWord }, length);
         }
         long[] resultData = new long[data.length];
         int shiftWordCount = shift >>> 6;
         int inWordShift = shift & 63;
-        int tailSize = size & 63;
+        int tailLength = length & 63;
         if (inWordShift == 0) {
             int copyWordCount = data.length - shiftWordCount;
             System.arraycopy(data, 0, resultData, shiftWordCount, copyWordCount);
-            if (tailSize != 0) {
+            if (tailLength != 0) {
                 int lastWordIndex = data.length - 1;
-                long mask = -1L << (64 - tailSize);
+                long mask = -1L << (64 - tailLength);
                 resultData[lastWordIndex] = resultData[lastWordIndex] & mask;
             }
         } else {
-            int fullWordCount = size >>> 6;
+            int fullWordCount = length >>> 6;
             int commonEndFilledWordCount = fullWordCount - shiftWordCount;
-            int suffixSize = 64 - inWordShift;
+            int suffixLength = 64 - inWordShift;
             long wordPrefix = 0;
             for (int i = 0; i < commonEndFilledWordCount; i++) {
                 long dataWord = data[i];
                 long wordSuffix = dataWord >>> inWordShift;
                 resultData[i + shiftWordCount] = wordPrefix | wordSuffix;
-                wordPrefix = dataWord << suffixSize;
+                wordPrefix = dataWord << suffixLength;
             }
-            if (tailSize != 0) {
+            if (tailLength != 0) {
                 int lastWordIndex = data.length - 1;
-                long mask = -1L << (64 - tailSize);
-                if (inWordShift >= tailSize) {
+                long mask = -1L << (64 - tailLength);
+                if (inWordShift >= tailLength) {
                     resultData[lastWordIndex] = wordPrefix & mask;
                 } else {
                     long wordSuffix = data[commonEndFilledWordCount] >>> inWordShift;
@@ -622,92 +622,92 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
                 }
             }
         }
-        return new BitString(resultData, size);
+        return new BitString(resultData, length);
     }
 
-    public BitString padLeft(int minSize) {
-        if (minSize <= size) {
+    public BitString padLeft(int minLength) {
+        if (minLength <= length) {
             return this;
         }
-        int newDataSize = (minSize + 63) >>> 6;
-        long[] newData = new long[newDataSize];
-        int padSize = minSize - size;
-        int firstFilledResultWordIndex = padSize >>> 6;
-        if ((padSize & 63) == 0) {
+        int newDataLength = (minLength + 63) >>> 6;
+        long[] newData = new long[newDataLength];
+        int padLength = minLength - length;
+        int firstFilledResultWordIndex = padLength >>> 6;
+        if ((padLength & 63) == 0) {
             System.arraycopy(data, 0, newData, firstFilledResultWordIndex, data.length);
         } else {
             long wordPrefix = 0L;
-            int prefixSize = padSize & 63;
-            int suffixSize = 64 - prefixSize;
+            int prefixLength = padLength & 63;
+            int suffixLength = 64 - prefixLength;
             for (int i = 0; i < data.length; i++) {
                 long dataWord = data[i];
-                long wordSuffix = dataWord >>> prefixSize;
+                long wordSuffix = dataWord >>> prefixLength;
                 long word = wordPrefix | wordSuffix;
                 newData[firstFilledResultWordIndex + i] = word;
-                wordPrefix = dataWord << suffixSize;
+                wordPrefix = dataWord << suffixLength;
             }
-            int tailSize = size & 63;
-            if (prefixSize + tailSize > 64) {
-                newData[newDataSize - 1] = wordPrefix;
+            int tailLength = length & 63;
+            if (prefixLength + tailLength > 64) {
+                newData[newDataLength - 1] = wordPrefix;
             }
         }
-        return new BitString(newData, minSize);
+        return new BitString(newData, minLength);
     }
 
-    public BitString padRight(int minSize) {
-        if (minSize <= size) {
+    public BitString padRight(int minLength) {
+        if (minLength <= length) {
             return this;
         }
-        int newDataSize = (minSize + 63) >>> 6;
-        long[] newData = new long[newDataSize];
+        int newDataLength = (minLength + 63) >>> 6;
+        long[] newData = new long[newDataLength];
         System.arraycopy(data, 0, newData, 0, data.length);
-        return new BitString(newData, minSize);
+        return new BitString(newData, minLength);
     }
 
-    public BitString resize(int newSize) {
-        if (newSize > size) {
-            int newDataSize = (newSize + 63) >>> 6;
-            long[] newData = new long[newDataSize];
+    public BitString resize(int newLength) {
+        if (newLength > length) {
+            int newDatadLength = (newLength + 63) >>> 6;
+            long[] newData = new long[newDatadLength];
             System.arraycopy(data, 0, newData, 0, data.length);
-            return new BitString(newData, newSize);
-        } else if (newSize == size) {
+            return new BitString(newData, newLength);
+        } else if (newLength == length) {
             return this;
-        } else if (newSize < 0) {
-            throw new IllegalArgumentException("Size must not be negative");
+        } else if (newLength < 0) {
+            throw new IllegalArgumentException("Length must not be negative");
         } else {
-            int newDataSize = (newSize + 63) >>> 6;
-            long[] newData = new long[newDataSize];
-            int fullWordSize = newSize >>> 6;
-            if (fullWordSize != 0) {
-                System.arraycopy(data, 0, newData, 0, fullWordSize);
+            int newDatadLength = (newLength + 63) >>> 6;
+            long[] newData = new long[newDatadLength];
+            int fullWordLength = newLength >>> 6;
+            if (fullWordLength != 0) {
+                System.arraycopy(data, 0, newData, 0, fullWordLength);
             }
-            int newTailSize = newSize & 63;
-            if (newTailSize != 0) {
-                long tailMask = -1L << (64 - newTailSize);
-                newData[fullWordSize] = data[fullWordSize] & tailMask;
+            int newTailLength = newLength & 63;
+            if (newTailLength != 0) {
+                long tailMask = -1L << (64 - newTailLength);
+                newData[fullWordLength] = data[fullWordLength] & tailMask;
             }
-            return new BitString(newData, newSize);
+            return new BitString(newData, newLength);
         }
     }
 
     public long toLong() {
-        if (size == 0) {
+        if (length == 0) {
             return 0L;
         }
-        int tailSize = size & 63;
-        long word = data[data.length - 1] >>> (64 - tailSize);
+        int tailLength = length & 63;
+        long word = data[data.length - 1] >>> (64 - tailLength);
         if (data.length == 1) {
             return word;
         }
-        word |= data[data.length - 2] << tailSize;
+        word |= data[data.length - 2] << tailLength;
         return word;
     }
 
     public boolean[] toBooleanArray() {
-        boolean[] result = new boolean[size];
-        int fullWordSize = size >>> 6;
+        boolean[] result = new boolean[length];
+        int fullWordLength = length >>> 6;
         long mask = -9223372036854775808L;
-        for (int i = 0; i < fullWordSize; i++) {
+        for (int i = 0; i < fullWordLength; i++) {
             long word = data[i];
             int startBitIndex = i << 6;
             result[startBitIndex] = (word & mask) != 0;
@@ -717,12 +717,12 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
                 result[bitIndex] = (word & mask) != 0;
             }
         }
-        int tailSize = size & 63;
-        if (tailSize != 0) {
-            long word = data[fullWordSize];
-            int startBitIndex = fullWordSize << 6;
+        int tailLength = length & 63;
+        if (tailLength != 0) {
+            long word = data[fullWordLength];
+            int startBitIndex = fullWordLength << 6;
             result[startBitIndex] = (word & mask) != 0;
-            for (int i = 1; i < tailSize; i++) {
+            for (int i = 1; i < tailLength; i++) {
                 word <<= 1;
                 int bitIndex = startBitIndex + i;
                 result[bitIndex] = (word & mask) != 0;
@@ -732,9 +732,9 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
     }
 
     public byte[] toByteArrayLeftAligned() {
-        int byteCount = (size + 7) >>> 3;
+        int byteCount = (length + 7) >>> 3;
         byte[] result = new byte[byteCount];
-        int fullWordCount = size >>> 6;
+        int fullWordCount = length >>> 6;
         for (int i = 0; i < fullWordCount; i++) {
             long word = data[i];
             int fromByteIndex = i << 3;
@@ -758,33 +758,33 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
     }
 
     public byte[] toByteArrayRightAligned() {
-        int byteTailSize = size & 7;
-        if (byteTailSize == 0) {
+        int byteTailLength = length & 7;
+        if (byteTailLength == 0) {
             return toByteArrayLeftAligned();
         }
-        int byteCount = (size + 7) >>> 3;
+        int byteCount = (length + 7) >>> 3;
         byte[] result = new byte[byteCount];
         int fullWordCount = byteCount >>> 3;
         byte bytePrefix = 0;
         for (int i = 0; i < fullWordCount; i++) {
             long word = data[i];
             int fromByteIndex = i << 3;
-            result[fromByteIndex] = (byte) ((word >>> (64 - byteTailSize)) | bytePrefix);
+            result[fromByteIndex] = (byte) ((word >>> (64 - byteTailLength)) | bytePrefix);
             for (int j = 1; j < 8; j++) {
                 int byteIndex = fromByteIndex + j;
-                int shift = 64 - byteTailSize - (j << 3);
+                int shift = 64 - byteTailLength - (j << 3);
                 result[byteIndex] = (byte) ((word >>> shift) & 255);
             }
-            bytePrefix = (byte) (word << byteTailSize);
+            bytePrefix = (byte) (word << byteTailLength);
         }
         int tailByteCount = byteCount & 7;
         if (tailByteCount > 0) {
             long word = data[fullWordCount];
             int fromByteIndex = fullWordCount << 3;
-            result[fromByteIndex] = (byte) ((word >>> (64 - byteTailSize)) | bytePrefix);
+            result[fromByteIndex] = (byte) ((word >>> (64 - byteTailLength)) | bytePrefix);
             for (int i = 1; i < tailByteCount; i++) {
                 int byteIndex = fromByteIndex + i;
-                int shift = 64 - byteTailSize - (i << 3);
+                int shift = 64 - byteTailLength - (i << 3);
                 result[byteIndex] = (byte) ((word >>> shift) & 255);
             }
         }
@@ -802,7 +802,7 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
 
         @Override
         public boolean hasNext() {
-            return position < size;
+            return position < length;
         }
 
         @Override

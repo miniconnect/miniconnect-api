@@ -63,7 +63,7 @@ class BitStringTest {
     }
 
     @Test
-    void testOfLongsWithSizeAndData() {
+    void testOfLongsWithLengthAndData() {
         assertThat(BitString.of(new long[0], 0).data()).isEmpty();
         assertThat(BitString.of(new long[0], 2).data()).containsExactly(0);
         assertThat(BitString.of(new long[2], 128).data()).containsExactly(0, 0);
@@ -108,26 +108,26 @@ class BitStringTest {
     }
 
     @Test
-    void testSize() {
-        assertThat(BitString.empty().size()).isZero();
-        assertThat(BitString.of(new boolean[0]).size()).isZero();
-        assertThat(BitString.of(false).size()).isOne();
-        assertThat(BitString.of(false).size()).isOne();
-        assertThat(BitString.of(true).size()).isOne();
-        assertThat(BitString.of(true, false).size()).isEqualTo(2);
-        assertThat(BitString.of(new boolean[65]).size()).isEqualTo(65);
-        assertThat(BitString.of(new byte[0]).size()).isZero();
-        assertThat(BitString.of(new byte[3]).size()).isEqualTo(24);
-        assertThat(BitString.of(new byte[20]).size()).isEqualTo(160);
-        assertThat(BitString.of(new long[0]).size()).isZero();
-        assertThat(BitString.of(new long[2]).size()).isEqualTo(128);
-        assertThat(BitString.of(new long[0], 0).size()).isZero();
-        assertThat(BitString.of(new long[0], 3).size()).isEqualTo(3);
-        assertThat(BitString.of(new long[0], 173).size()).isEqualTo(173);
-        assertThat(BitString.of("000000000").size()).isEqualTo(9);
+    void testLength() {
+        assertThat(BitString.empty().length()).isZero();
+        assertThat(BitString.of(new boolean[0]).length()).isZero();
+        assertThat(BitString.of(false).length()).isOne();
+        assertThat(BitString.of(false).length()).isOne();
+        assertThat(BitString.of(true).length()).isOne();
+        assertThat(BitString.of(true, false).length()).isEqualTo(2);
+        assertThat(BitString.of(new boolean[65]).length()).isEqualTo(65);
+        assertThat(BitString.of(new byte[0]).length()).isZero();
+        assertThat(BitString.of(new byte[3]).length()).isEqualTo(24);
+        assertThat(BitString.of(new byte[20]).length()).isEqualTo(160);
+        assertThat(BitString.of(new long[0]).length()).isZero();
+        assertThat(BitString.of(new long[2]).length()).isEqualTo(128);
+        assertThat(BitString.of(new long[0], 0).length()).isZero();
+        assertThat(BitString.of(new long[0], 3).length()).isEqualTo(3);
+        assertThat(BitString.of(new long[0], 173).length()).isEqualTo(173);
+        assertThat(BitString.of("000000000").length()).isEqualTo(9);
         assertThat(BitString.of(
                 "11000100011010101111101010100001010111010101010010110001010101110000101011")
-                .size()).isEqualTo(74);
+                .length()).isEqualTo(74);
     }
 
     @Test
