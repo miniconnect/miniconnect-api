@@ -385,8 +385,10 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
     }
 
     public BitString concat(BitString other) {
-        if (other.isEmpty()) {
+        if (other.length == 0) {
             return this;
+        } else if (length == 0) {
+            return other;
         }
         int resultLength = length + other.length;
         int resultDataLength = (resultLength + 63) >>> 6;
