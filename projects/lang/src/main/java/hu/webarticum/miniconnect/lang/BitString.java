@@ -554,7 +554,6 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
             int copyWordCount = data.length - shiftWordCount;
             System.arraycopy(data, shiftWordCount, resultData, 0, copyWordCount);
             if (tailSize != 0) {
-                int lastWordIndex = data.length - 1;
                 long mask = -1L << (64 - tailSize);
                 resultData[0] = resultData[0] & mask;
             }
