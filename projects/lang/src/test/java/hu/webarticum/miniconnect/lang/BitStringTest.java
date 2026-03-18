@@ -108,6 +108,131 @@ class BitStringTest {
     }
 
     @Test
+    void testBuilder() {
+        assertThat((Object) BitString.builder().build()).isEqualTo(BitString.empty());
+        assertThat((Object) BitString.builder().append(false).build()).isEqualTo(BitString.of("0"));
+        assertThat((Object) BitString.builder().append(true).build()).isEqualTo(BitString.of("1"));
+        assertThat((Object) BitString.builder().append('0').build()).isEqualTo(BitString.of("0"));
+        assertThat((Object) BitString.builder().append('1').build()).isEqualTo(BitString.of("1"));
+        assertThat((Object) BitString.builder()
+                .append(false).append(true).append(false).append(true).append(true).append(false)
+                .build()).isEqualTo(BitString.of("010110"));
+        assertThat((Object) BitString.builder()
+                .append(false).append(true).append('0').append(false).append('1').append(false)
+                .build()).isEqualTo(BitString.of("010010"));
+        assertThat((Object) BitString.builder()
+                .append(false).append(false).append(true).append(false).append(true).append(false).append(false).append(true)
+                .append(true).append(true).append(false).append(true).append(false).append(true).append(false).append(false)
+                .append(false).append(true).append(true).append(false).append(true).append(false).append(true).append(false)
+                .append(false).append(true).append(true).append(true).append(false).append(true).append(false).append(true)
+                .append(false).append(false).append(true).append(true).append(true).append(false).append(true).append(false)
+                .append(true).append(false).append(false).append(false).append(true).append(true).append(true).append(false)
+                .append(true).append(false).append(false).append(false).append(true).append(true).append(false).append(true)
+                .append(false).append(true).append(true).append(true).append(false).append(true).append(false).append(true)
+                .append(true).append(true).append(false).append(true).append(false).append(true).append(true).append(true)
+                .append(false).append(true).append(false).append(true).append(false).append(false).append(false).append(true)
+                .append(true).append(true).append(false).append(true).append(false).append(true).append(true)
+                .build()).isEqualTo(BitString.of(
+                "0010100111010100011010100111010100111010100011101000110101110101" +
+                "11010111010100011101011"));
+        assertThat((Object) BitString.builder().append(new boolean[] { true, true, false }).build()).isEqualTo(BitString.of("110"));
+        assertThat((Object) BitString.builder().append("0").build()).isEqualTo(BitString.of("0"));
+        assertThat((Object) BitString.builder().append("1").build()).isEqualTo(BitString.of("1"));
+        assertThat((Object) BitString.builder().append("11011010").build()).isEqualTo(BitString.of("11011010"));
+        assertThat((Object) BitString.builder().append(
+                "1010011011110101000111010001010111010100011010101010011010101100" +
+                "0110100011110101110101011010101011110101010111010100111010100011" +
+                "101011101011101000").build())
+                .isEqualTo(BitString.of(
+                "1010011011110101000111010001010111010100011010101010011010101100" +
+                "0110100011110101110101011010101011110101010111010100111010100011" +
+                "101011101011101000"));
+        assertThat((Object) BitString.builder()
+                .append("1011010111010011010111010001110101110101110110101001110101110101")
+                .append("01110001101010101100")
+                .build()).isEqualTo(BitString.of(
+                "1011010111010011010111010001110101110101110110101001110101110101" +
+                "01110001101010101100"));
+        assertThat((Object) BitString.builder()
+                .append("1001").append("1").append("01101110").append("01100011").append("000")
+                .build()).isEqualTo(BitString.of(
+                "100110110111001100011000"));
+        assertThat((Object) BitString.builder()
+                .append("0010100001010111010110100010101111101010001101101010011101110111")
+                .append("001110101110100110")
+                .append("10001101000011011010")
+                .append("10011010001110101001101001")
+                .append("0011110101111010111101111101101110111011010001101001101011011101")
+                .append("10010011110")
+                .append("1001101011101011")
+                .build()).isEqualTo(BitString.of(
+                "0010100001010111010110100010101111101010001101101010011101110111" +
+                "0011101011101001101000110100001101101010011010001110101001101001" +
+                "0011110101111010111101111101101110111011010001101001101011011101" +
+                "100100111101001101011101011"));
+        assertThat((Object) BitString.builder()
+                .append("1001110100111010111010110101010101110111010100111101011010101")
+                .append("0000000000000000")
+                .build()).isEqualTo(BitString.of(
+                "1001110100111010111010110101010101110111010100111101011010101000" +
+                "0000000000000"));
+        assertThat((Object) BitString.builder()
+                .append("01011101011110101011101010111101010111010101110101011")
+                .append("11010111010100110101011101010")
+                .build()).isEqualTo(BitString.of(
+                "0101110101111010101110101011110101011101010111010101111010111010" +
+                "100110101011101010"));
+        assertThat((Object) BitString.builder()
+                .append("100011101010101001010111101")
+                .append("01011101011110101001")
+                .append("10110010101101010011010100")
+                .append("0110101010100110101010110111")
+                .append("001011010110101011101010010")
+                .append("0101011101011101011010011101011101010")
+                .append("101011111010100011010001110101001101")
+                .build()).isEqualTo(BitString.of(
+                "1000111010101010010101111010101110101111010100110110010101101010" +
+                "0110101000110101010100110101010110111001011010110101011101010010" +
+                "0101011101011101011010011101011101010101011111010100011010001110" +
+                "101001101"));
+        assertThat((Object) BitString.builder()
+                .append(
+                        "1010111010111101010010101110101000110101110101111001010010101010" +
+                        "11101010010101000101010101101010101100")
+                .append(
+                        "0001101111011101010001010111010100010110101010101101001011010110" +
+                        "0110101101010001000101001100101011010100101011101010000101110101" +
+                        "11010110101001001111010001010110101110101")
+                .build()).isEqualTo(BitString.of(
+                "1010111010111101010010101110101000110101110101111001010010101010" +
+                "1110101001010100010101010110101010110000011011110111010100010101" +
+                "1101010001011010101010110100101101011001101011010100010001010011" +
+                "0010101101010010101110101000010111010111010110101001001111010001" +
+                "010110101110101"));
+        assertThat((Object) BitString.builder().append(BitString.empty()).build()).isEqualTo(BitString.empty());
+        assertThat((Object) BitString.builder().append(BitString.of("10110")).build()).isEqualTo(BitString.of("10110"));
+        assertThat((Object) BitString.builder()
+                .append("1011101011")
+                .append('0')
+                .append(BitString.of("000001100"))
+                .append(true)
+                .append(false)
+                .append('1')
+                .append('1')
+                .append(BitString.of("111010001001101011100"))
+                .append("100000110101110101000001")
+                .append(
+                        "1100100010101110101011110101011101010111101010101010111010110100" +
+                        "1")
+                .append(false)
+                .append(new boolean[] { true, false, true, true, false })
+                .build()).isEqualTo(BitString.of(
+                "1011101011000000110010111110100010011010111001000001101011101010" +
+                "0000111001000101011101010111101010111010101111010101010101110101" +
+                "101001010110"));
+    }
+
+    @Test
     void testLength() {
         assertThat(BitString.empty().length()).isZero();
         assertThat(BitString.of(new boolean[0]).length()).isZero();

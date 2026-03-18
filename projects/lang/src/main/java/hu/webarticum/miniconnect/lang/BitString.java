@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
 /**
@@ -158,6 +159,10 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
             data[fullWordCount] = word;
         }
         return new BitString(data, length);
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 
 
@@ -1033,6 +1038,102 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
             boolean result = get(position);
             position++;
             return result;
+        }
+
+    }
+
+
+    public static class Builder {
+
+        private final LinkedList<long[]> sections = new LinkedList<>();
+
+        private int length = 0;
+
+
+        private Builder() {
+            // use BitString.builder() instead
+        }
+
+
+        public Builder append(BitString bitsToAppend) {
+            int tailLength = length & 63;
+            int increment = bitsToAppend.length;
+            int newLength = length + increment;
+            if (tailLength == 0) {
+                sections.add(Arrays.copyOf(bitsToAppend.data, bitsToAppend.data.length));
+            } else {
+                long[] lastSection = sections.getLast();
+                lastSection[lastSection.length - 1] |= bitsToAppend.data[0] >>> tailLength;
+                int suffixLength = 64 - tailLength;
+                if (increment > suffixLength) {
+                    int wordCount = (length + 63) >>> 6;
+                    int newWordCount = (newLength + 63) >>> 6;
+                    int nextWordCount = newWordCount - wordCount;
+                    long[] nextSection = new long[nextWordCount];
+                    int newFullWordCount = newLength >>> 6;
+                    int nextFullWordCount = newFullWordCount - wordCount;
+                    long wordPrefix = bitsToAppend.data[0] << suffixLength;
+                    for (int i = 0; i < nextFullWordCount; i++) {
+                        long sourceWord = bitsToAppend.data[i + 1];
+                        long wordSuffix = sourceWord >>> tailLength;
+                        nextSection[i] = wordPrefix | wordSuffix;
+                        wordPrefix = sourceWord << suffixLength;
+                    }
+                    if (nextFullWordCount != nextWordCount) {
+                        long lastNewWord = wordPrefix;
+                        if (bitsToAppend.data.length != nextWordCount) {
+                            long wordSuffix = bitsToAppend.data[nextWordCount] >>> tailLength;
+                            lastNewWord |= wordSuffix;
+                        }
+                        nextSection[nextFullWordCount] = lastNewWord;
+                    }
+                    sections.add(nextSection);
+                }
+            }
+            length = newLength;
+            return this;
+        }
+
+        public Builder append(boolean[] bitsToAppend) {
+            return append(BitString.of(bitsToAppend));
+        }
+
+        public Builder append(String bitsToAppend) {
+            return append(BitString.of(bitsToAppend));
+        }
+
+        public Builder append(boolean bitToAppend) {
+            int tailLength = length & 63;
+            if (tailLength == 0) {
+                long newWord = bitToAppend ? -9223372036854775808L : 0L;
+                sections.add(new long[] { newWord });
+            } else if (bitToAppend) {
+                long[] lastSection = sections.getLast();
+                lastSection[lastSection.length - 1] |= 1L << (64 - tailLength - 1);
+            }
+            length++;
+            return this;
+        }
+
+        public Builder append(char bitChar) {
+            if (bitChar == '1') {
+                return append(true);
+            } else if (bitChar == '0') {
+                return append(false);
+            } else {
+                throw new IllegalArgumentException("Invalid character: '" + bitChar + "'");
+            }
+        }
+
+        public BitString build() {
+            int wordCount = (length + 63) >>> 6;
+            long[] data = new long[wordCount];
+            int pos = 0;
+            for (long[] section : sections) {
+                System.arraycopy(section, 0, data, pos, section.length);
+                pos += section.length;
+            }
+            return new BitString(data, length);
         }
 
     }
