@@ -1654,6 +1654,34 @@ class BitStringTest {
     }
 
     @Test
+    void testCountOfOnes() {
+        assertThat(BitString.empty().countOfOnes()).isEqualTo(0);
+        assertThat(BitString.of("0").countOfOnes()).isEqualTo(0);
+        assertThat(BitString.of("1").countOfOnes()).isEqualTo(1);
+        assertThat(BitString.of("0000000").countOfOnes()).isEqualTo(0);
+        assertThat(BitString.of("1111111").countOfOnes()).isEqualTo(7);
+        assertThat(BitString.of("01110001011011001").countOfOnes()).isEqualTo(9);
+        assertThat(BitString.of(
+                "1000111101010011011011010111010001101111011001010101110101011101" +
+                "0100101101101101101110101000100011110101110101000011010101110101" +
+                "1101000101000101000101001").countOfOnes()).isEqualTo(83);
+    }
+
+    @Test
+    void testCountOfZeros() {
+        assertThat(BitString.empty().countOfZeros()).isEqualTo(0);
+        assertThat(BitString.of("0").countOfZeros()).isEqualTo(1);
+        assertThat(BitString.of("1").countOfZeros()).isEqualTo(0);
+        assertThat(BitString.of("0000000").countOfZeros()).isEqualTo(7);
+        assertThat(BitString.of("1111111").countOfZeros()).isEqualTo(0);
+        assertThat(BitString.of("01110001011011001").countOfZeros()).isEqualTo(8);
+        assertThat(BitString.of(
+                "1000111101010011011011010111010001101111011001010101110101011101" +
+                "0100101101101101101110101000100011110101110101000011010101110101" +
+                "1101000101000101000101001").countOfZeros()).isEqualTo(70);
+    }
+
+    @Test
     void testToLong() {
         assertThat(BitString.empty().toLong()).isEqualTo(0);
         assertThat(BitString.of("0").toLong()).isZero();

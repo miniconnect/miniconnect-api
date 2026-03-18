@@ -809,6 +809,18 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         }
     }
 
+    public int countOfOnes() {
+        int result = 0;
+        for (long word : data) {
+            result += Long.bitCount(word);
+        }
+        return result;
+    }
+
+    public int countOfZeros() {
+        return length - countOfOnes();
+    }
+
     public boolean startsWith(BitString substring) {
         return match(substring, 0);
     }
