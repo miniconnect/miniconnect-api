@@ -809,6 +809,14 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         }
     }
 
+    public boolean startsWith(BitString substring) {
+        return match(substring, 0);
+    }
+
+    public boolean endsWith(BitString substring) {
+        return match(substring, length - substring.length);
+    }
+
     public boolean match(BitString substring, int position) {
         if (position > length || position < 0) {
             return false;

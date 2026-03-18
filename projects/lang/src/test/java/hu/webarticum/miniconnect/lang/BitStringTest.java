@@ -1386,6 +1386,132 @@ class BitStringTest {
     }
 
     @Test
+    void testStartsWith() {
+        assertThat(BitString.empty().startsWith(BitString.empty())).isTrue();
+        assertThat(BitString.empty().startsWith(BitString.of("0"))).isFalse();
+        assertThat(BitString.empty().startsWith(BitString.of("000"))).isFalse();
+        assertThat(BitString.empty().startsWith(BitString.of("0000000000"))).isFalse();
+        assertThat(BitString.empty().startsWith(BitString.of("1"))).isFalse();
+        assertThat(BitString.empty().startsWith(BitString.of("10010"))).isFalse();
+        assertThat(BitString.empty().startsWith(BitString.of("0111010"))).isFalse();
+        assertThat(BitString.of("0").startsWith(BitString.empty())).isTrue();
+        assertThat(BitString.of("0").startsWith(BitString.of("0"))).isTrue();
+        assertThat(BitString.of("0").startsWith(BitString.of("1"))).isFalse();
+        assertThat(BitString.of("0").startsWith(BitString.of("01"))).isFalse();
+        assertThat(BitString.of("0").startsWith(BitString.of("0011010"))).isFalse();
+        assertThat(BitString.of("1").startsWith(BitString.empty())).isTrue();
+        assertThat(BitString.of("1").startsWith(BitString.of("1"))).isTrue();
+        assertThat(BitString.of("1").startsWith(BitString.of("0"))).isFalse();
+        assertThat(BitString.of("01").startsWith(BitString.of("0"))).isTrue();
+        assertThat(BitString.of("01").startsWith(BitString.of("1"))).isFalse();
+        assertThat(BitString.of("10011010111000").startsWith(BitString.of("10011"))).isTrue();
+        assertThat(BitString.of("10011010111000").startsWith(BitString.of("10110"))).isFalse();
+        assertThat(BitString.of(
+                "0110101010111010111101011110101000110101110101001011110101110101" +
+                "11000011101010"
+                ).startsWith(BitString.of(
+                "0110101010111010111"))).isTrue();
+        assertThat(BitString.of(
+                "0110101010111010111101011110101000110101110101001011110101110101" +
+                "11000011101010"
+                ).startsWith(BitString.of(
+                "0101111010"))).isFalse();
+        assertThat(BitString.of(
+                "0110101010111010111101011110101000110101110101001011110101110101" +
+                "11000011101010"
+                ).startsWith(BitString.of(
+                "0110101010111010111101011110101000110101110101001011110101110101" +
+                "11000011101010"))).isTrue();
+        assertThat(BitString.of(
+                "0110101010111010111101011110101000110101110101001011110101110101" +
+                "11000011101010"
+                ).startsWith(BitString.of(
+                "0110101010111010111101011110101000110101110101001011110101110101" +
+                "1100001"))).isTrue();
+        assertThat(BitString.of(
+                "0110101010111010111101011110101000110101110101001011110101110101" +
+                "11000011101010"
+                ).startsWith(BitString.of(
+                "0110101010111010101101011110101000110101110101001011110101110101" +
+                "1100001"))).isFalse();
+        assertThat(BitString.of(
+                "0110101010111010111101011110101000110101110101001011110101110101" +
+                "11000011101010"
+                ).startsWith(BitString.of(
+                "0110101010111010111101011110101000110101110101001011110101110101" +
+                "1100101"))).isFalse();
+        assertThat(BitString.of(
+                "0110101010111010111101011110101000110101110101001011110101110101" +
+                "11000011101010"
+                ).startsWith(BitString.of(
+                "0110101010111010111101011110101000110101110101001011110101110101" +
+                "11000011101010000"))).isFalse();
+    }
+
+    @Test
+    void testEndsWith() {
+        assertThat(BitString.empty().endsWith(BitString.empty())).isTrue();
+        assertThat(BitString.empty().endsWith(BitString.of("0"))).isFalse();
+        assertThat(BitString.empty().endsWith(BitString.of("000"))).isFalse();
+        assertThat(BitString.empty().endsWith(BitString.of("0000000000"))).isFalse();
+        assertThat(BitString.empty().endsWith(BitString.of("1"))).isFalse();
+        assertThat(BitString.empty().endsWith(BitString.of("10010"))).isFalse();
+        assertThat(BitString.empty().endsWith(BitString.of("0111010"))).isFalse();
+        assertThat(BitString.of("0").endsWith(BitString.empty())).isTrue();
+        assertThat(BitString.of("0").endsWith(BitString.of("0"))).isTrue();
+        assertThat(BitString.of("0").endsWith(BitString.of("1"))).isFalse();
+        assertThat(BitString.of("0").endsWith(BitString.of("01"))).isFalse();
+        assertThat(BitString.of("0").endsWith(BitString.of("0011010"))).isFalse();
+        assertThat(BitString.of("1").endsWith(BitString.empty())).isTrue();
+        assertThat(BitString.of("1").endsWith(BitString.of("1"))).isTrue();
+        assertThat(BitString.of("1").endsWith(BitString.of("0"))).isFalse();
+        assertThat(BitString.of("01").endsWith(BitString.of("0"))).isFalse();
+        assertThat(BitString.of("01").endsWith(BitString.of("1"))).isTrue();
+        assertThat(BitString.of("10011010111000").endsWith(BitString.of("11000"))).isTrue();
+        assertThat(BitString.of("10011010111000").endsWith(BitString.of("10110"))).isFalse();
+        assertThat(BitString.of(
+                "0110101010111010111101011110101000110101110101001011110101110101" +
+                "11000011101010"
+                ).endsWith(BitString.of(
+                "00011101010"))).isTrue();
+        assertThat(BitString.of(
+                "0110101010111010111101011110101000110101110101001011110101110101" +
+                "11000011101010"
+                ).endsWith(BitString.of(
+                "0101111010"))).isFalse();
+        assertThat(BitString.of(
+                "0110101010111010111101011110101000110101110101001011110101110101" +
+                "11000011101010"
+                ).endsWith(BitString.of(
+                "0110101010111010111101011110101000110101110101001011110101110101" +
+                "11000011101010"))).isTrue();
+        assertThat(BitString.of(
+                "0110101010111010111101011110101000110101110101001011110101110101" +
+                "11000011101010"
+                ).endsWith(BitString.of(
+                "1010111010111101011110101000110101110101001011110101110101110000" +
+                "11101010"))).isTrue();
+        assertThat(BitString.of(
+                "0110101010111010111101011110101000110101110101001011110101110101" +
+                "11000011101010"
+                ).endsWith(BitString.of(
+                "1010111010111101011010101000110101110101001011110101110101110000" +
+                "11101010"))).isFalse();
+        assertThat(BitString.of(
+                "0110101010111010111101011110101000110101110101001011110101110101" +
+                "11000011101010"
+                ).endsWith(BitString.of(
+                "1010111010111101011110101000110101110101001011110101110101110000" +
+                "11101110"))).isFalse();
+        assertThat(BitString.of(
+                "0110101010111010111101011110101000110101110101001011110101110101" +
+                "11000011101010"
+                ).endsWith(BitString.of(
+                "0000110101010111010111101011110101000110101110101001011110101110" +
+                "10111000011101010"))).isFalse();
+    }
+
+    @Test
     void testMatch() {
         assertThat(BitString.empty().match(BitString.empty(), 0)).isTrue();
         assertThat(BitString.of("0").match(BitString.empty(), 0)).isTrue();
