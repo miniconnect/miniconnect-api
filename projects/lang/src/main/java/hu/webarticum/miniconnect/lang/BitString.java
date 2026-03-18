@@ -272,32 +272,27 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         if (position < 0) {
             throw new IndexOutOfBoundsException();
         }
-        if (position >= length) {
-            int targetCeilWordCount = (length + 63) >>> 6;
-            BitString result;
-            if (targetCeilWordCount == data.length) {
-                result = new BitString(data, position + 1);
-            } else {
-                long[] newData = new long[targetCeilWordCount];
-                System.arraycopy(data, 0, newData, 0, data.length);
-                result = new BitString(data, position + 1);
-            }
-            if (value) {
-                result = result.set(position, value);
-            }
-            return result;
-        }
         int wordIndex = position >>> 6;
+        if (wordIndex >= data.length) {
+            long[] newData = new long[wordIndex + 1];
+            System.arraycopy(data, 0, newData, 0, data.length);
+            if (value) {
+                newData[wordIndex] = Long.MIN_VALUE >>> (position & 63);
+            }
+            return new BitString(newData, position + 1);
+        }
+        boolean lengthIncreased = position >= length;
         long word = data[wordIndex];
         long mask = Long.MIN_VALUE >>> (position & 63);
         long masked = word & mask;
         boolean wasSet = masked != 0;
         if (wasSet == value) {
-            return this;
+            return lengthIncreased ? new BitString(data, position + 1) : this;
         }
         long changedWord = word ^ mask;
         long[] newData = replacedWord(data, wordIndex, changedWord);
-        return new BitString(newData, length);
+        int newLength = lengthIncreased ? position + 1 : length;
+        return new BitString(newData, newLength);
     }
 
     public BitString setStrict(int position, boolean value) {

@@ -426,12 +426,31 @@ class BitStringTest {
     @Test
     void testSet() {
         assertThat((Object) BitString.of("0").set(0, true)).isEqualTo(BitString.of("1"));
-        assertThat((Object) BitString.of("0").set(2, true)).isEqualTo(BitString.of("001"));
+        assertThat((Object) BitString.of("0").set(0, false)).isEqualTo(BitString.of("0"));
         assertThat((Object) BitString.of("1").set(0, false)).isEqualTo(BitString.of("0"));
+        assertThat((Object) BitString.of("1").set(0, true)).isEqualTo(BitString.of("1"));
+        assertThat((Object) BitString.of("0").set(2, true)).isEqualTo(BitString.of("001"));
         assertThat((Object) BitString.of("1").set(5, false)).isEqualTo(BitString.of("100000"));
         assertThat((Object) BitString.of("10110100").set(3, true)).isEqualTo(BitString.of("10110100"));
         assertThat((Object) BitString.of("10110100").set(3, false)).isEqualTo(BitString.of("10100100"));
         assertThat((Object) BitString.of("10110100").set(11, true)).isEqualTo(BitString.of("101101000001"));
+        assertThat((Object) BitString.of("10110100").set(72, true)).isEqualTo(BitString.of(
+                "1011010000000000000000000000000000000000000000000000000000000000" +
+                "000000001"));
+        assertThat((Object) BitString.of("10110100").set(128, true)).isEqualTo(BitString.of(
+                "1011010000000000000000000000000000000000000000000000000000000000" +
+                "0000000000000000000000000000000000000000000000000000000000000000" +
+                "1"));
+        assertThat((Object) BitString.of("10110100").set(192, false)).isEqualTo(BitString.of(
+                "1011010000000000000000000000000000000000000000000000000000000000" +
+                "0000000000000000000000000000000000000000000000000000000000000000" +
+                "0000000000000000000000000000000000000000000000000000000000000000" +
+                "0"));
+        assertThat((Object) BitString.of("10110100").set(204, true)).isEqualTo(BitString.of(
+                "1011010000000000000000000000000000000000000000000000000000000000" +
+                "0000000000000000000000000000000000000000000000000000000000000000" +
+                "0000000000000000000000000000000000000000000000000000000000000000" +
+                "0000000000001"));
     }
 
     @Test
@@ -440,20 +459,20 @@ class BitStringTest {
     }
 
     @Test
-    void testSetStrict() {
-        assertThat((Object) BitString.of("0").setStrict(0, true)).isEqualTo(BitString.of("1"));
-        assertThat((Object) BitString.of("1").setStrict(0, false)).isEqualTo(BitString.of("0"));
-        assertThat((Object) BitString.of("10110100").setStrict(3, true)).isEqualTo(BitString.of("10110100"));
-        assertThat((Object) BitString.of("10110100").setStrict(3, false)).isEqualTo(BitString.of("10100100"));
+    void testFlipStrict() {
+        assertThat((Object) BitString.of("0").flipStrict(0)).isEqualTo(BitString.of("1"));
+        assertThat((Object) BitString.of("1").flipStrict(0)).isEqualTo(BitString.of("0"));
+        assertThat((Object) BitString.of("10110100").flipStrict(3)).isEqualTo(BitString.of("10100100"));
+        assertThat((Object) BitString.of("10110100").flipStrict(4)).isEqualTo(BitString.of("10111100"));
     }
 
     @Test
-    void testSetStrictOutOfBounds() {
-        assertThatThrownBy(() -> BitString.empty().setStrict(-1, false)).isInstanceOf(IndexOutOfBoundsException.class);
-        assertThatThrownBy(() -> BitString.empty().setStrict(0, false)).isInstanceOf(IndexOutOfBoundsException.class);
-        assertThatThrownBy(() -> BitString.empty().setStrict(1, false)).isInstanceOf(IndexOutOfBoundsException.class);
-        assertThatThrownBy(() -> BitString.of(new long[1]).setStrict(71, false)).isInstanceOf(IndexOutOfBoundsException.class);
-        assertThatThrownBy(() -> BitString.of(new long[1], 3).setStrict(22, false)).isInstanceOf(IndexOutOfBoundsException.class);
+    void testFlipStrictOutOfBounds() {
+        assertThatThrownBy(() -> BitString.empty().flipStrict(-1)).isInstanceOf(IndexOutOfBoundsException.class);
+        assertThatThrownBy(() -> BitString.empty().flipStrict(0)).isInstanceOf(IndexOutOfBoundsException.class);
+        assertThatThrownBy(() -> BitString.empty().flipStrict(1)).isInstanceOf(IndexOutOfBoundsException.class);
+        assertThatThrownBy(() -> BitString.of(new long[1]).flipStrict(71)).isInstanceOf(IndexOutOfBoundsException.class);
+        assertThatThrownBy(() -> BitString.of(new long[1], 3).flipStrict(22)).isInstanceOf(IndexOutOfBoundsException.class);
     }
 
     @Test
