@@ -312,6 +312,38 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         return new BitString(newData, length);
     }
 
+    public BitString flip(int position) {
+        if (position < 0) {
+            throw new IndexOutOfBoundsException();
+        }
+        int wordIndex = position >>> 6;
+        if (wordIndex >= data.length) {
+            long[] newData = new long[wordIndex + 1];
+            System.arraycopy(data, 0, newData, 0, data.length);
+            newData[wordIndex] = Long.MIN_VALUE >>> (position & 63);
+            return new BitString(newData, position + 1);
+        }
+        boolean lengthIncreased = position >= length;
+        long word = data[wordIndex];
+        long mask = Long.MIN_VALUE >>> (position & 63);
+        long changedWord = word ^ mask;
+        long[] newData = replacedWord(data, wordIndex, changedWord);
+        int newLength = lengthIncreased ? position + 1 : length;
+        return new BitString(newData, newLength);
+    }
+
+    public BitString flipStrict(int position) {
+        if (position < 0 || position >= length) {
+            throw new IndexOutOfBoundsException();
+        }
+        int wordIndex = position >>> 6;
+        long word = data[wordIndex];
+        long mask = Long.MIN_VALUE >>> (position & 63);
+        long changedWord = word ^ mask;
+        long[] newData = replacedWord(data, wordIndex, changedWord);
+        return new BitString(newData, length);
+    }
+
     private long[] replacedWord(long[] original, int wordIndex, long newWord) {
         if (original.length == 1) {
             return new long[] { newWord };
