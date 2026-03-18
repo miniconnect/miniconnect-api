@@ -320,8 +320,9 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         if (wordIndex != 0) {
             System.arraycopy(original, 0, result, 0, wordIndex);
         }
+        result[wordIndex] = newWord;
         if (wordIndex < original.length - 1) {
-            int from = wordIndex;
+            int from = wordIndex + 1;
             System.arraycopy(original, from, result, from, original.length - wordIndex - 1);
         }
         return result;
