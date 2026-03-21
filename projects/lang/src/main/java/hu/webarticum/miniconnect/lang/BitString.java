@@ -1108,8 +1108,11 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
 
 
         public Builder append(BitString bitsToAppend) {
-            int tailLength = length & 63;
             int increment = bitsToAppend.length;
+            if (increment == 0) {
+                return this;
+            }
+            int tailLength = length & 63;
             int newLength = length + increment;
             if (tailLength == 0) {
                 sections.add(Arrays.copyOf(bitsToAppend.data, bitsToAppend.data.length));

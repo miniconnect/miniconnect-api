@@ -160,6 +160,7 @@ class BitStringTest {
         assertThat((Object) BitString.builder()
                 .append("0010100001010111010110100010101111101010001101101010011101110111")
                 .append("001110101110100110")
+                .append("")
                 .append("10001101000011011010")
                 .append("10011010001110101001101001")
                 .append("0011110101111010111101111101101110111011010001101001101011011101")
@@ -173,6 +174,7 @@ class BitStringTest {
         assertThat((Object) BitString.builder()
                 .append("1001110100111010111010110101010101110111010100111101011010101")
                 .append("0000000000000000")
+                .append("")
                 .build()).isEqualTo(BitString.of(
                 "1001110100111010111010110101010101110111010100111101011010101000" +
                 "0000000000000"));
@@ -188,6 +190,7 @@ class BitStringTest {
                 .append("10110010101101010011010100")
                 .append("0110101010100110101010110111")
                 .append("001011010110101011101010010")
+                .append("")
                 .append("0101011101011101011010011101011101010")
                 .append("101011111010100011010001110101001101")
                 .build()).isEqualTo(BitString.of(
@@ -219,6 +222,7 @@ class BitStringTest {
                 .append(false)
                 .append('1')
                 .append('1')
+                .append("")
                 .append(BitString.of("111010001001101011100"))
                 .append("100000110101110101000001")
                 .append(
