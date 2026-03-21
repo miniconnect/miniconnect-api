@@ -501,6 +501,10 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         return new BitString(resultData, resultLength);
     }
 
+    public BitString substring(int from) {
+        return substring(from, length);
+    }
+
     public BitString window(int from, int until) {
         if (from > until) {
             throw new IllegalArgumentException("Invalid substring");
