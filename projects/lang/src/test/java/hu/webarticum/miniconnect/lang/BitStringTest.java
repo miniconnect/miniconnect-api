@@ -1305,6 +1305,49 @@ class BitStringTest {
     }
 
     @Test
+    void testReverse() {
+        assertThat((Object) BitString.empty().reverse()).isEqualTo(BitString.empty());
+        assertThat((Object) BitString.of("0").reverse()).isEqualTo(BitString.of("0"));
+        assertThat((Object) BitString.of("00000").reverse()).isEqualTo(BitString.of("00000"));
+        assertThat((Object) BitString.of("1").reverse()).isEqualTo(BitString.of("1"));
+        assertThat((Object) BitString.of("11111").reverse()).isEqualTo(BitString.of("11111"));
+        assertThat((Object) BitString.of("10").reverse()).isEqualTo(BitString.of("01"));
+        assertThat((Object) BitString.of("01").reverse()).isEqualTo(BitString.of("10"));
+        assertThat((Object) BitString.of("01110001101").reverse()).isEqualTo(BitString.of("10110001110"));
+        assertThat((Object) BitString.of("10101110011001010010").reverse()).isEqualTo(BitString.of("01001010011001110101"));
+        assertThat((Object) BitString.of("1011010100010101010100010101011010110101011101010010101010010101").reverse())
+                .isEqualTo(BitString.of("1010100101010100101011101010110101101010100010101010100010101101"));
+        assertThat((Object) BitString.of(
+                "1101001101101010001011011011010100010010101011010110101000011100" +
+                "11010101001010101101101").reverse())
+                .isEqualTo(BitString.of(
+                "1011011010101001010101100111000010101101011010101001000101011011" +
+                "01101000101011011001011"));
+        assertThat((Object) BitString.of(
+                "1010010111010111010110101110101010111101101011010101101011010001" +
+                "0010101111010100010101101010110100001010110101010010101001011101" +
+                "1101010110101011010100010111010011010101010110101101011101001100" +
+                "0111010001001101001010001011101010101100101011010111011001101010").reverse())
+                .isEqualTo(BitString.of(
+                "0101011001101110101101010011010101011101000101001011001000101110" +
+                "0011001011101011010110101010101100101110100010101101010110101011" +
+                "1011101001010100101010110101000010110101011010100010101111010100" +
+                "1000101101011010101101011011110101010111010110101110101110100101"));
+        assertThat((Object) BitString.of(
+                "0101101001100101010111010010100101011010000101011101010110110011" +
+                "1010101101010000110100010110101011010101101010101111001011010100" +
+                "0101011101010001011101011010101101010001010111010100001010110101" +
+                "1101011010110001011101011010010101110101010001010110111011010100" +
+                "00110101010100001011110101110101110101").reverse())
+                .isEqualTo(BitString.of(
+                "1010111010111010111101000010101010110000101011011101101010001010" +
+                "1011101010010110101110100011010110101110101101010000101011101010" +
+                "0010101101010110101110100010101110101000101011010011110101010110" +
+                "1010110101011010001011000010101101010111001101101010111010100001" +
+                "01101010010100101110101010011001011010"));
+    }
+
+    @Test
     void testIndexOfOne() {
         assertThat(BitString.empty().indexOfOne()).isEqualTo(-1);
         assertThat(BitString.of("0").indexOfOne()).isEqualTo(-1);
