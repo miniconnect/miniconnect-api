@@ -1594,6 +1594,90 @@ class BitStringTest {
     }
 
     @Test
+    void testIndexOfSubstring() {
+        assertThat(BitString.empty().indexOf(BitString.empty())).isEqualTo(0);
+        assertThat(BitString.empty().indexOf(BitString.of("0"))).isEqualTo(-1);
+        assertThat(BitString.empty().indexOf(BitString.of("1"))).isEqualTo(-1);
+        assertThat(BitString.empty().indexOf(BitString.of("1010100"))).isEqualTo(-1);
+        assertThat(BitString.of("0").indexOf(BitString.empty())).isEqualTo(0);
+        assertThat(BitString.of("0").indexOf(BitString.of("0"))).isEqualTo(0);
+        assertThat(BitString.of("0").indexOf(BitString.of("00"))).isEqualTo(-1);
+        assertThat(BitString.of("0").indexOf(BitString.of("1"))).isEqualTo(-1);
+        assertThat(BitString.of("1").indexOf(BitString.empty())).isEqualTo(0);
+        assertThat(BitString.of("1").indexOf(BitString.of("1"))).isEqualTo(0);
+        assertThat(BitString.of("1").indexOf(BitString.of("11"))).isEqualTo(-1);
+        assertThat(BitString.of("1").indexOf(BitString.of("0"))).isEqualTo(-1);
+        assertThat(BitString.of("100110111010").indexOf(BitString.of("0"))).isEqualTo(1);
+        assertThat(BitString.of("100110111010").indexOf(BitString.of("1"))).isEqualTo(0);
+        assertThat(BitString.of("100110111010").indexOf(BitString.of("000"))).isEqualTo(-1);
+        assertThat(BitString.of("100110111010").indexOf(BitString.of("100"))).isEqualTo(0);
+        assertThat(BitString.of("100110111010").indexOf(BitString.of("110"))).isEqualTo(3);
+        assertThat(BitString.of("100110111010").indexOf(BitString.of("1010"))).isEqualTo(8);
+        assertThat(BitString.of("100110111010").indexOf(BitString.of("1101"))).isEqualTo(3);
+        assertThat(BitString.of("100110111010").indexOf(BitString.of("0100"))).isEqualTo(-1);
+        assertThat(BitString.of("100110111010").indexOf(BitString.of("100110111010"))).isEqualTo(0);
+        assertThat(BitString.of(
+                "0000000000001110000000000000000000000000000000000000000000000000" +
+                "00011110000000000").indexOf(BitString.of("111"))).isEqualTo(12);
+        assertThat(BitString.of(
+                "0000000000001110000000000000000000000000000000000000000000000000" +
+                "00011110000000000").indexOf(BitString.of("1111"))).isEqualTo(67);
+        assertThat(BITS_160.indexOf(BitString.of("0"))).isEqualTo(2);
+        assertThat(BITS_160.indexOf(BitString.of("1"))).isEqualTo(0);
+        assertThat(BITS_160.indexOf(BitString.of("100"))).isEqualTo(3);
+        assertThat(BITS_160.indexOf(BitString.of("10001010110"))).isEqualTo(12);
+        assertThat(BITS_160.indexOf(BitString.of("1101011101010"))).isEqualTo(20);
+        assertThat(BITS_160.indexOf(BitString.of("11010111010001010111"))).isEqualTo(88);
+        assertThat(BITS_160.indexOf(BitString.of("1101011110"))).isEqualTo(55);
+        assertThat(BITS_160.indexOf(BitString.of("1001110"))).isEqualTo(66);
+        assertThat(BITS_160.indexOf(BitString.of("100111100010101001110001"))).isEqualTo(112);
+        assertThat(BITS_160.indexOf(BitString.of("10111010100101110"))).isEqualTo(-1);
+        assertThat(BITS_160.indexOf(BitString.of("11111111111111111111"))).isEqualTo(-1);
+    }
+
+    @Test
+    void testLastIndexOfSubstring() {
+        assertThat(BitString.empty().lastIndexOf(BitString.empty())).isEqualTo(0);
+        assertThat(BitString.empty().lastIndexOf(BitString.of("0"))).isEqualTo(-1);
+        assertThat(BitString.empty().lastIndexOf(BitString.of("1"))).isEqualTo(-1);
+        assertThat(BitString.empty().lastIndexOf(BitString.of("1010100"))).isEqualTo(-1);
+        assertThat(BitString.of("0").lastIndexOf(BitString.empty())).isEqualTo(1);
+        assertThat(BitString.of("0").lastIndexOf(BitString.of("0"))).isEqualTo(0);
+        assertThat(BitString.of("0").lastIndexOf(BitString.of("00"))).isEqualTo(-1);
+        assertThat(BitString.of("0").lastIndexOf(BitString.of("1"))).isEqualTo(-1);
+        assertThat(BitString.of("1").lastIndexOf(BitString.empty())).isEqualTo(1);
+        assertThat(BitString.of("1").lastIndexOf(BitString.of("1"))).isEqualTo(0);
+        assertThat(BitString.of("1").lastIndexOf(BitString.of("11"))).isEqualTo(-1);
+        assertThat(BitString.of("1").lastIndexOf(BitString.of("0"))).isEqualTo(-1);
+        assertThat(BitString.of("100110111010").lastIndexOf(BitString.of("0"))).isEqualTo(11);
+        assertThat(BitString.of("100110111010").lastIndexOf(BitString.of("1"))).isEqualTo(10);
+        assertThat(BitString.of("100110111010").lastIndexOf(BitString.of("000"))).isEqualTo(-1);
+        assertThat(BitString.of("100110111010").lastIndexOf(BitString.of("100"))).isEqualTo(0);
+        assertThat(BitString.of("100110111010").lastIndexOf(BitString.of("110"))).isEqualTo(7);
+        assertThat(BitString.of("100110111010").lastIndexOf(BitString.of("1010"))).isEqualTo(8);
+        assertThat(BitString.of("100110111010").lastIndexOf(BitString.of("1101"))).isEqualTo(7);
+        assertThat(BitString.of("100110111010").lastIndexOf(BitString.of("0100"))).isEqualTo(-1);
+        assertThat(BitString.of("100110111010").lastIndexOf(BitString.of("100110111010"))).isEqualTo(0);
+        assertThat(BitString.of(
+                "0000000000001110000000000000000000000000000000000000000000000000" +
+                "00011110000000000").lastIndexOf(BitString.of("111"))).isEqualTo(68);
+        assertThat(BitString.of(
+                "0000000000001110000000000000000000000000000000000000000000000000" +
+                "00011110000000000").lastIndexOf(BitString.of("1111"))).isEqualTo(67);
+        assertThat(BITS_160.lastIndexOf(BitString.of("0"))).isEqualTo(159);
+        assertThat(BITS_160.lastIndexOf(BitString.of("1"))).isEqualTo(158);
+        assertThat(BITS_160.lastIndexOf(BitString.of("100"))).isEqualTo(146);
+        assertThat(BITS_160.lastIndexOf(BitString.of("10001010110"))).isEqualTo(131);
+        assertThat(BITS_160.lastIndexOf(BitString.of("1101011101010"))).isEqualTo(42);
+        assertThat(BITS_160.lastIndexOf(BitString.of("11010111010001010111"))).isEqualTo(88);
+        assertThat(BITS_160.lastIndexOf(BitString.of("1101011110"))).isEqualTo(55);
+        assertThat(BITS_160.lastIndexOf(BitString.of("1001110"))).isEqualTo(126);
+        assertThat(BITS_160.lastIndexOf(BitString.of("100111100010101001110001"))).isEqualTo(112);
+        assertThat(BITS_160.lastIndexOf(BitString.of("10111010100101110"))).isEqualTo(-1);
+        assertThat(BITS_160.lastIndexOf(BitString.of("11111111111111111111"))).isEqualTo(-1);
+    }
+
+    @Test
     void testStartsWith() {
         assertThat(BitString.empty().startsWith(BitString.empty())).isTrue();
         assertThat(BitString.empty().startsWith(BitString.of("0"))).isFalse();
@@ -1775,90 +1859,6 @@ class BitStringTest {
         assertThat(BITS_160.match(BitString.of("11011011100"), 150)).isFalse();
         assertThat(BITS_160.match(BitString.empty(), 160)).isTrue();
         assertThat(BITS_160.match(BitString.empty(), 165)).isFalse();
-    }
-
-    @Test
-    void testIndexOfSubstring() {
-        assertThat(BitString.empty().indexOf(BitString.empty())).isEqualTo(0);
-        assertThat(BitString.empty().indexOf(BitString.of("0"))).isEqualTo(-1);
-        assertThat(BitString.empty().indexOf(BitString.of("1"))).isEqualTo(-1);
-        assertThat(BitString.empty().indexOf(BitString.of("1010100"))).isEqualTo(-1);
-        assertThat(BitString.of("0").indexOf(BitString.empty())).isEqualTo(0);
-        assertThat(BitString.of("0").indexOf(BitString.of("0"))).isEqualTo(0);
-        assertThat(BitString.of("0").indexOf(BitString.of("00"))).isEqualTo(-1);
-        assertThat(BitString.of("0").indexOf(BitString.of("1"))).isEqualTo(-1);
-        assertThat(BitString.of("1").indexOf(BitString.empty())).isEqualTo(0);
-        assertThat(BitString.of("1").indexOf(BitString.of("1"))).isEqualTo(0);
-        assertThat(BitString.of("1").indexOf(BitString.of("11"))).isEqualTo(-1);
-        assertThat(BitString.of("1").indexOf(BitString.of("0"))).isEqualTo(-1);
-        assertThat(BitString.of("100110111010").indexOf(BitString.of("0"))).isEqualTo(1);
-        assertThat(BitString.of("100110111010").indexOf(BitString.of("1"))).isEqualTo(0);
-        assertThat(BitString.of("100110111010").indexOf(BitString.of("000"))).isEqualTo(-1);
-        assertThat(BitString.of("100110111010").indexOf(BitString.of("100"))).isEqualTo(0);
-        assertThat(BitString.of("100110111010").indexOf(BitString.of("110"))).isEqualTo(3);
-        assertThat(BitString.of("100110111010").indexOf(BitString.of("1010"))).isEqualTo(8);
-        assertThat(BitString.of("100110111010").indexOf(BitString.of("1101"))).isEqualTo(3);
-        assertThat(BitString.of("100110111010").indexOf(BitString.of("0100"))).isEqualTo(-1);
-        assertThat(BitString.of("100110111010").indexOf(BitString.of("100110111010"))).isEqualTo(0);
-        assertThat(BitString.of(
-                "0000000000001110000000000000000000000000000000000000000000000000" +
-                "00011110000000000").indexOf(BitString.of("111"))).isEqualTo(12);
-        assertThat(BitString.of(
-                "0000000000001110000000000000000000000000000000000000000000000000" +
-                "00011110000000000").indexOf(BitString.of("1111"))).isEqualTo(67);
-        assertThat(BITS_160.indexOf(BitString.of("0"))).isEqualTo(2);
-        assertThat(BITS_160.indexOf(BitString.of("1"))).isEqualTo(0);
-        assertThat(BITS_160.indexOf(BitString.of("100"))).isEqualTo(3);
-        assertThat(BITS_160.indexOf(BitString.of("10001010110"))).isEqualTo(12);
-        assertThat(BITS_160.indexOf(BitString.of("1101011101010"))).isEqualTo(20);
-        assertThat(BITS_160.indexOf(BitString.of("11010111010001010111"))).isEqualTo(88);
-        assertThat(BITS_160.indexOf(BitString.of("1101011110"))).isEqualTo(55);
-        assertThat(BITS_160.indexOf(BitString.of("1001110"))).isEqualTo(66);
-        assertThat(BITS_160.indexOf(BitString.of("100111100010101001110001"))).isEqualTo(112);
-        assertThat(BITS_160.indexOf(BitString.of("10111010100101110"))).isEqualTo(-1);
-        assertThat(BITS_160.indexOf(BitString.of("11111111111111111111"))).isEqualTo(-1);
-    }
-
-    @Test
-    void testLastIndexOfSubstring() {
-        assertThat(BitString.empty().lastIndexOf(BitString.empty())).isEqualTo(0);
-        assertThat(BitString.empty().lastIndexOf(BitString.of("0"))).isEqualTo(-1);
-        assertThat(BitString.empty().lastIndexOf(BitString.of("1"))).isEqualTo(-1);
-        assertThat(BitString.empty().lastIndexOf(BitString.of("1010100"))).isEqualTo(-1);
-        assertThat(BitString.of("0").lastIndexOf(BitString.empty())).isEqualTo(1);
-        assertThat(BitString.of("0").lastIndexOf(BitString.of("0"))).isEqualTo(0);
-        assertThat(BitString.of("0").lastIndexOf(BitString.of("00"))).isEqualTo(-1);
-        assertThat(BitString.of("0").lastIndexOf(BitString.of("1"))).isEqualTo(-1);
-        assertThat(BitString.of("1").lastIndexOf(BitString.empty())).isEqualTo(1);
-        assertThat(BitString.of("1").lastIndexOf(BitString.of("1"))).isEqualTo(0);
-        assertThat(BitString.of("1").lastIndexOf(BitString.of("11"))).isEqualTo(-1);
-        assertThat(BitString.of("1").lastIndexOf(BitString.of("0"))).isEqualTo(-1);
-        assertThat(BitString.of("100110111010").lastIndexOf(BitString.of("0"))).isEqualTo(11);
-        assertThat(BitString.of("100110111010").lastIndexOf(BitString.of("1"))).isEqualTo(10);
-        assertThat(BitString.of("100110111010").lastIndexOf(BitString.of("000"))).isEqualTo(-1);
-        assertThat(BitString.of("100110111010").lastIndexOf(BitString.of("100"))).isEqualTo(0);
-        assertThat(BitString.of("100110111010").lastIndexOf(BitString.of("110"))).isEqualTo(7);
-        assertThat(BitString.of("100110111010").lastIndexOf(BitString.of("1010"))).isEqualTo(8);
-        assertThat(BitString.of("100110111010").lastIndexOf(BitString.of("1101"))).isEqualTo(7);
-        assertThat(BitString.of("100110111010").lastIndexOf(BitString.of("0100"))).isEqualTo(-1);
-        assertThat(BitString.of("100110111010").lastIndexOf(BitString.of("100110111010"))).isEqualTo(0);
-        assertThat(BitString.of(
-                "0000000000001110000000000000000000000000000000000000000000000000" +
-                "00011110000000000").lastIndexOf(BitString.of("111"))).isEqualTo(68);
-        assertThat(BitString.of(
-                "0000000000001110000000000000000000000000000000000000000000000000" +
-                "00011110000000000").lastIndexOf(BitString.of("1111"))).isEqualTo(67);
-        assertThat(BITS_160.lastIndexOf(BitString.of("0"))).isEqualTo(159);
-        assertThat(BITS_160.lastIndexOf(BitString.of("1"))).isEqualTo(158);
-        assertThat(BITS_160.lastIndexOf(BitString.of("100"))).isEqualTo(146);
-        assertThat(BITS_160.lastIndexOf(BitString.of("10001010110"))).isEqualTo(131);
-        assertThat(BITS_160.lastIndexOf(BitString.of("1101011101010"))).isEqualTo(42);
-        assertThat(BITS_160.lastIndexOf(BitString.of("11010111010001010111"))).isEqualTo(88);
-        assertThat(BITS_160.lastIndexOf(BitString.of("1101011110"))).isEqualTo(55);
-        assertThat(BITS_160.lastIndexOf(BitString.of("1001110"))).isEqualTo(126);
-        assertThat(BITS_160.lastIndexOf(BitString.of("100111100010101001110001"))).isEqualTo(112);
-        assertThat(BITS_160.lastIndexOf(BitString.of("10111010100101110"))).isEqualTo(-1);
-        assertThat(BITS_160.lastIndexOf(BitString.of("11111111111111111111"))).isEqualTo(-1);
     }
 
     @Test

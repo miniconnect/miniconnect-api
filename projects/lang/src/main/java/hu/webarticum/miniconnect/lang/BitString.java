@@ -809,9 +809,9 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
 
     public int indexOf(char bitChar) {
         if (bitChar == '1') {
-            return indexOf(true);
+            return indexOfOne();
         } else if (bitChar == '0') {
-            return indexOf(false);
+            return indexOfZero();
         } else {
             throw new IllegalArgumentException("Invalid character: '" + bitChar + "'");
         }
@@ -867,24 +867,54 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
 
     public int lastIndexOf(char bitChar) {
         if (bitChar == '1') {
-            return lastIndexOf(true);
+            return lastIndexOfOne();
         } else if (bitChar == '0') {
-            return lastIndexOf(false);
+            return lastIndexOfZero();
         } else {
             throw new IllegalArgumentException("Invalid character: '" + bitChar + "'");
         }
     }
 
-    public int countOfOnes() {
-        int result = 0;
-        for (long word : data) {
-            result += Long.bitCount(word);
+    public int indexOf(BitString substring) {
+        if (substring.length == 0) {
+            return 0;
+        } else if (length == 0) {
+            return -1;
+        } else if (substring.length == 1) {
+            return indexOf(substring.get(0));
+        } else if (substring.length == length) {
+            return equals(substring) ? 0 : -1;
+        } else if (substring.length > length) {
+            return -1;
         }
-        return result;
+        int maxValidPosition = length - substring.length;
+        for (int i = 0; i <= maxValidPosition; i++) {
+            if (matchInternal(substring, i)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
-    public int countOfZeros() {
-        return length - countOfOnes();
+    public int lastIndexOf(BitString substring) {
+        if (substring.length == 0) {
+            return length;
+        } else if (length == 0) {
+            return -1;
+        } else if (substring.length == 1) {
+            return lastIndexOf(substring.get(0));
+        } else if (substring.length == length) {
+            return equals(substring) ? 0 : -1;
+        } else if (substring.length > length) {
+            return -1;
+        }
+        int maxValidPosition = length - substring.length;
+        for (int i = maxValidPosition; i >= 0; i--) {
+            if (matchInternal(substring, i)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     public boolean startsWith(BitString substring) {
@@ -904,6 +934,18 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
             return false;
         }
         return matchInternal(substring, position);
+    }
+
+    public int countOfOnes() {
+        int result = 0;
+        for (long word : data) {
+            result += Long.bitCount(word);
+        }
+        return result;
+    }
+
+    public int countOfZeros() {
+        return length - countOfOnes();
     }
 
     private boolean matchInternal(BitString substring, int position) {
@@ -957,48 +999,6 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
             }
         }
         return true;
-    }
-
-    public int indexOf(BitString substring) {
-        if (substring.length == 0) {
-            return 0;
-        } else if (length == 0) {
-            return -1;
-        } else if (substring.length == 1) {
-            return indexOf(substring.get(0));
-        } else if (substring.length == length) {
-            return equals(substring) ? 0 : -1;
-        } else if (substring.length > length) {
-            return -1;
-        }
-        int maxValidPosition = length - substring.length;
-        for (int i = 0; i <= maxValidPosition; i++) {
-            if (matchInternal(substring, i)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    public int lastIndexOf(BitString substring) {
-        if (substring.length == 0) {
-            return length;
-        } else if (length == 0) {
-            return -1;
-        } else if (substring.length == 1) {
-            return lastIndexOf(substring.get(0));
-        } else if (substring.length == length) {
-            return equals(substring) ? 0 : -1;
-        } else if (substring.length > length) {
-            return -1;
-        }
-        int maxValidPosition = length - substring.length;
-        for (int i = maxValidPosition; i >= 0; i--) {
-            if (matchInternal(substring, i)) {
-                return i;
-            }
-        }
-        return -1;
     }
 
     public long toLong() {
