@@ -758,8 +758,36 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         return bit ? indexOfOne() : indexOfZero();
     }
 
+    public int indexOf(boolean bit, int fromIndex) {
+        return bit ? indexOfOne(fromIndex) : indexOfZero(fromIndex);
+    }
+
     public int indexOfOne() {
         for (int i = 0; i < data.length; i++) {
+            int pos = Long.numberOfLeadingZeros(data[i]);
+            if (pos != 64) {
+                return (i << 6) + pos;
+            }
+        }
+        return -1;
+    }
+
+    public int indexOfOne(int fromIndex) {
+        if (fromIndex >= length) {
+            return -1;
+        } else if (fromIndex < 0) {
+            fromIndex = 0;
+        }
+        int fromWordIndex = fromIndex >>> 6;
+        int fromFullWordIndex = (fromIndex + 63) >>> 6;
+        if (fromWordIndex != fromFullWordIndex) {
+            long mask = -1L >>> (fromIndex & 63);
+            int pos = Long.numberOfLeadingZeros(data[fromWordIndex] & mask);
+            if (pos != 64) {
+                return (fromWordIndex << 6) + pos;
+            }
+        }
+        for (int i = fromFullWordIndex; i < data.length; i++) {
             int pos = Long.numberOfLeadingZeros(data[i]);
             if (pos != 64) {
                 return (i << 6) + pos;
@@ -788,6 +816,47 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         return -1;
     }
 
+    public int indexOfZero(int fromIndex) {
+        if (fromIndex >= length) {
+            return -1;
+        } else if (fromIndex < 0) {
+            fromIndex = 0;
+        }
+        int tailLength = length & 63;
+        int fromWordIndex = fromIndex >>> 6;
+        int fromFullWordIndex = (fromIndex + 63) >>> 6;
+        if (fromWordIndex != fromFullWordIndex) {
+            boolean isLast = (fromFullWordIndex == data.length);
+            long fromMask = -1L >>> (fromIndex & 63);
+            long invertedWord = (~data[fromWordIndex]) & fromMask;
+            if (isLast && tailLength != 0) {
+                invertedWord &= -1L << (64 - tailLength);
+            }
+            int pos = Long.numberOfLeadingZeros(invertedWord);
+            if (pos != 64) {
+                return (fromWordIndex << 6) + pos;
+            } else if (isLast) {
+                return -1;
+            }
+        }
+        int fullWordCount = length >>> 6;
+        for (int i = fromFullWordIndex; i < fullWordCount; i++) {
+            int pos = Long.numberOfLeadingZeros(~data[i]);
+            if (pos != 64) {
+                return (i << 6) + pos;
+            }
+        }
+        if (tailLength != 0) {
+            long mask = -1L << (64 - tailLength);
+            long invertedTailWord = (~data[fullWordCount]) & mask;
+            int pos = Long.numberOfLeadingZeros(invertedTailWord);
+            if (pos != 64) {
+                return (fullWordCount << 6) + pos;
+            }
+        }
+        return -1;
+    }
+
     public int indexOf(char bitChar) {
         if (bitChar == '1') {
             return indexOfOne();
@@ -798,12 +867,55 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         }
     }
 
+    public int indexOf(char bitChar, int fromIndex) {
+        if (bitChar == '1') {
+            return indexOfOne(fromIndex);
+        } else if (bitChar == '0') {
+            return indexOfZero(fromIndex);
+        } else {
+            throw new IllegalArgumentException("Invalid character: '" + bitChar + "'");
+        }
+    }
+
     public int lastIndexOf(boolean bit) {
         return bit ? lastIndexOfOne() : lastIndexOfZero();
     }
 
+    public int lastIndexOf(boolean bit, int fromIndex) {
+        return bit ? lastIndexOfOne(fromIndex) : lastIndexOfZero(fromIndex);
+    }
+
     public int lastIndexOfOne() {
         for (int i = data.length - 1; i >= 0; i--) {
+            int pad = Long.numberOfTrailingZeros(data[i]);
+            if (pad != 64) {
+                int pos = 64 - pad - 1;
+                return (i << 6) + pos;
+            }
+        }
+        return -1;
+    }
+
+    public int lastIndexOfOne(int fromIndex) {
+        if (fromIndex >= length) {
+            fromIndex = length - 1;
+        }
+        if (fromIndex < 0) {
+            return -1;
+        }
+        int effectiveLength = fromIndex + 1;
+        int fullWordCount = effectiveLength >>> 6;
+        int tailLength = effectiveLength & 63;
+        if (tailLength != 0) {
+            long mask = -1L << (64 - tailLength);
+            long tailWord = data[fullWordCount] & mask;
+            int pad = Long.numberOfTrailingZeros(tailWord);
+            if (pad != 64) {
+                int pos = 64 - pad - 1;
+                return (fullWordCount << 6) + pos;
+            }
+        }
+        for (int i = fullWordCount - 1; i >= 0; i--) {
             int pad = Long.numberOfTrailingZeros(data[i]);
             if (pad != 64) {
                 int pos = 64 - pad - 1;
@@ -835,6 +947,35 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         return -1;
     }
 
+    public int lastIndexOfZero(int fromIndex) {
+        if (fromIndex >= length) {
+            fromIndex = length - 1;
+        }
+        if (fromIndex < 0) {
+            return -1;
+        }
+        int effectiveLength = fromIndex + 1;
+        int fullWordCount = effectiveLength >>> 6;
+        int tailLength = effectiveLength & 63;
+        if (tailLength != 0) {
+            long mask = -1L << (64 - tailLength);
+            long invertedTailWord = (~data[fullWordCount]) & mask;
+            int pad = Long.numberOfTrailingZeros(invertedTailWord);
+            if (pad != 64) {
+                int pos = 64 - pad - 1;
+                return (fullWordCount << 6) + pos;
+            }
+        }
+        for (int i = fullWordCount - 1; i >= 0; i--) {
+            int pad = Long.numberOfTrailingZeros(~data[i]);
+            if (pad != 64) {
+                int pos = 64 - pad - 1;
+                return (i << 6) + pos;
+            }
+        }
+        return -1;
+    }
+
     public int lastIndexOf(char bitChar) {
         if (bitChar == '1') {
             return lastIndexOfOne();
@@ -845,20 +986,38 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         }
     }
 
+    public int lastIndexOf(char bitChar, int fromIndex) {
+        if (bitChar == '1') {
+            return lastIndexOfOne(fromIndex);
+        } else if (bitChar == '0') {
+            return lastIndexOfZero(fromIndex);
+        } else {
+            throw new IllegalArgumentException("Invalid character: '" + bitChar + "'");
+        }
+    }
+
     public int indexOf(BitString substring) {
+        return indexOfInternal(substring, 0);
+    }
+
+    public int indexOf(BitString substring, int fromIndex) {
+        return indexOfInternal(substring, Math.max(0, fromIndex));
+    }
+
+    private int indexOfInternal(BitString substring, int fromIndex) {
         if (substring.length == 0) {
-            return 0;
+            return fromIndex > length ? -1 : fromIndex;
         } else if (length == 0) {
             return -1;
         } else if (substring.length == 1) {
-            return indexOf(substring.get(0));
+            return indexOf(substring.get(0), fromIndex);
         } else if (substring.length == length) {
             return equals(substring) ? 0 : -1;
         } else if (substring.length > length) {
             return -1;
         }
         int maxValidPosition = length - substring.length;
-        for (int i = 0; i <= maxValidPosition; i++) {
+        for (int i = fromIndex; i <= maxValidPosition; i++) {
             if (matchInternal(substring, i)) {
                 return i;
             }
@@ -867,19 +1026,26 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
     }
 
     public int lastIndexOf(BitString substring) {
+        return lastIndexOfInternal(substring, length - substring.length);
+    }
+
+    public int lastIndexOf(BitString substring, int fromIndex) {
+        return lastIndexOfInternal(substring, Math.min(length - substring.length, fromIndex));
+    }
+
+    private int lastIndexOfInternal(BitString substring, int fromIndex) {
         if (substring.length == 0) {
-            return length;
+            return fromIndex < 0 ? -1 : fromIndex;
         } else if (length == 0) {
             return -1;
         } else if (substring.length == 1) {
-            return lastIndexOf(substring.get(0));
+            return lastIndexOf(substring.get(0), fromIndex);
         } else if (substring.length == length) {
             return equals(substring) ? 0 : -1;
         } else if (substring.length > length) {
             return -1;
         }
-        int maxValidPosition = length - substring.length;
-        for (int i = maxValidPosition; i >= 0; i--) {
+        for (int i = fromIndex; i >= 0; i--) {
             if (matchInternal(substring, i)) {
                 return i;
             }
