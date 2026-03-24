@@ -109,7 +109,7 @@ class ByteStringTest {
     }
 
     @Test
-    void testComparse() {
+    void testCompare() {
         assertThat(ByteString.empty().compareTo(ByteString.empty())).isZero();
         assertThat(ByteString.of("lorem").compareTo(ByteString.of("lorem"))).isZero();
         assertThat(ByteString.of("loren").compareTo(ByteString.of("lorem"))).isPositive();
@@ -134,24 +134,24 @@ class ByteStringTest {
     void testSubstring() {
         ByteString byteString = ByteString.of("lorem");
         assertThatThrownBy(() -> byteString.substring(9)).isInstanceOf(IndexOutOfBoundsException.class);
-        assertThat((Iterable<Byte>) byteString.substring(3)).isEqualTo(ByteString.of("em"));
+        assertThat((Object) byteString.substring(3)).isEqualTo(ByteString.of("em"));
     }
 
     @Test
     void testSubstringUntil() {
         ByteString byteString = ByteString.of("lorem");
         assertThatThrownBy(() -> byteString.substring(2, 10)).isInstanceOf(IndexOutOfBoundsException.class);
-        assertThat((Iterable<Byte>) byteString.substring(1, 1)).isEqualTo(ByteString.empty());
-        assertThat((Iterable<Byte>) byteString.substring(1, 3)).isEqualTo(ByteString.of("or"));
+        assertThat((Object) byteString.substring(1, 1)).isEqualTo(ByteString.empty());
+        assertThat((Object) byteString.substring(1, 3)).isEqualTo(ByteString.of("or"));
     }
 
     @Test
     void testSubstringLength() {
         ByteString byteString = ByteString.of("lorem");
         assertThatThrownBy(() -> byteString.substringLength(3, 5)).isInstanceOf(IndexOutOfBoundsException.class);
-        assertThat((Iterable<Byte>) byteString.substringLength(1, 0)).isEqualTo(ByteString.empty());
-        assertThat((Iterable<Byte>) byteString.substringLength(2, 3)).isEqualTo(ByteString.of("rem"));
-        assertThat((Iterable<Byte>) byteString.substringLength(0, 5)).isSameAs(byteString);
+        assertThat((Object) byteString.substringLength(1, 0)).isEqualTo(ByteString.empty());
+        assertThat((Object) byteString.substringLength(2, 3)).isEqualTo(ByteString.of("rem"));
+        assertThat((Object) byteString.substringLength(0, 5)).isSameAs(byteString);
     }
 
     @Test
@@ -176,7 +176,7 @@ class ByteStringTest {
     @Test
     void testExtractUntil() {
         assertThat(ByteString.empty().extract(0, 0)).isEmpty();
-        assertThat((Iterable<Byte>) ByteString.empty()).satisfies(bs -> assertThatThrownBy(() ->
+        assertThat((Object) ByteString.empty()).satisfies(bs -> assertThatThrownBy(() ->
                 ((ByteString) bs).extract(10, 20)).isInstanceOf(IndexOutOfBoundsException.class));
         assertThat(ByteString.of(new byte[] { 0, 0, 1, -3, 100 }).extract(1, 4)).containsExactly(0, 1, -3);
         assertThat(ByteString.of("lorem ipsum").extract(1, 1)).isEmpty();
@@ -296,10 +296,10 @@ class ByteStringTest {
 
     @Test
     void testToString() throws IOException {
-        assertThat((Iterable<Byte>) ByteString.empty()).hasToString("");
-        assertThat((Iterable<Byte>) ByteString.ofByte(114)).hasToString("r");
-        assertThat((Iterable<Byte>) ByteString.of("lorem")).hasToString("lorem");
-        assertThat((Iterable<Byte>) ByteString.of("\u0000lorem \u1FFCipsum")).hasToString("[00]lorem [E1][BF][BC]ipsum");
+        assertThat((Object) ByteString.empty()).hasToString("");
+        assertThat((Object) ByteString.ofByte(114)).hasToString("r");
+        assertThat((Object) ByteString.of("lorem")).hasToString("lorem");
+        assertThat((Object) ByteString.of("\u0000lorem \u1FFCipsum")).hasToString("[00]lorem [E1][BF][BC]ipsum");
     }
 
     @Test
