@@ -156,6 +156,14 @@ public final class ByteString implements Comparable<ByteString>, Iterable<Byte>,
         return new ByteStringIterator();
     }
 
+    public ByteString reverse() {
+        byte[] newBytes = new byte[bytes.length];
+        for (int i = 0; i < bytes.length; i++) {
+            newBytes[i] = bytes[bytes.length - i - 1];
+        }
+        return new ByteString(newBytes);
+    }
+
     public ByteString substring(int beginIndex) {
         return substring(beginIndex, bytes.length);
     }

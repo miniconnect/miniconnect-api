@@ -131,6 +131,17 @@ class ByteStringTest {
     }
 
     @Test
+    void testReverse() {
+        assertThat((Object) ByteString.empty().reverse()).isEqualTo(ByteString.empty());
+        assertThat((Object) ByteString.of("xx").reverse()).isEqualTo(ByteString.of("xx"));
+        assertThat((Object) ByteString.of("lorem").reverse()).isEqualTo(ByteString.of("merol"));
+        assertThat((Object) ByteString.of(new byte[] { 65, -34, 0, 12, 7 }).reverse())
+                .isEqualTo(ByteString.of(new byte[] { 7, 12, 0, -34, 65 }));
+        assertThat(ByteString.of(new byte[] { 125, 2, -1, 0, 13, -67, 111, 31, 93, 23, -78, -99, 2, 15 }).reverse().extract())
+                .containsExactly(15, 2, -99, -78, 23, 93, 31, 111, -67, 13, 0, -1, 2, 125);
+    }
+
+    @Test
     void testSubstring() {
         ByteString byteString = ByteString.of("lorem");
         assertThatThrownBy(() -> byteString.substring(9)).isInstanceOf(IndexOutOfBoundsException.class);
