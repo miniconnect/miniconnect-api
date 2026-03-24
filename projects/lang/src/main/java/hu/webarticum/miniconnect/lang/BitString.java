@@ -759,20 +759,10 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
     }
 
     public int indexOfOne() {
-        int fullWordCount = length >>> 6;
-        for (int i = 0; i < fullWordCount; i++) {
+        for (int i = 0; i < data.length; i++) {
             int pos = Long.numberOfLeadingZeros(data[i]);
             if (pos != 64) {
                 return (i << 6) + pos;
-            }
-        }
-        int tailLength = length & 63;
-        if (tailLength != 0) {
-            long mask = -1L << (64 - tailLength);
-            long tailWord = data[fullWordCount] & mask;
-            int pos = Long.numberOfLeadingZeros(tailWord);
-            if (pos != 64) {
-                return (fullWordCount << 6) + pos;
             }
         }
         return -1;
