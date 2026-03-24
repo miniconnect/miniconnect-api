@@ -754,15 +754,6 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
         return new BitString(newData, length);
     }
 
-    private long reverseWord(long word) {
-        long result = ((word & 0xFFFFFFFF00000000L) >>> 32) | ((word & 0x00000000FFFFFFFFL) << 32);
-        result = ((result & 0xFFFF0000FFFF0000L) >>> 16) | ((result & 0x0000FFFF0000FFFFL) << 16);
-        result = ((result & 0xFF00FF00FF00FF00L) >>> 8) | ((result & 0x00FF00FF00FF00FFL) << 8);
-        result = ((result & 0xF0F0F0F0F0F0F0F0L) >>> 4) | ((result & 0x0F0F0F0F0F0F0F0FL) << 4);
-        result = ((result & 0xCCCCCCCCCCCCCCCCL) >>> 2) | ((result & 0x3333333333333333L) << 2);
-        return ((result & 0xAAAAAAAAAAAAAAAAL) >>> 1) | ((result & 0x5555555555555555L) << 1);
-    }
-
     public int indexOf(boolean bit) {
         return bit ? indexOfOne() : indexOfZero();
     }
