@@ -803,18 +803,7 @@ public final class BitString implements Comparable<BitString>, Iterable<Boolean>
     }
 
     public int lastIndexOfOne() {
-        int fullWordCount = length >>> 6;
-        int tailLength = length & 63;
-        if (tailLength != 0) {
-            long mask = -1L << (64 - tailLength);
-            long tailWord = data[fullWordCount] & mask;
-            int pad = Long.numberOfTrailingZeros(tailWord);
-            if (pad != 64) {
-                int pos = 64 - pad - 1;
-                return (fullWordCount << 6) + pos;
-            }
-        }
-        for (int i = fullWordCount - 1; i >= 0; i--) {
+        for (int i = data.length - 1; i >= 0; i--) {
             int pad = Long.numberOfTrailingZeros(data[i]);
             if (pad != 64) {
                 int pos = 64 - pad - 1;
