@@ -198,6 +198,40 @@ public final class ByteString implements Comparable<ByteString>, Iterable<Byte>,
         return -1;
     }
 
+    public int indexOfNonZero() {
+        return indexOfNonZeroInternal(0);
+    }
+
+    public int indexOfNonZero(int fromIndex) {
+        return indexOfNonZeroInternal(Math.max(0, fromIndex));
+    }
+
+    private int indexOfNonZeroInternal(int fromIndex) {
+        for (int i = fromIndex; i < bytes.length; i++) {
+            if (bytes[i] != (byte) 0) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public int lastIndexOfNonZero() {
+        return lastIndexOfNonZeroInternal(bytes.length - 1);
+    }
+
+    public int lastIndexOfNonZero(int fromIndex) {
+        return lastIndexOfNonZeroInternal(Math.min(bytes.length - 1, fromIndex));
+    }
+
+    private int lastIndexOfNonZeroInternal(int fromIndex) {
+        for (int i = fromIndex; i >= 0; i--) {
+            if (bytes[i] != (byte) 0) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     public int indexOf(ByteString substring) {
         return indexOfInternal(substring, 0);
     }
