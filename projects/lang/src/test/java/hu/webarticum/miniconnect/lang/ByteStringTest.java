@@ -142,6 +142,263 @@ class ByteStringTest {
     }
 
     @Test
+    void testIndexOfByte() {
+        assertThat(ByteString.empty().indexOf((byte) 0)).isEqualTo(-1);
+        assertThat(ByteString.empty().indexOf((byte) 12)).isEqualTo(-1);
+        assertThat(ByteString.of("i").indexOf((byte) 'o')).isEqualTo(-1);
+        assertThat(ByteString.of("i").indexOf((byte) 'i')).isEqualTo(0);
+        assertThat(ByteString.of("iii").indexOf((byte) 'o')).isEqualTo(-1);
+        assertThat(ByteString.of("iii").indexOf((byte) 'i')).isEqualTo(0);
+        assertThat(ByteString.of("oooiioiiioioio").indexOf((byte) 'o')).isEqualTo(0);
+        assertThat(ByteString.of("oooiioiiioioio").indexOf((byte) 'i')).isEqualTo(3);
+    }
+
+    @Test
+    void testIndexOfByteFrom() {
+        assertThat(ByteString.empty().indexOf((byte) 0, -2)).isEqualTo(-1);
+        assertThat(ByteString.empty().indexOf((byte) 0, 0)).isEqualTo(-1);
+        assertThat(ByteString.empty().indexOf((byte) 0, 1)).isEqualTo(-1);
+        assertThat(ByteString.empty().indexOf((byte) 12, 1)).isEqualTo(-1);
+        assertThat(ByteString.of("i").indexOf((byte) 'o', -2)).isEqualTo(-1);
+        assertThat(ByteString.of("i").indexOf((byte) 'o', 0)).isEqualTo(-1);
+        assertThat(ByteString.of("i").indexOf((byte) 'o', 1)).isEqualTo(-1);
+        assertThat(ByteString.of("i").indexOf((byte) 'i', -2)).isEqualTo(0);
+        assertThat(ByteString.of("i").indexOf((byte) 'i', 0)).isEqualTo(0);
+        assertThat(ByteString.of("i").indexOf((byte) 'i', 1)).isEqualTo(-1);
+        assertThat(ByteString.of("iii").indexOf((byte) 'o', -2)).isEqualTo(-1);
+        assertThat(ByteString.of("iii").indexOf((byte) 'o', 0)).isEqualTo(-1);
+        assertThat(ByteString.of("iii").indexOf((byte) 'o', 1)).isEqualTo(-1);
+        assertThat(ByteString.of("iii").indexOf((byte) 'o', 5)).isEqualTo(-1);
+        assertThat(ByteString.of("iii").indexOf((byte) 'i', -2)).isEqualTo(0);
+        assertThat(ByteString.of("iii").indexOf((byte) 'i', 0)).isEqualTo(0);
+        assertThat(ByteString.of("iii").indexOf((byte) 'i', 1)).isEqualTo(1);
+        assertThat(ByteString.of("iii").indexOf((byte) 'i', 5)).isEqualTo(-1);
+        assertThat(ByteString.of("oooiioiiioioio").indexOf((byte) 'o', -2)).isEqualTo(0);
+        assertThat(ByteString.of("oooiioiiioioio").indexOf((byte) 'o', 0)).isEqualTo(0);
+        assertThat(ByteString.of("oooiioiiioioio").indexOf((byte) 'o', 2)).isEqualTo(2);
+        assertThat(ByteString.of("oooiioiiioioio").indexOf((byte) 'o', 7)).isEqualTo(9);
+        assertThat(ByteString.of("oooiioiiioioio").indexOf((byte) 'o', 11)).isEqualTo(11);
+        assertThat(ByteString.of("oooiioiiioioio").indexOf((byte) 'o', 17)).isEqualTo(-1);
+        assertThat(ByteString.of("oooiioiiioioio").indexOf((byte) 'i', -2)).isEqualTo(3);
+        assertThat(ByteString.of("oooiioiiioioio").indexOf((byte) 'i', 0)).isEqualTo(3);
+        assertThat(ByteString.of("oooiioiiioioio").indexOf((byte) 'i', 3)).isEqualTo(3);
+        assertThat(ByteString.of("oooiioiiioioio").indexOf((byte) 'i', 9)).isEqualTo(10);
+        assertThat(ByteString.of("oooiioiiioioio").indexOf((byte) 'i', 12)).isEqualTo(12);
+        assertThat(ByteString.of("oooiioiiioioio").indexOf((byte) 'i', 17)).isEqualTo(-1);
+    }
+
+    @Test
+    void testLastIndexOfByte() {
+        assertThat(ByteString.empty().lastIndexOf((byte) 0)).isEqualTo(-1);
+        assertThat(ByteString.empty().lastIndexOf((byte) 12)).isEqualTo(-1);
+        assertThat(ByteString.of("i").lastIndexOf((byte) 'o')).isEqualTo(-1);
+        assertThat(ByteString.of("i").lastIndexOf((byte) 'i')).isEqualTo(0);
+        assertThat(ByteString.of("iii").lastIndexOf((byte) 'o')).isEqualTo(-1);
+        assertThat(ByteString.of("iii").lastIndexOf((byte) 'i')).isEqualTo(2);
+        assertThat(ByteString.of("oooiioiiioioio").lastIndexOf((byte) 'o')).isEqualTo(13);
+        assertThat(ByteString.of("oooiioiiioioio").lastIndexOf((byte) 'i')).isEqualTo(12);
+    }
+
+    @Test
+    void testLastIndexOfByteFrom() {
+        assertThat(ByteString.empty().lastIndexOf((byte) 0, -2)).isEqualTo(-1);
+        assertThat(ByteString.empty().lastIndexOf((byte) 0, 0)).isEqualTo(-1);
+        assertThat(ByteString.empty().lastIndexOf((byte) 0, 1)).isEqualTo(-1);
+        assertThat(ByteString.empty().lastIndexOf((byte) 12, 1)).isEqualTo(-1);
+        assertThat(ByteString.of("i").lastIndexOf((byte) 'o', -2)).isEqualTo(-1);
+        assertThat(ByteString.of("i").lastIndexOf((byte) 'o', 0)).isEqualTo(-1);
+        assertThat(ByteString.of("i").lastIndexOf((byte) 'o', 1)).isEqualTo(-1);
+        assertThat(ByteString.of("i").lastIndexOf((byte) 'i', -2)).isEqualTo(-1);
+        assertThat(ByteString.of("i").lastIndexOf((byte) 'i', 0)).isEqualTo(0);
+        assertThat(ByteString.of("i").lastIndexOf((byte) 'i', 1)).isEqualTo(0);
+        assertThat(ByteString.of("iii").lastIndexOf((byte) 'o', -2)).isEqualTo(-1);
+        assertThat(ByteString.of("iii").lastIndexOf((byte) 'o', 0)).isEqualTo(-1);
+        assertThat(ByteString.of("iii").lastIndexOf((byte) 'o', 1)).isEqualTo(-1);
+        assertThat(ByteString.of("iii").lastIndexOf((byte) 'o', 5)).isEqualTo(-1);
+        assertThat(ByteString.of("iii").lastIndexOf((byte) 'i', -2)).isEqualTo(-1);
+        assertThat(ByteString.of("iii").lastIndexOf((byte) 'i', 0)).isEqualTo(0);
+        assertThat(ByteString.of("iii").lastIndexOf((byte) 'i', 1)).isEqualTo(1);
+        assertThat(ByteString.of("iii").lastIndexOf((byte) 'i', 5)).isEqualTo(2);
+        assertThat(ByteString.of("oooiioiiioioio").lastIndexOf((byte) 'o', -2)).isEqualTo(-1);
+        assertThat(ByteString.of("oooiioiiioioio").lastIndexOf((byte) 'o', 0)).isEqualTo(0);
+        assertThat(ByteString.of("oooiioiiioioio").lastIndexOf((byte) 'o', 2)).isEqualTo(2);
+        assertThat(ByteString.of("oooiioiiioioio").lastIndexOf((byte) 'o', 8)).isEqualTo(5);
+        assertThat(ByteString.of("oooiioiiioioio").lastIndexOf((byte) 'o', 13)).isEqualTo(13);
+        assertThat(ByteString.of("oooiioiiioioio").lastIndexOf((byte) 'o', 17)).isEqualTo(13);
+        assertThat(ByteString.of("oooiioiiioioio").lastIndexOf((byte) 'i', -2)).isEqualTo(-1);
+        assertThat(ByteString.of("oooiioiiioioio").lastIndexOf((byte) 'i', 0)).isEqualTo(-1);
+        assertThat(ByteString.of("oooiioiiioioio").lastIndexOf((byte) 'i', 3)).isEqualTo(3);
+        assertThat(ByteString.of("oooiioiiioioio").lastIndexOf((byte) 'i', 11)).isEqualTo(10);
+        assertThat(ByteString.of("oooiioiiioioio").lastIndexOf((byte) 'i', 12)).isEqualTo(12);
+        assertThat(ByteString.of("oooiioiiioioio").lastIndexOf((byte) 'i', 17)).isEqualTo(12);
+    }
+
+    @Test
+    void testIndexOfSubstring() {
+        assertThat(ByteString.empty().indexOf(ByteString.empty())).isEqualTo(0);
+        assertThat(ByteString.of("lorem").indexOf(ByteString.empty())).isEqualTo(0);
+        assertThat(ByteString.empty().indexOf(ByteString.of("lorem"))).isEqualTo(-1);
+        assertThat(ByteString.of("i").indexOf(ByteString.of("o"))).isEqualTo(-1);
+        assertThat(ByteString.of("i").indexOf(ByteString.of("i"))).isEqualTo(0);
+        assertThat(ByteString.of("ooi").indexOf(ByteString.of("i"))).isEqualTo(2);
+        assertThat(ByteString.of("ooi").indexOf(ByteString.of("ii"))).isEqualTo(-1);
+        assertThat(ByteString.of("ooii").indexOf(ByteString.of("ii"))).isEqualTo(2);
+        assertThat(ByteString.of("lorem ipsum").indexOf(ByteString.of("ips"))).isEqualTo(6);
+        assertThat(ByteString.of("lorem ipsum").indexOf(ByteString.of("lips"))).isEqualTo(-1);
+        assertThat(ByteString.of("rywamywetywu").indexOf(ByteString.of("yw"))).isEqualTo(1);
+    }
+
+    @Test
+    void testIndexOfSubstringFrom() {
+        assertThat(ByteString.empty().indexOf(ByteString.empty(), -2)).isEqualTo(0);
+        assertThat(ByteString.empty().indexOf(ByteString.empty(), 0)).isEqualTo(0);
+        assertThat(ByteString.empty().indexOf(ByteString.empty(), 2)).isEqualTo(-1);
+        assertThat(ByteString.of("lorem").indexOf(ByteString.empty(), -2)).isEqualTo(0);
+        assertThat(ByteString.of("lorem").indexOf(ByteString.empty(), 0)).isEqualTo(0);
+        assertThat(ByteString.of("lorem").indexOf(ByteString.empty(), 2)).isEqualTo(2);
+        assertThat(ByteString.of("lorem").indexOf(ByteString.empty(), 5)).isEqualTo(5);
+        assertThat(ByteString.of("lorem").indexOf(ByteString.empty(), 7)).isEqualTo(-1);
+        assertThat(ByteString.empty().indexOf(ByteString.of("lorem"), -2)).isEqualTo(-1);
+        assertThat(ByteString.empty().indexOf(ByteString.of("lorem"), 0)).isEqualTo(-1);
+        assertThat(ByteString.empty().indexOf(ByteString.of("lorem"), 2)).isEqualTo(-1);
+        assertThat(ByteString.empty().indexOf(ByteString.of("lorem"), 5)).isEqualTo(-1);
+        assertThat(ByteString.empty().indexOf(ByteString.of("lorem"), 7)).isEqualTo(-1);
+        assertThat(ByteString.of("i").indexOf(ByteString.of("o"), -2)).isEqualTo(-1);
+        assertThat(ByteString.of("i").indexOf(ByteString.of("i"), -2)).isEqualTo(0);
+        assertThat(ByteString.of("lorem ipsum").indexOf(ByteString.of("ips"), -2)).isEqualTo(6);
+        assertThat(ByteString.of("lorem ipsum").indexOf(ByteString.of("ips"), 0)).isEqualTo(6);
+        assertThat(ByteString.of("lorem ipsum").indexOf(ByteString.of("ips"), 4)).isEqualTo(6);
+        assertThat(ByteString.of("lorem ipsum").indexOf(ByteString.of("ips"), 6)).isEqualTo(6);
+        assertThat(ByteString.of("lorem ipsum").indexOf(ByteString.of("ips"), 7)).isEqualTo(-1);
+        assertThat(ByteString.of("lorem ipsum").indexOf(ByteString.of("ips"), 10)).isEqualTo(-1);
+        assertThat(ByteString.of("rywamywetywu").indexOf(ByteString.of("yw"), -2)).isEqualTo(1);
+        assertThat(ByteString.of("rywamywetywu").indexOf(ByteString.of("yw"), 0)).isEqualTo(1);
+        assertThat(ByteString.of("rywamywetywu").indexOf(ByteString.of("yw"), 1)).isEqualTo(1);
+        assertThat(ByteString.of("rywamywetywu").indexOf(ByteString.of("yw"), 2)).isEqualTo(5);
+        assertThat(ByteString.of("rywamywetywu").indexOf(ByteString.of("yw"), 4)).isEqualTo(5);
+        assertThat(ByteString.of("rywamywetywu").indexOf(ByteString.of("yw"), 5)).isEqualTo(5);
+        assertThat(ByteString.of("rywamywetywu").indexOf(ByteString.of("yw"), 7)).isEqualTo(9);
+        assertThat(ByteString.of("rywamywetywu").indexOf(ByteString.of("yw"), 10)).isEqualTo(-1);
+        assertThat(ByteString.of("rywamywetywu").indexOf(ByteString.of("yw"), 15)).isEqualTo(-1);
+    }
+
+    @Test
+    void testLastIndexOfSubstring() {
+        assertThat(ByteString.empty().lastIndexOf(ByteString.empty())).isEqualTo(0);
+        assertThat(ByteString.of("lorem").lastIndexOf(ByteString.empty())).isEqualTo(5);
+        assertThat(ByteString.empty().lastIndexOf(ByteString.of("lorem"))).isEqualTo(-1);
+        assertThat(ByteString.of("i").lastIndexOf(ByteString.of("o"))).isEqualTo(-1);
+        assertThat(ByteString.of("i").lastIndexOf(ByteString.of("i"))).isEqualTo(0);
+        assertThat(ByteString.of("ooi").lastIndexOf(ByteString.of("i"))).isEqualTo(2);
+        assertThat(ByteString.of("ooi").lastIndexOf(ByteString.of("ii"))).isEqualTo(-1);
+        assertThat(ByteString.of("ooii").lastIndexOf(ByteString.of("ii"))).isEqualTo(2);
+        assertThat(ByteString.of("lorem ipsum").lastIndexOf(ByteString.of("ips"))).isEqualTo(6);
+        assertThat(ByteString.of("lorem ipsum").lastIndexOf(ByteString.of("lips"))).isEqualTo(-1);
+        assertThat(ByteString.of("rywamywetywu").lastIndexOf(ByteString.of("yw"))).isEqualTo(9);
+    }
+
+    @Test
+    void testLastIndexOfSubstringFrom() {
+        assertThat(ByteString.empty().lastIndexOf(ByteString.empty(), -2)).isEqualTo(-1);
+        assertThat(ByteString.empty().lastIndexOf(ByteString.empty(), 0)).isEqualTo(0);
+        assertThat(ByteString.empty().lastIndexOf(ByteString.empty(), 2)).isEqualTo(0);
+        assertThat(ByteString.of("lorem").lastIndexOf(ByteString.empty(), -2)).isEqualTo(-1);
+        assertThat(ByteString.of("lorem").lastIndexOf(ByteString.empty(), 0)).isEqualTo(0);
+        assertThat(ByteString.of("lorem").lastIndexOf(ByteString.empty(), 2)).isEqualTo(2);
+        assertThat(ByteString.of("lorem").lastIndexOf(ByteString.empty(), 5)).isEqualTo(5);
+        assertThat(ByteString.of("lorem").lastIndexOf(ByteString.empty(), 7)).isEqualTo(5);
+        assertThat(ByteString.empty().lastIndexOf(ByteString.of("lorem"), -2)).isEqualTo(-1);
+        assertThat(ByteString.empty().lastIndexOf(ByteString.of("lorem"), 0)).isEqualTo(-1);
+        assertThat(ByteString.empty().lastIndexOf(ByteString.of("lorem"), 2)).isEqualTo(-1);
+        assertThat(ByteString.empty().lastIndexOf(ByteString.of("lorem"), 5)).isEqualTo(-1);
+        assertThat(ByteString.empty().lastIndexOf(ByteString.of("lorem"), 7)).isEqualTo(-1);
+        assertThat(ByteString.of("i").lastIndexOf(ByteString.of("o"), -2)).isEqualTo(-1);
+        assertThat(ByteString.of("i").lastIndexOf(ByteString.of("o"), 0)).isEqualTo(-1);
+        assertThat(ByteString.of("i").lastIndexOf(ByteString.of("o"), 2)).isEqualTo(-1);
+        assertThat(ByteString.of("i").lastIndexOf(ByteString.of("i"), -1)).isEqualTo(-1);
+        assertThat(ByteString.of("i").lastIndexOf(ByteString.of("i"), 0)).isEqualTo(0);
+        assertThat(ByteString.of("i").lastIndexOf(ByteString.of("i"), 2)).isEqualTo(0);
+        assertThat(ByteString.of("lorem ipsum").lastIndexOf(ByteString.of("ips"), -2)).isEqualTo(-1);
+        assertThat(ByteString.of("lorem ipsum").lastIndexOf(ByteString.of("ips"), 0)).isEqualTo(-1);
+        assertThat(ByteString.of("lorem ipsum").lastIndexOf(ByteString.of("ips"), 4)).isEqualTo(-1);
+        assertThat(ByteString.of("lorem ipsum").lastIndexOf(ByteString.of("ips"), 6)).isEqualTo(6);
+        assertThat(ByteString.of("lorem ipsum").lastIndexOf(ByteString.of("ips"), 7)).isEqualTo(6);
+        assertThat(ByteString.of("lorem ipsum").lastIndexOf(ByteString.of("ips"), 10)).isEqualTo(6);
+        assertThat(ByteString.of("rywamywetywu").lastIndexOf(ByteString.of("yw"), -2)).isEqualTo(-1);
+        assertThat(ByteString.of("rywamywetywu").lastIndexOf(ByteString.of("yw"), 0)).isEqualTo(-1);
+        assertThat(ByteString.of("rywamywetywu").lastIndexOf(ByteString.of("yw"), 1)).isEqualTo(1);
+        assertThat(ByteString.of("rywamywetywu").lastIndexOf(ByteString.of("yw"), 2)).isEqualTo(1);
+        assertThat(ByteString.of("rywamywetywu").lastIndexOf(ByteString.of("yw"), 4)).isEqualTo(1);
+        assertThat(ByteString.of("rywamywetywu").lastIndexOf(ByteString.of("yw"), 5)).isEqualTo(5);
+        assertThat(ByteString.of("rywamywetywu").lastIndexOf(ByteString.of("yw"), 7)).isEqualTo(5);
+        assertThat(ByteString.of("rywamywetywu").lastIndexOf(ByteString.of("yw"), 10)).isEqualTo(9);
+        assertThat(ByteString.of("rywamywetywu").lastIndexOf(ByteString.of("yw"), 15)).isEqualTo(9);
+    }
+
+    @Test
+    void testStartsWith() {
+        assertThat(ByteString.empty().startsWith(ByteString.empty())).isTrue();
+        assertThat(ByteString.of("lorem").startsWith(ByteString.empty())).isTrue();
+        assertThat(ByteString.empty().startsWith(ByteString.of("lorem"))).isFalse();
+        assertThat(ByteString.of("lor").startsWith(ByteString.of("lorem"))).isFalse();
+        assertThat(ByteString.of("rem").startsWith(ByteString.of("lorem"))).isFalse();
+        assertThat(ByteString.of("lorem").startsWith(ByteString.of("lor"))).isTrue();
+        assertThat(ByteString.of("lorem").startsWith(ByteString.of("rem"))).isFalse();
+        assertThat(ByteString.of("lorem").startsWith(ByteString.of("lorem"))).isTrue();
+        assertThat(ByteString.of("lorem").startsWith(ByteString.of("ipsum"))).isFalse();
+        assertThat(ByteString.of("hfalsdbfadkljflaue").startsWith(ByteString.of("hfalsdbfadk"))).isTrue();
+        assertThat(ByteString.of("hfalsdbfadkljflaue").startsWith(ByteString.of("skfkanpdkjr"))).isFalse();
+    }
+
+    @Test
+    void testEndsWith() {
+        assertThat(ByteString.empty().endsWith(ByteString.empty())).isTrue();
+        assertThat(ByteString.of("lorem").endsWith(ByteString.empty())).isTrue();
+        assertThat(ByteString.empty().endsWith(ByteString.of("lorem"))).isFalse();
+        assertThat(ByteString.of("lor").endsWith(ByteString.of("lorem"))).isFalse();
+        assertThat(ByteString.of("rem").endsWith(ByteString.of("lorem"))).isFalse();
+        assertThat(ByteString.of("lorem").endsWith(ByteString.of("lor"))).isFalse();
+        assertThat(ByteString.of("lorem").endsWith(ByteString.of("rem"))).isTrue();
+        assertThat(ByteString.of("lorem").endsWith(ByteString.of("lorem"))).isTrue();
+        assertThat(ByteString.of("lorem").endsWith(ByteString.of("ipsum"))).isFalse();
+        assertThat(ByteString.of("hfalsdbfadkljflaue").endsWith(ByteString.of("fadkljflaue"))).isTrue();
+        assertThat(ByteString.of("hfalsdbfadkljflaue").endsWith(ByteString.of("zughdjfkasw"))).isFalse();
+    }
+
+    @Test
+    void testMatch() {
+        assertThat(ByteString.empty().match(ByteString.empty(), -2)).isFalse();
+        assertThat(ByteString.empty().match(ByteString.empty(), 0)).isTrue();
+        assertThat(ByteString.empty().match(ByteString.empty(), 2)).isFalse();
+        assertThat(ByteString.empty().match(ByteString.of("lorem"), -2)).isFalse();
+        assertThat(ByteString.empty().match(ByteString.of("lorem"), 0)).isFalse();
+        assertThat(ByteString.empty().match(ByteString.of("lorem"), 2)).isFalse();
+        assertThat(ByteString.of("lorem").match(ByteString.empty(), -2)).isFalse();
+        assertThat(ByteString.of("lorem").match(ByteString.empty(), 0)).isTrue();
+        assertThat(ByteString.of("lorem").match(ByteString.empty(), 2)).isTrue();
+        assertThat(ByteString.of("lorem").match(ByteString.empty(), 5)).isTrue();
+        assertThat(ByteString.of("lorem").match(ByteString.empty(), 7)).isFalse();
+        assertThat(ByteString.of("lorem").match(ByteString.of("lorem"), -2)).isFalse();
+        assertThat(ByteString.of("lorem").match(ByteString.of("lorem"), 0)).isTrue();
+        assertThat(ByteString.of("lorem").match(ByteString.of("lorem"), 2)).isFalse();
+        assertThat(ByteString.of("lorem").match(ByteString.of("lorem"), 5)).isFalse();
+        assertThat(ByteString.of("lorem").match(ByteString.of("lorem"), 7)).isFalse();
+        assertThat(ByteString.of("lorem").match(ByteString.of("lor"), -2)).isFalse();
+        assertThat(ByteString.of("lorem").match(ByteString.of("lor"), 0)).isTrue();
+        assertThat(ByteString.of("lorem").match(ByteString.of("lor"), 2)).isFalse();
+        assertThat(ByteString.of("lorem").match(ByteString.of("lor"), 7)).isFalse();
+        assertThat(ByteString.of("lorem").match(ByteString.of("rem"), -2)).isFalse();
+        assertThat(ByteString.of("lorem").match(ByteString.of("rem"), 0)).isFalse();
+        assertThat(ByteString.of("lorem").match(ByteString.of("rem"), 2)).isTrue();
+        assertThat(ByteString.of("lorem").match(ByteString.of("rem"), 7)).isFalse();
+        assertThat(ByteString.of("bahfhauksdjflvd").match(ByteString.of("hauksdj"), 4)).isTrue();
+        assertThat(ByteString.of("bahfhauksdjflvd").match(ByteString.of("hauksdk"), 4)).isFalse();
+        assertThat(ByteString.of("bahfhauksdjflvd").match(ByteString.of("jflvd"), 10)).isTrue();
+        assertThat(ByteString.of("bahfhauksdjflvd").match(ByteString.of("jflvde"), 10)).isFalse();
+        assertThat(ByteString.of("bahfhauksdjflvd").match(ByteString.of("jflvd\0"), 10)).isFalse();
+    }
+
+    @Test
     void testSubstring() {
         ByteString byteString = ByteString.of("lorem");
         assertThatThrownBy(() -> byteString.substring(9)).isInstanceOf(IndexOutOfBoundsException.class);
