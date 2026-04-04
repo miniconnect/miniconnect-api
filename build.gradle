@@ -65,7 +65,9 @@ subprojects { subproject ->
             withJavadocJar()
             withSourcesJar()
         }
-
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:deprecation"
+        }
         subproject.tasks.withType(JavaCompile).configureEach { compileTask ->
             compileTask.javaCompiler = javaToolchains.compilerFor {
                 languageVersion = JavaLanguageVersion.of(8)

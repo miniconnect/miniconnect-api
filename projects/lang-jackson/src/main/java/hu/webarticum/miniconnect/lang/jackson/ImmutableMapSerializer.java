@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 import hu.webarticum.miniconnect.lang.ImmutableMap;
 
+@SuppressWarnings("all")
 public class ImmutableMapSerializer extends StdSerializer<ImmutableMap<?, ?>> {
 
     private static final long serialVersionUID = 1L;
@@ -38,6 +39,7 @@ public class ImmutableMapSerializer extends StdSerializer<ImmutableMap<?, ?>> {
         generator.writeEndObject();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public JsonNode getSchema(SerializerProvider provider, Type typeHint) throws JsonMappingException {
         return createSchemaNode("object");
