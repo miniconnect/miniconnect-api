@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 
@@ -127,6 +129,24 @@ class ImmutableMapTest {
         assertThat(ImmutableMap.of(1, "a").values()).isEqualTo(ImmutableList.of("a"));
         assertThat(ImmutableMap.of(1, "a", null, "b", 3, "c").values()).containsExactlyInAnyOrder("a", "b", "c");
         assertThat(ImmutableMap.of(1, "a", 2, "b", 3, "c").values()).containsExactlyInAnyOrder("a", "b", "c");
+    }
+
+    @Test
+    void testValuesMapping() {
+        Function<Object, String> mapper = v -> Objects.toString(v).toUpperCase();
+        assertThat(ImmutableMap.empty().values(mapper)).isEqualTo(ImmutableList.empty());
+        assertThat(ImmutableMap.of(1, "lorem").values(mapper)).isEqualTo(ImmutableList.of("LOREM"));
+        assertThat(ImmutableMap.of(1, "lorem", 2, null, 3, "WiYz").values(mapper))
+                .isEqualTo(ImmutableList.of("LOREM", "NULL", "WIYZ"));
+    }
+
+    @Test
+    void testValuesBiMapping() {
+        BiFunction<Object, Object, String> mapper = (k, v) -> k + ":" + v;
+        assertThat(ImmutableMap.empty().values(mapper)).isEqualTo(ImmutableList.empty());
+        assertThat(ImmutableMap.of(1, "lorem").values(mapper)).isEqualTo(ImmutableList.of("1:lorem"));
+        assertThat(ImmutableMap.of(1, "lorem", 2, null, 3, "WiYz").values(mapper))
+                .isEqualTo(ImmutableList.of("1:lorem", "2:null", "3:WiYz"));
     }
 
     @Test

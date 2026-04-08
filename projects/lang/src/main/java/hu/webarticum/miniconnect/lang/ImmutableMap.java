@@ -250,6 +250,15 @@ public final class ImmutableMap<K, V> implements Serializable {
         return ImmutableList.fromCollection(data.values());
     }
 
+    public <V2> ImmutableList<V2> values(Function<? super V, V2> valueMapper) {
+        return data.values().stream().map(valueMapper).collect(ImmutableList.createCollector());
+    }
+
+    public <V2> ImmutableList<V2> values(BiFunction<? super K, ? super V, V2> valueBiMapper) {
+        return data.entrySet().stream().map(e -> valueBiMapper.apply(e.getKey(), e.getValue()))
+                .collect(ImmutableList.createCollector());
+    }
+
     public V get(Object key) {
         return data.get(key);
     }
