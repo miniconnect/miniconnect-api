@@ -295,6 +295,17 @@ public final class ImmutableMap<K, V> implements Serializable {
         return new ImmutableMap<>(mappedData);
     }
 
+    public <V2> ImmutableMap<K, V2> mapValues(Function<? super V, V2> valueMapper) {
+        Map<K, V2> mappedData = new HashMap<>(data.size());
+        for (Map.Entry<K, V> entry : data.entrySet()) {
+            K key = entry.getKey();
+            V value = entry.getValue();
+            V2 newValue = valueMapper.apply(value);
+            mappedData.put(key, newValue);
+        }
+        return new ImmutableMap<>(mappedData);
+    }
+
     public <V2> ImmutableMap<K, V2> mapValues(BiFunction<? super K, ? super V, V2> valueMapper) {
         Map<K, V2> mappedData = new HashMap<>(data.size());
         for (Map.Entry<K, V> entry : data.entrySet()) {

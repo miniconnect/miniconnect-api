@@ -228,6 +228,17 @@ class ImmutableMapTest {
     }
 
     @Test
+    void testMapValuesCross() {
+        assertThat(ImmutableMap.empty().mapValues(v -> v).asMap()).isEmpty();
+        assertThat(ImmutableMap.of(null, null).mapValues(v -> v).asMap())
+                .containsExactly(entry(null, null));
+        assertThat(ImmutableMap.of(1, "a").mapValues(v -> null).asMap())
+                .containsExactly(entry(1, null));
+        assertThat(ImmutableMap.of(1, "a", null, "b", 3, null).mapValues(v -> v).asMap())
+                .containsExactlyInAnyOrderEntriesOf(map(entry(1, "a"), entry(null, "b"), entry(3, null)));
+    }
+
+    @Test
     void testForEachEmpty() {
         Map<Object, Object> map = new HashMap<>();
         ImmutableMap.empty().forEach(map::put);
