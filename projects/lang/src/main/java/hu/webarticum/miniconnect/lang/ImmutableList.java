@@ -78,7 +78,7 @@ public final class ImmutableList<T> implements ReversibleIterable<T>, Serializab
         return of(Arrays.stream(intArray).boxed().toArray(Integer[]::new));
     }
 
-    public static ImmutableList<Long> fromLongArray(int[] longArray) {
+    public static ImmutableList<Long> fromLongArray(long[] longArray) {
         return of(Arrays.stream(longArray).boxed().toArray(Long[]::new));
     }
 
