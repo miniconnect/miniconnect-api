@@ -3,6 +3,9 @@ package hu.webarticum.miniconnect.lang;
 import java.util.Collections;
 import java.util.Iterator;
 
+/**
+ * Extension of the <code>java.util.Iterator</code> interface with reversibility.
+ */
 public interface ReversibleIterable<T> extends Iterable<T> {
 
     public ReversibleIterable<T> reverseOrder();

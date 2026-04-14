@@ -2,6 +2,9 @@ package hu.webarticum.miniconnect.lang;
 
 import java.util.Objects;
 
+/**
+ * Return-value wrapper for positions found even in a huge virtual array.
+ */
 public class FindPositionResult {
 
     private final boolean found;

@@ -11,6 +11,11 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+/**
+ * Convenient immutable map class.
+ *
+ * <p>Note that it does NOT implement the <code>java.util.Map</code> interface.
+ */
 public final class ImmutableMap<K, V> implements Serializable {
 
     private static final long serialVersionUID = 1L;

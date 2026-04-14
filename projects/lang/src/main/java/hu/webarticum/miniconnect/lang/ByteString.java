@@ -18,7 +18,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 
 /**
- * Simple immutable wrapper for byte arrays
+ * Simple immutable wrapper for byte arrays.
  */
 public final class ByteString implements Comparable<ByteString>, Iterable<Byte>, Serializable {
 

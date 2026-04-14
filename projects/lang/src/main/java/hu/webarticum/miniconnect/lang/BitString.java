@@ -10,7 +10,7 @@ import java.util.NoSuchElementException;
 /**
  * Simple immutable bit array implementation.
  *
- * It represents the bits in a long array with MSB first order:
+ * <p>It represents the bits in a long array with MSB first order:
  * the array layout is MSB first, and the MSB of each long corresponds
  * to the first logical bit it represents from the bit string.
  * The last long value, if incomplete (in case of length % 64 > 0),

@@ -8,6 +8,18 @@ import java.util.BitSet;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Efficient numeric type for arbitrarily large signed whole numbers.
+ *
+ * <p>It is an alternative to <code>java.math.BigDecimal</code>, and replicates all of the latter's methods.
+ * In addition, it provides many further convenience methods
+ * (<code>isNegative()</code>, <code>isRelativelyPrimeTo(n)</code>, etc.).
+ *
+ * <p>The implementation is adaptive.
+ * For small values (fitting in the primitive <code>long</code> range) it applies primitive long arithmetic,
+ * while for calculations involving or possibly leading to larger values, it uses <code>java.math.BigInteger</code>.
+ * This way, it's fast for small numbers, yet also capable of handling arbitrarily large numbers.
+ */
 public abstract class LargeInteger extends Number implements Comparable<LargeInteger> {
 
     private static final long serialVersionUID = 1L;
