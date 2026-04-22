@@ -4,6 +4,10 @@ plugins {
 
 description = "MiniConnect API definition"
 
+tasks.withType(JavaCompile).configureEach {
+    options.release = 8
+}
+
 dependencies {
     api project(':lang')
 }

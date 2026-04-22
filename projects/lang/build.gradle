@@ -12,6 +12,10 @@ sourceSets {
     }
 }
 
+tasks.withType(JavaCompile).configureEach {
+    options.release = 8
+}
+
 dependencies {
     jmh 'org.openjdk.jmh:jmh-core:1.37'
     jmh 'org.scala-lang:scala-library:2.13.16'
