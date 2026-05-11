@@ -1,6 +1,26 @@
 # Changelog
 
 
+## Version 0.6.0
+
+Released on *2026-05-11*
+
+### Added:
+
+- Added the `BitString` type
+
+### Improved:
+
+- Improved API and implementation of `ByteString`
+- Improved API and implementation of `ImmutableMap`
+- Added more doc comments
+
+### Development:
+
+- Upgraded to gradle 9.5.0 and improved build
+- Added CONTRIBUTING.md and CODE_OF_CONDUCT.md
+
+
 ## Version 0.5.0
 
 Released on *2026-03-03*
