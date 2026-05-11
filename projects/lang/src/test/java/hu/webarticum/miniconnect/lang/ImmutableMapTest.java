@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 
@@ -130,6 +132,24 @@ class ImmutableMapTest {
     }
 
     @Test
+    void testValuesMapping() {
+        Function<Object, String> mapper = v -> Objects.toString(v).toUpperCase();
+        assertThat(ImmutableMap.empty().values(mapper)).isEqualTo(ImmutableList.empty());
+        assertThat(ImmutableMap.of(1, "lorem").values(mapper)).isEqualTo(ImmutableList.of("LOREM"));
+        assertThat(ImmutableMap.of(1, "lorem", 2, null, 3, "WiYz").values(mapper))
+                .isEqualTo(ImmutableList.of("LOREM", "NULL", "WIYZ"));
+    }
+
+    @Test
+    void testValuesBiMapping() {
+        BiFunction<Object, Object, String> mapper = (k, v) -> k + ":" + v;
+        assertThat(ImmutableMap.empty().values(mapper)).isEqualTo(ImmutableList.empty());
+        assertThat(ImmutableMap.of(1, "lorem").values(mapper)).isEqualTo(ImmutableList.of("1:lorem"));
+        assertThat(ImmutableMap.of(1, "lorem", 2, null, 3, "WiYz").values(mapper))
+                .isEqualTo(ImmutableList.of("1:lorem", "2:null", "3:WiYz"));
+    }
+
+    @Test
     void testGet() {
         assertThat(ImmutableMap.empty().get(1)).isNull();
         assertThat(ImmutableMap.empty().get(null)).isNull();
@@ -205,6 +225,17 @@ class ImmutableMapTest {
         assertThat(ImmutableMap.of(1, "a", null, "b", 3, null).mapValues((k, v) -> k + ":" + v).asMap())
                 .containsExactlyInAnyOrderEntriesOf(
                         map(entry(1, "1:a"), entry(null, "null:b"), entry(3, "3:null")));
+    }
+
+    @Test
+    void testMapValuesCross() {
+        assertThat(ImmutableMap.empty().mapValues(v -> v).asMap()).isEmpty();
+        assertThat(ImmutableMap.of(null, null).mapValues(v -> v).asMap())
+                .containsExactly(entry(null, null));
+        assertThat(ImmutableMap.of(1, "a").mapValues(v -> null).asMap())
+                .containsExactly(entry(1, null));
+        assertThat(ImmutableMap.of(1, "a", null, "b", 3, null).mapValues(v -> v).asMap())
+                .containsExactlyInAnyOrderEntriesOf(map(entry(1, "a"), entry(null, "b"), entry(3, null)));
     }
 
     @Test

@@ -18,7 +18,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 
 /**
- * Simple immutable wrapper for byte arrays
+ * Simple immutable wrapper for byte arrays.
  */
 public final class ByteString implements Comparable<ByteString>, Iterable<Byte>, Serializable {
 
@@ -154,6 +154,144 @@ public final class ByteString implements Comparable<ByteString>, Iterable<Byte>,
     @Override
     public Iterator<Byte> iterator() {
         return new ByteStringIterator();
+    }
+
+    public ByteString reverse() {
+        byte[] newBytes = new byte[bytes.length];
+        for (int i = 0; i < bytes.length; i++) {
+            newBytes[i] = bytes[bytes.length - i - 1];
+        }
+        return new ByteString(newBytes);
+    }
+
+    public int indexOf(byte b) {
+        return indexOfInternal(b, 0);
+    }
+
+    public int indexOf(byte b, int fromIndex) {
+        return indexOfInternal(b, Math.max(0, fromIndex));
+    }
+
+    private int indexOfInternal(byte b, int fromIndex) {
+        for (int i = fromIndex; i < bytes.length; i++) {
+            if (bytes[i] == b) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public int lastIndexOf(byte b) {
+        return lastIndexOfInternal(b, bytes.length - 1);
+    }
+
+    public int lastIndexOf(byte b, int fromIndex) {
+        return lastIndexOfInternal(b, Math.min(bytes.length - 1, fromIndex));
+    }
+
+    private int lastIndexOfInternal(byte b, int fromIndex) {
+        for (int i = fromIndex; i >= 0; i--) {
+            if (bytes[i] == b) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public int indexOfNonZero() {
+        return indexOfNonZeroInternal(0);
+    }
+
+    public int indexOfNonZero(int fromIndex) {
+        return indexOfNonZeroInternal(Math.max(0, fromIndex));
+    }
+
+    private int indexOfNonZeroInternal(int fromIndex) {
+        for (int i = fromIndex; i < bytes.length; i++) {
+            if (bytes[i] != (byte) 0) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public int lastIndexOfNonZero() {
+        return lastIndexOfNonZeroInternal(bytes.length - 1);
+    }
+
+    public int lastIndexOfNonZero(int fromIndex) {
+        return lastIndexOfNonZeroInternal(Math.min(bytes.length - 1, fromIndex));
+    }
+
+    private int lastIndexOfNonZeroInternal(int fromIndex) {
+        for (int i = fromIndex; i >= 0; i--) {
+            if (bytes[i] != (byte) 0) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public int indexOf(ByteString substring) {
+        return indexOfInternal(substring, 0);
+    }
+
+    public int indexOf(ByteString substring, int fromIndex) {
+        return indexOfInternal(substring, Math.max(0, fromIndex));
+    }
+
+    private int indexOfInternal(ByteString substring, int fromIndex) {
+        int highIndex = bytes.length - substring.bytes.length;
+        for (int i = fromIndex; i <= highIndex; i++) {
+            if (matchInternal(substring, i)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public int lastIndexOf(ByteString substring) {
+        return lastIndexOfInternal(substring, bytes.length - substring.bytes.length);
+    }
+
+    public int lastIndexOf(ByteString substring, int fromIndex) {
+        return lastIndexOfInternal(substring, Math.min(bytes.length - substring.bytes.length, fromIndex));
+    }
+
+    private int lastIndexOfInternal(ByteString substring, int fromIndex) {
+        for (int i = fromIndex; i >= 0; i--) {
+            if (match(substring, i)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public boolean startsWith(ByteString substring) {
+        if (substring.bytes.length > bytes.length) {
+            return false;
+        }
+        return match(substring, 0);
+    }
+
+    public boolean endsWith(ByteString substring) {
+        return match(substring, bytes.length - substring.bytes.length);
+    }
+
+    public boolean match(ByteString substring, int position) {
+        if (position < 0 || position > bytes.length - substring.bytes.length) {
+            return false;
+        }
+        return matchInternal(substring, position);
+    }
+
+    private boolean matchInternal(ByteString substring, int position) {
+        for (int i = 0 ; i < substring.bytes.length; i++) {
+            if (substring.bytes[i] != bytes[position + i]) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public ByteString substring(int beginIndex) {

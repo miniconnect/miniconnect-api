@@ -19,6 +19,11 @@ import java.util.stream.Collector;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+/**
+ * Convenient immutable list class.
+ *
+ * <p>Note that it does NOT implement the <code>java.util.Collections</code> interface.
+ */
 public final class ImmutableList<T> implements ReversibleIterable<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -78,7 +83,7 @@ public final class ImmutableList<T> implements ReversibleIterable<T>, Serializab
         return of(Arrays.stream(intArray).boxed().toArray(Integer[]::new));
     }
 
-    public static ImmutableList<Long> fromLongArray(int[] longArray) {
+    public static ImmutableList<Long> fromLongArray(long[] longArray) {
         return of(Arrays.stream(longArray).boxed().toArray(Long[]::new));
     }
 

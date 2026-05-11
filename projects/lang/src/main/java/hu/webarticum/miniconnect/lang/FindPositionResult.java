@@ -2,6 +2,9 @@ package hu.webarticum.miniconnect.lang;
 
 import java.util.Objects;
 
+/**
+ * Return-value wrapper for positions found even in a huge virtual array.
+ */
 public class FindPositionResult {
 
     private final boolean found;
@@ -35,24 +38,24 @@ public class FindPositionResult {
 
     @Override
     public int hashCode() {
-    	return Objects.hash(found, position);
+        return Objects.hash(found, position);
     }
 
     @Override
     public boolean equals(Object obj) {
-    	if (obj == this) {
-    		return true;
-    	}
-    	if (obj == null) {
-    		return false;
-    	}
-    	if (!(obj instanceof FindPositionResult)) {
-    		return false;
-    	}
-    	FindPositionResult other = (FindPositionResult) obj;
-    	return (
-    			found == other.found &&
-    			position.equals(other.position));
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof FindPositionResult)) {
+            return false;
+        }
+        FindPositionResult other = (FindPositionResult) obj;
+        return (
+                found == other.found &&
+                position.equals(other.position));
     }
 
     @Override

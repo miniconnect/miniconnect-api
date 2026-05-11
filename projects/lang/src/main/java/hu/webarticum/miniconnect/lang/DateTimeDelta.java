@@ -26,6 +26,17 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Immutable value class for storing differences between dates/times.
+ *
+ * <p>It implements `TemporalAmount`, ensuring seamless integration with the `java.time` API.
+ * Internally, it stores the `Period` and `Duration` components separately.
+ * Since two `Period` objects can only be compared lexicographically,
+ * the comparison of two `DateTimeDelta` instances is also performed lexicographically.
+ *
+ * <p>The main motivation for this implementation was the need for a unified, flexible helper type
+ * that could serve as the underlying equivalent of INTERVAL in a database engine.
+ */
 public final class DateTimeDelta implements Comparable<DateTimeDelta>, TemporalAmount, Serializable {
 
     private static final long serialVersionUID = 1L;

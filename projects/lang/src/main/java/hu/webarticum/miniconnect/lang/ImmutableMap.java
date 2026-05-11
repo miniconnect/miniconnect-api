@@ -11,6 +11,11 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+/**
+ * Convenient immutable map class.
+ *
+ * <p>Note that it does NOT implement the <code>java.util.Map</code> interface.
+ */
 public final class ImmutableMap<K, V> implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -250,6 +255,15 @@ public final class ImmutableMap<K, V> implements Serializable {
         return ImmutableList.fromCollection(data.values());
     }
 
+    public <V2> ImmutableList<V2> values(Function<? super V, V2> valueMapper) {
+        return data.values().stream().map(valueMapper).collect(ImmutableList.createCollector());
+    }
+
+    public <V2> ImmutableList<V2> values(BiFunction<? super K, ? super V, V2> valueBiMapper) {
+        return data.entrySet().stream().map(e -> valueBiMapper.apply(e.getKey(), e.getValue()))
+                .collect(ImmutableList.createCollector());
+    }
+
     public V get(Object key) {
         return data.get(key);
     }
@@ -282,6 +296,17 @@ public final class ImmutableMap<K, V> implements Serializable {
             K2 newKey = keyMapper.apply(key, value);
             V2 newValue = valueMapper.apply(key, value);
             mappedData.put(newKey, newValue);
+        }
+        return new ImmutableMap<>(mappedData);
+    }
+
+    public <V2> ImmutableMap<K, V2> mapValues(Function<? super V, V2> valueMapper) {
+        Map<K, V2> mappedData = new HashMap<>(data.size());
+        for (Map.Entry<K, V> entry : data.entrySet()) {
+            K key = entry.getKey();
+            V value = entry.getValue();
+            V2 newValue = valueMapper.apply(value);
+            mappedData.put(key, newValue);
         }
         return new ImmutableMap<>(mappedData);
     }

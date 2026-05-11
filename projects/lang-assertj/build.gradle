@@ -4,6 +4,10 @@ plugins {
 
 description = "AssertJ integration for miniconnect-api:lang types"
 
+tasks.withType(JavaCompile).configureEach {
+    options.release = 8
+}
+
 dependencies {
     api project(':lang')
     api 'org.assertj:assertj-core:3.27.7'

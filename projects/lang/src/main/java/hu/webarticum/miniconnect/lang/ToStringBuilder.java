@@ -1,5 +1,8 @@
 package hu.webarticum.miniconnect.lang;
 
+/**
+ * Helper for building result of the <code>toString()</code> method based on fields.
+ */
 public class ToStringBuilder {
 
     private final StringBuilder stringBuilder = new StringBuilder();

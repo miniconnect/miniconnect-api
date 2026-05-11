@@ -12,7 +12,7 @@ public class LargeIntegers extends Numbers<LargeInteger> {
 
 
     public LargeIntegers(ComparisonStrategy comparisonStrategy) {
-      super(comparisonStrategy);
+        super(comparisonStrategy);
     }
 
     @VisibleForTesting
